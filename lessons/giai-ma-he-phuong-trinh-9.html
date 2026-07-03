@@ -1214,7 +1214,15 @@ function scaleSlide() {
   var canvas = inner ? inner.querySelector(".slide-canvas") : null;
   if (wrapper && inner) {
     var scale = Math.min(inner.offsetWidth / 960, inner.offsetHeight / 540);
-    wrapper.style.transform = "scale(" + scale + ")"; wrapper.style.transformOrigin = "top left"; wrapper.style.marginLeft = Math.max(0, (inner.offsetWidth - 960 * scale) / 2) + "px"; wrapper.style.marginTop = Math.max(0, (inner.offsetHeight - 540 * scale) / 2) + "px";
+    wrapper.style.width = "960px";
+    wrapper.style.height = "540px";
+    wrapper.style.position = "absolute";
+    wrapper.style.left = "50%";
+    wrapper.style.top = "50%";
+    wrapper.style.transformOrigin = "center";
+    wrapper.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+    wrapper.style.marginLeft = "0";
+    wrapper.style.marginTop = "0";
     requestAnimationFrame(function(){
       if (typeof autoFitAllText === "function") { try { autoFitAllText(); } catch(e){} }
       if (typeof shrinkToFit === "function") { try { shrinkToFit(canvas); } catch(e){} }
