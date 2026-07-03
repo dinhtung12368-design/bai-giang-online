@@ -1215,14 +1215,14 @@ function scaleSlide() {
   if (wrapper && inner) {
     var scale = Math.min(inner.offsetWidth / 960, inner.offsetHeight / 540);
     wrapper.style.width = "960px";
-    wrapper.style.height = "540px";
-    wrapper.style.position = "absolute";
-    wrapper.style.left = "50%";
-    wrapper.style.top = "50%";
-    wrapper.style.transformOrigin = "center";
-    wrapper.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
-    wrapper.style.marginLeft = "0";
-    wrapper.style.marginTop = "0";
+      wrapper.style.height = "540px";
+      wrapper.style.position = "relative";
+      wrapper.style.left = "auto";
+      wrapper.style.top = "auto";
+      wrapper.style.transformOrigin = "center";
+      wrapper.style.transform = "scale(" + scale + ")";
+      wrapper.style.marginLeft = "0";
+      wrapper.style.marginTop = "0";
     requestAnimationFrame(function(){
       if (typeof autoFitAllText === "function") { try { autoFitAllText(); } catch(e){} }
       if (typeof shrinkToFit === "function") { try { shrinkToFit(canvas); } catch(e){} }
@@ -1364,3 +1364,4 @@ if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function
 </body>
 </html>
 <!-- force rebuild -->
+<!-- relative fix -->
