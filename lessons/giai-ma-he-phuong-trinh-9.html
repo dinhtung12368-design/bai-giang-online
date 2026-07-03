@@ -1580,6 +1580,8 @@ function initTBot() {
   var isOpen = false;
   btn.onclick = function() { isOpen = !isOpen; updatePanel(); };
   closeBtn.onclick = function() { isOpen = false; updatePanel(); };
+  var maxBtn = document.getElementById('tbot-maximize');
+  if (maxBtn) { maxBtn.onclick = function() { panel.classList.toggle('tbot-maximized'); }; }
 
   function updatePanel() {
     if (isOpen) {
