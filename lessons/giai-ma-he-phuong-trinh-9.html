@@ -1739,11 +1739,11 @@ function initTBot() {
         addMsg(reply, false);
         history.push({ "role": "model", "parts": [{ "text": reply }] });
       } else {
-        addMsg("Khoan, não thầy hơi lag, mạng mẻo chán quá! Em hỏi lại câu này nhé! 😅", false);
+        addMsg("Thầy xin lỗi em nhé! 🙏 Hệ thống đang quá tải, tạm thời dừng ở đây để hệ thống xử lý. Em chờ vài giây rồi thử hỏi lại nhé! 💪", false);
       }
     } catch(e) {
       hideTyping();
-      addMsg("Ui, server của thầy vừa bị sấp mặt. Lỗi kết nối rồi em ơi! 😭", false);
+      addMsg("Thầy xin lỗi em! 🙏 Hệ thống đang gặp sự cố kết nối, tạm thời dừng ở đây để bảo trì. Em vui lòng thử lại sau ít phút nhé! 🔧", false);
     }
   }
 
