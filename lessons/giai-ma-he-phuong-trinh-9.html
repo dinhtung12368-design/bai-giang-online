@@ -17,9 +17,9 @@ body{font-family:"Be Vietnam Pro",sans-serif;background:#0f172a;height:100vh;ove
 .slide-counter{background:#334155;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;color:#e2e8f0}
 .progress-bar{height:4px;background:#334155;width:100%}
 .progress-fill{height:100%;background:linear-gradient(90deg,#4f46e5,#06b6d4);transition:width .3s ease}
-.main{flex:1;display:flex;justify-content:center;align-items:center;padding:4px;position:relative;width:100%;height:100%;overflow:hidden}
-.main{flex:1;display:flex;justify-content:center;align-items:center;padding:4px;position:relative;width:100%;height:100%;overflow:hidden}
-.slide{text-rendering:geometricPrecision;width:100%;aspect-ratio:16/9;background:#fff;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.2);overflow:hidden;position:relative;display:flex;flex-direction:column;max-height:calc(100vh - 80px);max-width:calc((100vh - 80px) * 16 / 9)}
+.main{flex:1;display:flex;justify-content:center;align-items:center;padding:0;position:relative;width:100%;height:100%;overflow:hidden}
+.main{flex:1;display:flex;justify-content:center;align-items:center;padding:0;position:relative;width:100%;height:100%;overflow:hidden}
+.slide{text-rendering:geometricPrecision;width:100%;aspect-ratio:16/9;background:#fff;border-radius:0;box-shadow:none;overflow:hidden;position:relative;display:flex;flex-direction:column;max-height:100vh;max-width:100vw}
 .slide-canvas{width:960px;height:540px;transform-origin:top left}
 .nav{min-height:64px;background:#1e293b;border-top:1px solid #334155;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px;flex-shrink:0;z-index:9999;position:relative}
 .btn-prev,.btn-next{background:#4f46e5;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;transition:background .2s}
@@ -492,7 +492,7 @@ function playVoiceover(slide) {
     var audio = document.createElement("audio");
     audio.id = "voiceoverAudio";
     audio.src = src;
-    audio.autoplay = true; audio.controls = true; audio.style.cssText = "position:absolute;bottom:70px;left:50%;transform:translateX(-50%);z-index:9999;width:90%;max-width:500px;height:36px;opacity:0.85;";
+    audio.autoplay = true; audio.controls = true; audio.style.cssText = "position:fixed;bottom:50px;left:50%;transform:translateX(-50%);z-index:9999;width:60%;max-width:400px;height:32px;opacity:0.7;";
     audio.onended = function() {
       if (typeof autoPlay !== "undefined" && autoPlay) {
         clearTimeout(autoPlayTimer);
