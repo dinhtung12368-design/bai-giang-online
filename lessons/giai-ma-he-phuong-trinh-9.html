@@ -1236,7 +1236,20 @@ function scaleSlide() {
     inner.style.justifyContent = "center";
     inner.style.overflow = "hidden";
     
-    var scale = Math.min(inner.offsetWidth / 960, inner.offsetHeight / 540);
+    
+    var mainEl = document.querySelector(".main");
+    var slideEl = document.querySelector(".slide");
+    var aw = mainEl ? mainEl.clientWidth : window.innerWidth;
+    var ah = mainEl ? mainEl.clientHeight : window.innerHeight;
+    var scale = Math.min(aw / 960, ah / 540);
+    
+    if (slideEl) {
+      slideEl.style.width = (960 * scale) + "px";
+      slideEl.style.height = (540 * scale) + "px";
+      slideEl.style.maxWidth = "none";
+      slideEl.style.maxHeight = "none";
+    }
+    
     wrapper.style.width = "960px";
     wrapper.style.height = "540px";
     wrapper.style.position = "relative";
@@ -1248,18 +1261,33 @@ function scaleSlide() {
     wrapper.style.marginTop = "0";
     
     var firstImage = inner.querySelector("img.fc-element");
-    if (firstImage && firstImage.src) {
-      document.body.style.backgroundImage = "url('" + firstImage.src + "')";
+    var bgSrc = firstImage ? firstImage.src : "";
+    if (!bgSrc) {
+       var bgEl = inner.querySelector("[style*='background-image']");
+       if (bgEl && bgEl.style.backgroundImage) {
+          var m = bgEl.style.backgroundImage.match(/url\(['"]?(.*?)['"]?\)/);
+          if (m) bgSrc = m[1];
+       }
+    }
+    if (bgSrc) {
+      document.body.style.backgroundImage = "url('" + bgSrc + "')";
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
       document.body.style.transition = "background-image 0.5s ease-in-out";
-      var mainEl = document.querySelector(".main");
       if (mainEl) {
         mainEl.style.backgroundColor = "rgba(15, 23, 42, 0.75)";
         mainEl.style.backdropFilter = "blur(30px)";
         mainEl.style.webkitBackdropFilter = "blur(30px)";
       }
+    } else {
+      document.body.style.backgroundImage = "none";
+      if (mainEl) {
+        mainEl.style.backgroundColor = "transparent";
+        mainEl.style.backdropFilter = "none";
+        mainEl.style.webkitBackdropFilter = "none";
+      }
     }
+
     requestAnimationFrame(function(){
       if (typeof autoFitAllText === "function") { try { autoFitAllText(); } catch(e){} }
       if (typeof shrinkToFit === "function") { try { shrinkToFit(canvas); } catch(e){} }
