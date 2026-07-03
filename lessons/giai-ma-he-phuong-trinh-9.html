@@ -1613,12 +1613,7 @@ function initTBot() {
     input.value = '';
     addMsg(text, true);
     
-    if (API_KEY === "AQ.Ab8RN6JV1waCtU0gfMVEAM_FkVs-uO_jPAJA3-dUeb0ywrjciQ" || !API_KEY) {
-        setTimeout(function(){
-            addMsg("Ét ô ét! Thầy đang bị cạn kiệt năng lượng (chưa có API Key). Em nhờ Admin gắn khóa API cho thầy để thầy tỉnh lại nhé! 🚀", false);
-        }, 500);
-        return;
-    }
+    
 
     history.push({ "role": "user", "parts": [{ "text": text }] });
     showTyping();
@@ -1665,4 +1660,4 @@ if (document.readyState === 'loading') {
 <!-- inner flex fix -->
 <!-- retry -->
 <!-- no crop fix -->
-<!-- ambient fix -->\n<!-- retry 2 -->\n
+<!-- ambient fix -->
