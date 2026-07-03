@@ -1716,7 +1716,11 @@ function initTBot() {
     pendingImage = null;
     if (imgPreview) { imgPreview.style.display = 'none'; }
     if (imgFile) { imgFile.value = ''; }
-    history.push({ "role": "user", "parts": parts });
+    // For API call, use parts with image; for history, store only text to avoid bloat
+    var hasImage = parts.length > 1;
+    var apiContents = history.concat([{ "role": "user", "parts": parts }]);
+    // Store only text in history to keep it lightweight
+    history.push({ "role": "user", "parts": [{ "text": (hasImage ? "[Học sinh gửi ảnh bài tập] " : "") + (text || "Em gửi ảnh này, thầy xem giúp em!") }] });
     showTyping();
 
     try {
@@ -1724,7 +1728,7 @@ function initTBot() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: history,
+          contents: apiContents,
           generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
         })
       });
