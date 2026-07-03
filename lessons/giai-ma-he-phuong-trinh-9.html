@@ -1608,6 +1608,20 @@ function initTBot() {
     d.innerHTML = htmlText;
     messages.appendChild(d);
     messages.scrollTop = messages.scrollHeight;
+    // Render KaTeX math formulas
+    if (!isUser && typeof renderMathInElement === 'function') {
+      try {
+        renderMathInElement(d, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError: false
+        });
+      } catch(e) { console.log('KaTeX error:', e); }
+    }
   }
 
   function showTyping() {
