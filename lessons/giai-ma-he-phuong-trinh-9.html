@@ -555,19 +555,21 @@ function render() {
       if (typeof initInteractiveVideo === "function") initInteractiveVideo(canvas, s);
       // Auto-fit text giĂ¡Â»â€˜ng editor Ă„â€˜Ă¡Â»Æ’ tronh chĂ¡Â»â€œng chĂ¡Â»Â¯
       
-    var firstImage = inner.querySelector("img.fc-element");
-    if (firstImage && firstImage.src) {
-      document.body.style.backgroundImage = "url('" + firstImage.src + "')";
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center";
-      document.body.style.transition = "background-image 0.5s ease-in-out";
-      var mainEl = document.querySelector(".main");
-      if (mainEl) {
-        mainEl.style.backgroundColor = "rgba(15, 23, 42, 0.75)";
-        mainEl.style.backdropFilter = "blur(30px)";
-        mainEl.style.webkitBackdropFilter = "blur(30px)";
-      }
+    
+    // Apply vibrant green floral pattern
+    document.body.style.backgroundImage = "url('floral_bg.png')";
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+    
+    var mainEl = document.querySelector(".main");
+    if (mainEl) {
+      // Just a slight dark overlay so the slide pops out, but leaves remain visible
+      mainEl.style.backgroundColor = "rgba(15, 23, 42, 0.6)";
+      mainEl.style.backdropFilter = "none";
+      mainEl.style.webkitBackdropFilter = "none";
     }
+
     requestAnimationFrame(function(){
         if (true) { try { autoFitAllText(); } catch(e){} }
         if (true) { try { shrinkToFit(canvas); } catch(e){} }
