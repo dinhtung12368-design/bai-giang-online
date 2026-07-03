@@ -443,7 +443,7 @@
         var thumb = l.thumbnail
           ? '<img src="' + l.thumbnail + '" alt="' + l.title + '">'
           : getDefaultThumb(l.subject);
-        return '<a class="card" href="' + l.file + '" style="animation-delay:' + (i * 0.05) + 's">' +
+        return '<a class="card" href="lessons/' + l.file + '" style="animation-delay:' + (i * 0.05) + 's">' +
           '<div class="card-thumb">' + thumb +
             '<span class="badge ' + badgeClass + '">' + (l.subject || 'Bài giảng') + '</span>' +
             '<span class="slide-count">📄 ' + (l.slides || '?') + ' slide</span>' +
