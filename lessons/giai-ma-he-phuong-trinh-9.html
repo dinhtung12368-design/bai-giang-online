@@ -1595,7 +1595,7 @@ function initTBot() {
     if (d) d.remove();
   }
 
-  var API_KEY = "YOUR_GEMINI_API_KEY_HERE"; // ⚠️ ĐIỀN API KEY VÀO ĐÂY
+  var API_KEY = "AQ.Ab8RN6JV1waCtU0gfMVEAM_FkVs-uO_jPAJA3-dUeb0ywrjciQ"; // ⚠️ ĐIỀN API KEY VÀO ĐÂY
   var history = [
     {
       "role": "user",
@@ -1613,7 +1613,7 @@ function initTBot() {
     input.value = '';
     addMsg(text, true);
     
-    if (API_KEY === "YOUR_GEMINI_API_KEY_HERE" || !API_KEY) {
+    if (API_KEY === "AQ.Ab8RN6JV1waCtU0gfMVEAM_FkVs-uO_jPAJA3-dUeb0ywrjciQ" || !API_KEY) {
         setTimeout(function(){
             addMsg("Ét ô ét! Thầy đang bị cạn kiệt năng lượng (chưa có API Key). Em nhờ Admin gắn khóa API cho thầy để thầy tỉnh lại nhé! 🚀", false);
         }, 500);
@@ -1624,7 +1624,7 @@ function initTBot() {
     showTyping();
 
     try {
-      var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + API_KEY, {
+      var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
