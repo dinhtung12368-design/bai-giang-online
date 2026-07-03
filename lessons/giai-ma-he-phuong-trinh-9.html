@@ -1733,20 +1733,33 @@ function initTBot() {
           generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
         })
       });
+      if (res.status === 429) {
+        hideTyping();
+        addMsg("Thầy xin lỗi em nhé! 🙏 Hệ thống đang quá tải (quá nhiều bạn hỏi cùng lúc), tạm thời dừng ở đây. Em chờ khoảng 30 giây rồi thử hỏi lại nhé! 💪", false);
+        history.pop();
+        return;
+      }
       var data = await res.json();
-      console.log("[TBot] API response status:", res.status, "data:", JSON.stringify(data).substring(0,200));
+      console.log("[TBot] API response:", JSON.stringify(data).substring(0,300));
       hideTyping();
-      if (data.candidates && data.candidates.length > 0) {
+      if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
         var reply = data.candidates[0].content.parts[0].text;
         addMsg(reply, false);
         history.push({ "role": "model", "parts": [{ "text": reply }] });
       } else {
-        addMsg("Thầy xin lỗi em nhé! 🙏 Hệ thống đang quá tải, tạm thời dừng ở đây để hệ thống xử lý. Em chờ vài giây rồi thử hỏi lại nhé! 💪", false);
+        console.warn("[TBot] No candidates. Full response:", JSON.stringify(data));
+        var errMsg = "Thầy xin lỗi em nhé! 🙏 Hệ thống đang xử lý, tạm thời dừng ở đây. Em chờ vài giây rồi thử hỏi lại nhé! 💪";
+        if (data.promptFeedback && data.promptFeedback.blockReason) {
+          errMsg = "Thầy xin lỗi em! 🙏 Câu hỏi này hệ thống chưa xử lý được. Em thử đặt câu hỏi khác nhé!";
+        }
+        addMsg(errMsg, false);
+        history.pop();
       }
     } catch(e) {
       hideTyping();
       console.error("[TBot] API Error:", e);
       addMsg("Thầy xin lỗi em! 🙏 Hệ thống đang gặp sự cố kết nối, tạm thời dừng ở đây để bảo trì. Em vui lòng thử lại sau ít phút nhé! 🔧", false);
+      history.pop();
     }
   }
 
