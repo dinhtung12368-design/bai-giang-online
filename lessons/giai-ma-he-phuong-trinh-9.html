@@ -1696,6 +1696,7 @@ function initTBot() {
 
   async function handleSend() {
     var text = input.value.trim();
+    console.log("[TBot] handleSend called, text:", text, "hasImage:", !!pendingImage);
     if (!text && !pendingImage) return;
     input.value = '';
     if (pendingImage) {
@@ -1733,6 +1734,7 @@ function initTBot() {
         })
       });
       var data = await res.json();
+      console.log("[TBot] API response status:", res.status, "data:", JSON.stringify(data).substring(0,200));
       hideTyping();
       if (data.candidates && data.candidates.length > 0) {
         var reply = data.candidates[0].content.parts[0].text;
@@ -1743,6 +1745,7 @@ function initTBot() {
       }
     } catch(e) {
       hideTyping();
+      console.error("[TBot] API Error:", e);
       addMsg("Thầy xin lỗi em! 🙏 Hệ thống đang gặp sự cố kết nối, tạm thời dừng ở đây để bảo trì. Em vui lòng thử lại sau ít phút nhé! 🔧", false);
     }
   }
