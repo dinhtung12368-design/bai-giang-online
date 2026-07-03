@@ -554,7 +554,21 @@ function render() {
       }
       if (typeof initInteractiveVideo === "function") initInteractiveVideo(canvas, s);
       // Auto-fit text giĂ¡Â»â€˜ng editor Ă„â€˜Ă¡Â»Æ’ tronh chĂ¡Â»â€œng chĂ¡Â»Â¯
-      requestAnimationFrame(function(){
+      
+    var firstImage = inner.querySelector("img.fc-element");
+    if (firstImage && firstImage.src) {
+      document.body.style.backgroundImage = "url('" + firstImage.src + "')";
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.transition = "background-image 0.5s ease-in-out";
+      var mainEl = document.querySelector(".main");
+      if (mainEl) {
+        mainEl.style.backgroundColor = "rgba(15, 23, 42, 0.75)";
+        mainEl.style.backdropFilter = "blur(30px)";
+        mainEl.style.webkitBackdropFilter = "blur(30px)";
+      }
+    }
+    requestAnimationFrame(function(){
         if (true) { try { autoFitAllText(); } catch(e){} }
         if (true) { try { shrinkToFit(canvas); } catch(e){} }
         // Ap dung co chu va dan dong nguoi dung da chinh
@@ -1232,6 +1246,20 @@ function scaleSlide() {
     wrapper.style.transform = "scale(" + scale + ")";
     wrapper.style.marginLeft = "0";
     wrapper.style.marginTop = "0";
+    
+    var firstImage = inner.querySelector("img.fc-element");
+    if (firstImage && firstImage.src) {
+      document.body.style.backgroundImage = "url('" + firstImage.src + "')";
+      document.body.style.backgroundSize = "cover";
+      document.body.style.backgroundPosition = "center";
+      document.body.style.transition = "background-image 0.5s ease-in-out";
+      var mainEl = document.querySelector(".main");
+      if (mainEl) {
+        mainEl.style.backgroundColor = "rgba(15, 23, 42, 0.75)";
+        mainEl.style.backdropFilter = "blur(30px)";
+        mainEl.style.webkitBackdropFilter = "blur(30px)";
+      }
+    }
     requestAnimationFrame(function(){
       if (typeof autoFitAllText === "function") { try { autoFitAllText(); } catch(e){} }
       if (typeof shrinkToFit === "function") { try { shrinkToFit(canvas); } catch(e){} }
@@ -1377,3 +1405,4 @@ if (document.fonts && document.fonts.ready) { document.fonts.ready.then(function
 <!-- inner flex fix -->
 <!-- retry -->
 <!-- no crop fix -->
+<!-- ambient fix -->
