@@ -1262,33 +1262,7 @@ function scaleSlide() {
     wrapper.style.marginLeft = "0";
     wrapper.style.marginTop = "0";
     
-    var firstImage = inner.querySelector("img.fc-element");
-    var bgSrc = firstImage ? firstImage.src : "";
-    if (!bgSrc) {
-       var bgEl = inner.querySelector("[style*='background-image']");
-       if (bgEl && bgEl.style.backgroundImage) {
-          var m = bgEl.style.backgroundImage.match(/url\(['"]?(.*?)['"]?\)/);
-          if (m) bgSrc = m[1];
-       }
-    }
-    if (bgSrc) {
-      document.body.style.backgroundImage = "url('" + bgSrc + "')";
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundPosition = "center";
-      document.body.style.transition = "background-image 0.5s ease-in-out";
-      if (mainEl) {
-        mainEl.style.backgroundColor = "rgba(15, 23, 42, 0.75)";
-        mainEl.style.backdropFilter = "blur(30px)";
-        mainEl.style.webkitBackdropFilter = "blur(30px)";
-      }
-    } else {
-      document.body.style.backgroundImage = "none";
-      if (mainEl) {
-        mainEl.style.backgroundColor = "transparent";
-        mainEl.style.backdropFilter = "none";
-        mainEl.style.webkitBackdropFilter = "none";
-      }
-    }
+    
 
     requestAnimationFrame(function(){
       if (typeof autoFitAllText === "function") { try { autoFitAllText(); } catch(e){} }
