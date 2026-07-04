@@ -1775,13 +1775,33 @@ function initTBot() {
         addMsg(reply, false);
         history.push({ "role": "model", "parts": [{ "text": reply }] });
       } else {
-        console.warn("[TBot] No candidates. Full response:", JSON.stringify(data));
-        var errMsg = "Thầy xin lỗi em nhé! 🙏 Hệ thống đang xử lý, tạm thời dừng ở đây. Em chờ vài giây rồi thử hỏi lại nhé! 💪";
-        if (data.promptFeedback && data.promptFeedback.blockReason) {
-          errMsg = "Thầy xin lỗi em! 🙏 Câu hỏi này hệ thống chưa xử lý được. Em thử đặt câu hỏi khác nhé!";
+        console.warn("[TBot] No candidates. Trying next key...", JSON.stringify(data).substring(0,200));
+        // Retry with next key
+        rotateKey();
+        try {
+          var retryRes = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + API_KEY, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: apiContents, generationConfig: { temperature: 0.7, maxOutputTokens: 1500 } })
+          });
+          var retryData = await retryRes.json();
+          console.log("[TBot] Retry response:", JSON.stringify(retryData).substring(0,200));
+          if (retryData.candidates && retryData.candidates.length > 0 && retryData.candidates[0].content) {
+            var retryReply = retryData.candidates[0].content.parts[0].text;
+            addMsg(retryReply, false);
+            history.push({ "role": "model", "parts": [{ "text": retryReply }] });
+          } else {
+            var errMsg = "Thầy xin lỗi em nhé! 🙏 Hệ thống đang xử lý, tạm thời dừng ở đây. Em chờ vài giây rồi thử hỏi lại nhé! 💪";
+            if ((data.promptFeedback && data.promptFeedback.blockReason) || (retryData.promptFeedback && retryData.promptFeedback.blockReason)) {
+              errMsg = "Thầy xin lỗi em! 🙏 Câu hỏi này hệ thống chưa xử lý được. Em thử đặt câu hỏi khác nhé!";
+            }
+            addMsg(errMsg, false);
+            history.pop();
+          }
+        } catch(retryErr) {
+          console.error("[TBot] Retry also failed:", retryErr);
+          addMsg("Thầy xin lỗi em nhé! 🙏 Hệ thống đang xử lý, tạm thời dừng ở đây. Em chờ vài giây rồi thử hỏi lại nhé! 💪", false);
+          history.pop();
         }
-        addMsg(errMsg, false);
-        history.pop();
       }
     } catch(e) {
       hideTyping();
