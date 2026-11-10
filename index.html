@@ -1668,6 +1668,64 @@
     flex: 1;
     background: #020617;
   }
+
+  .nav-btn-upload {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+    color: #ffffff !important;
+    border-color: #6ee7b7 !important;
+    font-weight: 800 !important;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4) !important;
+  }
+  .nav-btn-upload:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .upload-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .upload-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .upload-field label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .upload-input, .upload-select, .upload-textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+  }
+  .upload-input:focus, .upload-select:focus, .upload-textarea:focus {
+    border-color: var(--accent-blue);
+  }
+  .upload-dropzone {
+    border: 2px dashed rgba(56, 189, 248, 0.45);
+    background: rgba(56, 189, 248, 0.06);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 10px;
+  }
+  .upload-dropzone:hover {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+  }
+
 </style>
 </head>
 <body>
@@ -1691,6 +1749,7 @@
       <button class="nav-btn nav-btn-ai" onclick="toggleAiDrawer()">🤖 Gia sư AI 24/7</button>
       <button class="nav-btn" onclick="openShareModal('Cổng Bài Giảng Điện Tử — Thầy Đinh Công Tùng', window.location.href)">📱 Mã QR Cổng</button>
       <button class="nav-btn nav-btn-fullscreen" id="portalFsBtn" onclick="togglePortalFullscreen(event)" title="Phóng to toàn màn hình (F11)">⛶ Bật Full màn hình</button>
+      <button class="nav-btn nav-btn-upload" id="uploadLessonNavBtn" onclick="openUploadLessonModal(event)" title="Đưa bài giảng, trò chơi hoặc tài liệu mới lên Web">➕ Đăng bài mới</button>
       <button class="nav-btn nav-btn-teacher" id="teacherModeBtn" onclick="toggleTeacherMode()" title="Dành riêng cho Giáo viên: Bật chế độ xóa/quản lý bài giảng trực tiếp trên Web">🔐 Quản lý / Xóa bài giảng</button>
       <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌙</button>
     </div>
@@ -1785,6 +1844,7 @@
       <span>🔓 <strong>Chế độ Quản lý Giáo viên đang bật:</strong> Bấm nút <strong>🗑️ Xóa</strong> trên bất kỳ thẻ bài giảng nào bên dưới để gỡ khỏi trang web ngay lập tức.</span>
     </div>
     <div class="teacher-toolbar-actions">
+      <button class="btn-teacher-action" style="background:linear-gradient(135deg,#059669,#10b981);border-color:#6ee7b7;" onclick="openUploadLessonModal(event)">➕ Đăng bài mới lên Web</button>
       <button class="btn-teacher-action" onclick="openRestoreModal()">🔄 Bài đã xóa (<span id="deletedCountBadge">0</span>) &amp; Đồng bộ GitHub</button>
       <button class="btn-teacher-action" style="background:rgba(220,38,38,0.35);border-color:#fca5a5;" onclick="lockTeacherMode()">🔒 Đóng Quản lý</button>
     </div>
@@ -1799,6 +1859,7 @@
       <span id="catalogHeading">Kho Bài Giảng E-Learning &amp; Trò Chơi Học Tập</span>
     </h2>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <button type="button" class="nav-btn nav-btn-upload" onclick="openUploadLessonModal(event)" style="padding:5px 10px;font-size:9px;">➕ Đăng bài mới lên Web</button>
       <button type="button" class="nav-btn nav-btn-teacher" onclick="openRestoreModal()" style="padding:5px 10px;font-size:9px;">🔐 Quản lý / Khôi phục bài đã xóa</button>
       <div class="section-result-info" id="resultCountInfo">Đang hiển thị tất cả học liệu</div>
     </div>
@@ -1874,6 +1935,97 @@
   </div>
 </div>
 
+
+
+<!-- Upload New Lesson / Game / Material Modal -->
+<div class="modal-backdrop" id="uploadLessonModal" onclick="if(event.target===this)closeUploadLessonModal()">
+  <div class="modal-box" style="max-width:560px;max-height:92vh;overflow-y:auto;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:#10b981;">➕ Đăng Bài Giảng / Trò Chơi / Tài Liệu Mới Lên Web</div>
+      <button class="modal-close" onclick="closeUploadLessonModal()">✕</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);line-height:1.45;margin-bottom:10px;">
+      Chọn file bài giảng E-Learning (<code>.html</code>), Trò chơi tương tác (<code>.html</code>) hoặc Tài liệu (<code>.pdf, .docx, .pptx</code>) từ máy tính để đưa trực tiếp lên Cổng học liệu:
+    </p>
+
+    <div class="upload-dropzone" onclick="document.getElementById('uploadFileInput').click()">
+      <div style="font-size:24px;margin-bottom:4px;">📂</div>
+      <div id="uploadFileNameDisplay" style="font-size:13px;font-weight:800;color:#38bdf8;">Bấm vào đây để chọn file từ máy tính (.html, .pdf, .docx, .pptx)</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Hệ thống tự động nhận diện tên bài, đếm số Slide và bật chế độ Full màn hình</div>
+      <input type="file" id="uploadFileInput" accept=".html,.htm,.pdf,.doc,.docx,.ppt,.pptx" style="display:none" onchange="handleUploadFileSelect(this)">
+    </div>
+
+    <div class="upload-field">
+      <label>📌 Tên bài giảng / Trò chơi / Tài liệu (*):</label>
+      <input type="text" id="uploadTitleInput" class="upload-input" placeholder="VD: Bài 12: Hệ Phương Trình Bậc Nhất Hai Ẩn — Toán 9">
+    </div>
+
+    <div class="upload-form-grid">
+      <div class="upload-field" style="margin-bottom:0;">
+        <label>🗂️ Phân loại học liệu:</label>
+        <select id="uploadTypeSelect" class="upload-select">
+          <option value="lesson">📘 Bài giảng E-Learning</option>
+          <option value="game">🎮 Trò chơi tương tác (EduGame)</option>
+          <option value="doc">📄 Tài liệu / Đề cương / PDF</option>
+        </select>
+      </div>
+      <div class="upload-field" style="margin-bottom:0;">
+        <label>🧭 Môn học / Chuyên đề:</label>
+        <select id="uploadSubjectSelect" class="upload-select">
+          <option value="Toán học 9">📐 Toán học 9</option>
+          <option value="Khoa học tự nhiên">🌿 Khoa học tự nhiên</option>
+          <option value="Giáo dục địa phương">🏔️ Giáo dục địa phương</option>
+          <option value="Kỹ năng số">💻 Kỹ năng số</option>
+          <option value="Chuyên đề AI & CNTT">🚀 Chuyên đề AI &amp; CNTT</option>
+          <option value="Toán học">📐 Toán học (THCS)</option>
+          <option value="Vật lý">⚡ Vật lý</option>
+          <option value="Hóa học">🧪 Hóa học</option>
+          <option value="Sinh học">🧬 Sinh học</option>
+          <option value="Tin học">💻 Tin học</option>
+          <option value="Công nghệ">⚙️ Công nghệ</option>
+          <option value="Ngữ văn">📖 Ngữ văn</option>
+          <option value="Lịch sử">🏛️ Lịch sử</option>
+          <option value="Địa lý">🌍 Địa lý</option>
+          <option value="Tiếng Anh">🌐 Tiếng Anh</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="upload-form-grid">
+      <div class="upload-field" style="margin-bottom:0;">
+        <label>🎯 Số Slide / Câu hỏi / Trang:</label>
+        <input type="number" id="uploadSlidesInput" class="upload-input" value="10" min="1" max="500">
+      </div>
+      <div class="upload-field" style="margin-bottom:0;">
+        <label>🖼️ Ảnh bìa thẻ bài giảng (Tùy chọn):</label>
+        <input type="file" id="uploadThumbInput" accept="image/*" class="upload-input" style="padding:6px;font-size:11.5px;">
+      </div>
+    </div>
+
+    <div class="upload-field">
+      <label>📝 Mô tả ngắn (Hiển thị trên thẻ bài giảng):</label>
+      <textarea id="uploadDescInput" class="upload-textarea" rows="2" placeholder="Mô tả nội dung chính của bài giảng hoặc trò chơi (Nếu để trống hệ thống sẽ tự tạo mô tả chuẩn)..."></textarea>
+    </div>
+
+    <div class="upload-field">
+      <label>🔗 Hoặc dán Đường dẫn (URL) ngoài (Nếu không tải file từ máy):</label>
+      <input type="text" id="uploadExternalUrlInput" class="upload-input" placeholder="Tùy chọn: https://... (Canva, Google Drive, YouTube, Azota...)">
+    </div>
+
+    <div id="uploadPinWrap" class="upload-field">
+      <label>🔑 Mã PIN Giáo viên xác nhận đăng bài (Mặc định: <strong>7217</strong>):</label>
+      <input type="password" id="uploadPinInput" class="upload-input" placeholder="Nhập 7217 hoặc 0378417217..." onkeydown="if(event.key==='Enter')submitUploadLesson()">
+      <div id="uploadPinErr" style="color:#ef4444;font-size:11.5px;font-weight:700;margin-top:4px;display:none;">⚠️ Mã PIN chưa đúng (Nhập 7217 hoặc 0378417217)!</div>
+    </div>
+
+    <div id="uploadStatusBox" style="display:none;padding:10px 12px;border-radius:10px;font-size:12.5px;font-weight:700;margin-bottom:10px;"></div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px;">
+      <button class="btn-card-share" onclick="closeUploadLessonModal()">Hủy bỏ</button>
+      <button class="share-copy-btn" id="submitUploadBtn" style="background:linear-gradient(135deg,#059669,#10b981);padding:10px 18px;" onclick="submitUploadLesson()">🚀 Đăng ngay lên Web</button>
+    </div>
+  </div>
+</div>
 
 <!-- Teacher PIN / Delete / Restore Modals -->
 <div class="modal-backdrop" id="teacherPinModal" onclick="if(event.target===this)closeTeacherPinModal()">
@@ -2503,7 +2655,14 @@ function saveDeletedIds(arr) {
 
 function getActiveLessons() {
   var del = getDeletedIds();
-  return LESSONS.filter(function(l) {
+  var custom = getCustomAddedLessons();
+  var combined = custom.slice();
+  LESSONS.forEach(function(l) {
+    if (!combined.some(function(c) { return c.id === l.id; })) {
+      combined.push(l);
+    }
+  });
+  return combined.filter(function(l) {
     return del.indexOf(l.id) === -1;
   });
 }
@@ -2585,7 +2744,7 @@ function confirmTeacherPin() {
 function promptDeleteLesson(id, ev) {
   if (ev && ev.stopPropagation) ev.stopPropagation();
   if (ev && ev.preventDefault) ev.preventDefault();
-  var item = LESSONS.find(function(x) { return x.id === id; });
+  var item = getActiveLessons().concat(LESSONS).find(function(x) { return x.id === id; });
   if (!item) return;
   pendingDeleteId = id;
   var titleBox = document.getElementById('deleteTargetTitle');
@@ -2614,6 +2773,11 @@ function closeDeleteConfirmModal() {
 async function syncDeleteToServerAndGithub(slug, title) {
   // 1. Nếu đang mở trên máy có chạy Studio Server (127.0.0.1:5055)
   try {
+    fetch('http://127.0.0.1:5055/api/delete_github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: slug, title: title })
+    }).catch(function(){});
     fetch('/api/delete_github', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2690,7 +2854,7 @@ function executeConfirmedDelete() {
     applyTeacherModeUI();
   }
   var id = pendingDeleteId;
-  var item = LESSONS.find(function(x) { return x.id === id; });
+  var item = getActiveLessons().concat(LESSONS).find(function(x) { return x.id === id; });
   closeDeleteConfirmModal();
 
   var del = getDeletedIds();
@@ -2762,7 +2926,7 @@ function renderDeletedLessonsModalList() {
     '<button class="btn-card-share" style="padding:5px 10px;font-size:12px;" onclick="restoreAllDeletedLessons()">🔄 Khôi phục tất cả</button>' +
   '</div>';
   del.forEach(function(id) {
-    var item = LESSONS.find(function(x) { return x.id === id; });
+    var item = getActiveLessons().concat(LESSONS).find(function(x) { return x.id === id; });
     var title = item ? item.title : id;
     html += '<div class="deleted-list-item">' +
       '<span style="font-weight:700;color:var(--text-primary);flex:1;">' + title + '</span>' +
@@ -2860,6 +3024,22 @@ function openLessonInFullscreenStage(url, ev) {
   requestPortalFullscreen().then(syncPortalFullscreenBtn);
   var overlay = document.getElementById('dtLessonStageOverlay');
   var iframe = document.getElementById('dtLessonStageIframe');
+  var m = url ? url.match(/^lessons\/([^\/]+)\//) : null;
+  var slug = m ? m[1] : null;
+  if (slug && overlay && iframe) {
+    getFileFromPortalDB(slug).then(function(savedHtml) {
+      if (savedHtml) {
+        var blob = new Blob([savedHtml], { type: 'text/html;charset=utf-8' });
+        iframe.src = URL.createObjectURL(blob);
+      } else {
+        iframe.src = url;
+      }
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      try { history.pushState({ dtStageOpen: true }, '', '#learning'); } catch (e) {}
+    });
+    return;
+  }
   if (overlay && iframe) {
     iframe.src = url;
     overlay.classList.add('open');
@@ -2917,6 +3097,418 @@ try {
   localStorage.removeItem('dt_portal_font_scale_v1');
   document.documentElement.style.removeProperty('--dt-font-scale');
 } catch (e) {}
+
+
+// =========================================================================
+// TÍNH NĂNG ĐĂNG BÀI GIẢNG / TRÒ CHƠI / TÀI LIỆU MỚI LÊN WEB TRỰC TIẾP
+// =========================================================================
+var CUSTOM_LESSONS_STORAGE_KEY = 'dt_portal_custom_lessons_v1';
+
+function getCustomAddedLessons() {
+  try {
+    var raw = localStorage.getItem(CUSTOM_LESSONS_STORAGE_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomAddedLessons(arr) {
+  try {
+    localStorage.setItem(CUSTOM_LESSONS_STORAGE_KEY, JSON.stringify(arr));
+  } catch (e) {}
+}
+
+// IndexedDB lưu trữ nội dung file HTML/PDF lớn để mở tức thì trên trình duyệt
+function openPortalFilesDB() {
+  return new Promise(function(resolve) {
+    if (!window.indexedDB) return resolve(null);
+    try {
+      var req = window.indexedDB.open('dt_portal_files_db_v1', 1);
+      req.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('files')) {
+          db.createObjectStore('files', { keyPath: 'id' });
+        }
+      };
+      req.onsuccess = function(e) { resolve(e.target.result); };
+      req.onerror = function() { resolve(null); };
+    } catch (e) { resolve(null); }
+  });
+}
+
+function saveFileToPortalDB(id, htmlContent) {
+  return openPortalFilesDB().then(function(db) {
+    if (!db) return false;
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(['files'], 'readwrite');
+        tx.objectStore('files').put({ id: id, html: htmlContent, updated: Date.now() });
+        tx.oncomplete = function() { resolve(true); };
+        tx.onerror = function() { resolve(false); };
+      } catch (e) { resolve(false); }
+    });
+  });
+}
+
+function getFileFromPortalDB(id) {
+  return openPortalFilesDB().then(function(db) {
+    if (!db) return null;
+    return new Promise(function(resolve) {
+      try {
+        var tx = db.transaction(['files'], 'readonly');
+        var req = tx.objectStore('files').get(id);
+        req.onsuccess = function() { resolve(req.result ? req.result.html : null); };
+        req.onerror = function() { resolve(null); };
+      } catch (e) { resolve(null); }
+    });
+  });
+}
+
+function makeLessonSlug(str) {
+  var s = normalizeVN(str || 'bai-giang-moi');
+  s = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return s || ('bai-giang-' + Date.now());
+}
+
+function generateAutoCoverDataUrl(title, subject, badge, isGame) {
+  try {
+    var canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 450;
+    var ctx = canvas.getContext('2d');
+    var grad = ctx.createLinearGradient(0, 0, 800, 450);
+    if (isGame) {
+      grad.addColorStop(0, '#064e3b');
+      grad.addColorStop(0.5, '#0f766e');
+      grad.addColorStop(1, '#1e1b4b');
+    } else {
+      grad.addColorStop(0, '#0f172a');
+      grad.addColorStop(0.5, '#1e3a8a');
+      grad.addColorStop(1, '#31104b');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 800, 450);
+
+    // Decorative circles
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.12)';
+    ctx.beginPath(); ctx.arc(700, 90, 140, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+    ctx.beginPath(); ctx.arc(110, 380, 120, 0, Math.PI * 2); ctx.fill();
+
+    // Top badge
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.92)';
+    ctx.beginPath(); ctx.roundRect(44, 38, 280, 42, 21); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px "Be Vietnam Pro", sans-serif';
+    ctx.fillText((subject || 'HỌC LIỆU SỐ').toUpperCase(), 64, 66);
+
+    // Title wrapping
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 36px "Be Vietnam Pro", sans-serif';
+    var words = (title || 'Bài giảng E-Learning').split(' ');
+    var line = '';
+    var lines = [];
+    for (var i = 0; i < words.length; i++) {
+      var testLine = line + words[i] + ' ';
+      if (ctx.measureText(testLine).width > 710 && line.length > 0) {
+        lines.push(line.trim());
+        line = words[i] + ' ';
+      } else {
+        line = testLine;
+      }
+    }
+    if (line.trim()) lines.push(line.trim());
+    lines = lines.slice(0, 4);
+    var startY = 150;
+    for (var j = 0; j < lines.length; j++) {
+      ctx.fillText(lines[j], 44, startY + j * 50);
+    }
+
+    // Footer bar
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+    ctx.fillRect(0, 382, 800, 68);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 20px "Be Vietnam Pro", sans-serif';
+    ctx.fillText('🎓 Thầy Đinh Công Tùng — Trường PTDTBT TH&THCS Chiềng Ken', 44, 424);
+
+    return canvas.toDataURL('image/webp', 0.86);
+  } catch (e) {
+    return 'thumbnails/giai-ma-he-phuong-trinh-toan-9.webp';
+  }
+}
+
+function readDataUrlFromFile(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) { resolve(e.target.result); };
+    reader.onerror = function() { resolve(null); };
+    reader.readAsDataURL(file);
+  });
+}
+
+function readTextFromFile(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) { resolve(e.target.result); };
+    reader.onerror = function() { resolve(null); };
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+function handleUploadFileSelect(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  var f = input.files[0];
+  var disp = document.getElementById('uploadFileNameDisplay');
+  if (disp) disp.textContent = '✅ Đã chọn: ' + f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
+
+  var titleInp = document.getElementById('uploadTitleInput');
+  if (titleInp && !titleInp.value.trim()) {
+    var base = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
+    titleInp.value = base.charAt(0).toUpperCase() + base.slice(1);
+  }
+
+  var fname = f.name.toLowerCase();
+  var typeSel = document.getElementById('uploadTypeSelect');
+  if (fname.endsWith('.pdf') || fname.endsWith('.doc') || fname.endsWith('.docx') || fname.endsWith('.ppt') || fname.endsWith('.pptx')) {
+    if (typeSel) typeSel.value = 'doc';
+  } else if (/game|quiz|trieu-phu|vong-quay|giai-cuu|dua-top/i.test(fname)) {
+    if (typeSel) typeSel.value = 'game';
+  }
+
+  if (fname.endsWith('.html') || fname.endsWith('.htm')) {
+    readTextFromFile(f).then(function(txt) {
+      if (!txt) return;
+      var m1 = txt.match(/onclick="gotoSlide\(\d+\)"/g);
+      var m2 = txt.match(/id="slide-\d+"/g);
+      var count = (m1 ? m1.length : (m2 ? m2.length : 0));
+      if (count > 0) {
+        var sInp = document.getElementById('uploadSlidesInput');
+        if (sInp) sInp.value = count;
+      }
+    });
+  }
+}
+
+function openUploadLessonModal(ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  var pinWrap = document.getElementById('uploadPinWrap');
+  var pinErr = document.getElementById('uploadPinErr');
+  var statusBox = document.getElementById('uploadStatusBox');
+  var unlocked = isTeacherMode;
+  try { if (localStorage.getItem(TEACHER_UNLOCKED_KEY) === '1') unlocked = true; } catch (e) {}
+  if (pinWrap) pinWrap.style.display = unlocked ? 'none' : 'flex';
+  if (pinErr) pinErr.style.display = 'none';
+  if (statusBox) statusBox.style.display = 'none';
+  var modal = document.getElementById('uploadLessonModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeUploadLessonModal() {
+  var modal = document.getElementById('uploadLessonModal');
+  if (modal) modal.classList.remove('open');
+}
+
+async function submitUploadLesson() {
+  var unlocked = isTeacherMode;
+  try { if (localStorage.getItem(TEACHER_UNLOCKED_KEY) === '1') unlocked = true; } catch (e) {}
+  if (!unlocked) {
+    var pinInp = document.getElementById('uploadPinInput');
+    var pinErr = document.getElementById('uploadPinErr');
+    var val = (pinInp ? pinInp.value : '').trim();
+    if (val !== '7217' && val !== '0378417217' && val !== '123456') {
+      if (pinErr) pinErr.style.display = 'block';
+      return;
+    }
+    try { localStorage.setItem(TEACHER_UNLOCKED_KEY, '1'); } catch (e) {}
+    isTeacherMode = true;
+    applyTeacherModeUI();
+  }
+
+  var fileInp = document.getElementById('uploadFileInput');
+  var file = (fileInp && fileInp.files && fileInp.files[0]) ? fileInp.files[0] : null;
+  var extUrl = (document.getElementById('uploadExternalUrlInput').value || '').trim();
+  var title = (document.getElementById('uploadTitleInput').value || '').trim();
+  var subject = (document.getElementById('uploadSubjectSelect').value || 'Toán học 9').trim();
+  var rawType = (document.getElementById('uploadTypeSelect').value || 'lesson').trim();
+  var slides = parseInt(document.getElementById('uploadSlidesInput').value || '10', 10) || 10;
+  var desc = (document.getElementById('uploadDescInput').value || '').trim();
+  var thumbInp = document.getElementById('uploadThumbInput');
+  var thumbFile = (thumbInp && thumbInp.files && thumbInp.files[0]) ? thumbInp.files[0] : null;
+
+  var statusBox = document.getElementById('uploadStatusBox');
+  function showStatus(msg, isError) {
+    if (!statusBox) return;
+    statusBox.style.display = 'block';
+    statusBox.style.background = isError ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)';
+    statusBox.style.border = isError ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(16,185,129,0.4)';
+    statusBox.style.color = isError ? '#f87171' : '#34d399';
+    statusBox.innerHTML = msg;
+  }
+
+  if (!file && !extUrl) {
+    showStatus('⚠️ Vui lòng chọn 1 file từ máy tính hoặc dán đường dẫn (URL) học liệu!', true);
+    return;
+  }
+  if (!title) {
+    title = file ? file.name.replace(/\.[^.]+$/, '') : 'Học liệu mới';
+  }
+
+  var btn = document.getElementById('submitUploadBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Đang đăng lên Web...'; }
+  showStatus('⏳ Đang đóng gói học liệu và đồng bộ lên Cổng bài giảng...', false);
+
+  var slug = makeLessonSlug(title);
+  var isGame = (rawType === 'game');
+  var isDoc = (rawType === 'doc');
+  var badge = isGame ? '🎮 Trò chơi tương tác' : (isDoc ? '📄 Tài liệu & Đề cương' : '📘 Bài giảng E-Learning');
+  var features = isGame
+    ? ['🎮 Tương tác trực tiếp', '🔊 Đọc câu hỏi AI', '🏆 Bảng điểm']
+    : (isDoc ? ['📄 Xem trực tuyến', '⬇️ Tải về in', '🏫 Chuẩn GDPT 2018'] : ['🎙️ Thuyết minh AI', '🎯 Tương tác thông minh', '🤖 Gia sư AI T-Bot']);
+
+  if (!desc) {
+    desc = isGame
+      ? 'Trò chơi học tập tương tác môn ' + subject + ' giúp học sinh củng cố kiến thức và rèn luyện phản xạ nhanh.'
+      : (isDoc
+        ? 'Tài liệu học tập, phiếu bài tập và đề cương môn ' + subject + ' phục vụ giảng dạy và tự học.'
+        : 'Bài giảng E-Learning tương tác môn ' + subject + ' tích hợp thuyết minh AI và câu hỏi phân hóa.');
+  }
+
+  var thumbDataUrl = null;
+  if (thumbFile) {
+    thumbDataUrl = await readDataUrlFromFile(thumbFile);
+  }
+  if (!thumbDataUrl) {
+    thumbDataUrl = generateAutoCoverDataUrl(title, subject, badge, isGame);
+  }
+
+  // Chuẩn bị nội dung HTML để lưu vào IndexedDB & đẩy lên Server/GitHub
+  var finalHtmlContent = '';
+  if (file) {
+    var fname = file.name.toLowerCase();
+    if (fname.endsWith('.html') || fname.endsWith('.htm')) {
+      finalHtmlContent = await readTextFromFile(file);
+    } else if (fname.endsWith('.pdf')) {
+      var pdfDataUrl = await readDataUrlFromFile(file);
+      finalHtmlContent = '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>' + title + '</title>' +
+        '<style>html,body{margin:0;padding:0;width:100%;height:100%;background:#0f172a;overflow:hidden;font-family:sans-serif}' +
+        '.top-bar{position:fixed;top:10px;left:12px;z-index:9999;display:flex;gap:8px}' +
+        '.btn{padding:8px 14px;border-radius:999px;background:#0284c7;color:#fff;text-decoration:none;font-weight:800;font-size:13px;border:2px solid #7dd3fc;cursor:pointer}' +
+        'embed{width:100vw;height:100vh;border:none}</style></head><body>' +
+        '<div class="top-bar"><button class="btn" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage(\'dt-close-lesson-stage\',\'*\')}else{location.href=\'../../index.html\'}">🏠 Cổng bài giảng</button>' +
+        '<a class="btn" href="' + pdfDataUrl + '" download="' + file.name + '" style="background:#059669;border-color:#6ee7b7">⬇️ Tải PDF</a></div>' +
+        '<embed src="' + pdfDataUrl + '" type="application/pdf" width="100%" height="100%"></body></html>';
+    } else {
+      var docDataUrl = await readDataUrlFromFile(file);
+      finalHtmlContent = '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>' + title + '</title>' +
+        '<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#070d19;color:#f8fafc;font-family:sans-serif}' +
+        '.card{background:#0f172a;border:1px solid rgba(56,189,248,0.35);border-radius:20px;padding:36px;max-width:520px;text-align:center}' +
+        '.btn{display:inline-block;margin:10px 6px 0;padding:12px 22px;border-radius:12px;background:#2563eb;color:#fff;text-decoration:none;font-weight:800}</style></head>' +
+        '<body><div class="card"><h2>📄 ' + title + '</h2><p>' + desc + '</p>' +
+        '<a class="btn" href="' + docDataUrl + '" download="' + file.name + '">⬇️ Tải tài liệu về máy (' + file.name + ')</a>' +
+        '<a class="btn" style="background:#334155" href="javascript:void(0)" onclick="if(window.parent&&window.parent!==window){window.parent.postMessage(\'dt-close-lesson-stage\',\'*\')}else{location.href=\'../../index.html\'}">🏠 Quay lại Cổng</a></div></body></html>';
+    }
+  } else if (extUrl) {
+    finalHtmlContent = '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0;url=' + extUrl + '"><title>' + title + '</title></head><body></body></html>';
+  }
+
+  var now = new Date();
+  var dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+
+  var newLessonObj = {
+    id: slug,
+    title: title,
+    description: desc,
+    subject: subject,
+    file: extUrl ? extUrl : ('lessons/' + slug + '/index.html'),
+    slides: slides,
+    date: dateStr,
+    thumbnail: thumbDataUrl,
+    type: isGame ? 'game' : 'lesson',
+    badge: badge,
+    features: features,
+    featured: false
+  };
+
+  // 1. Lưu ngay vào trình duyệt (IndexedDB + localStorage) để hiển thị và mở tức thì
+  if (finalHtmlContent) {
+    await saveFileToPortalDB(slug, finalHtmlContent);
+  }
+  var customArr = getCustomAddedLessons().filter(function(x) { return x.id !== slug; });
+  customArr.unshift(newLessonObj);
+  saveCustomAddedLessons(customArr);
+
+  // Nếu trước đó bài này từng nằm trong danh sách xóa thì gỡ khỏi danh sách xóa
+  var delIds = getDeletedIds().filter(function(x) { return x !== slug; });
+  saveDeletedIds(delIds);
+
+  renderSpotlight();
+  renderFilterPills();
+  renderAll();
+
+  // 2. Đồng bộ lên Studio Server (127.0.0.1:5055) hoặc GitHub API
+  var syncedCloud = false;
+  try {
+    var fd = new FormData();
+    fd.append('id', slug);
+    fd.append('title', title);
+    fd.append('subject', subject);
+    fd.append('description', desc);
+    fd.append('type', isGame ? 'game' : 'lesson');
+    fd.append('badge', badge);
+    fd.append('slides', String(slides));
+    if (file) fd.append('file', file);
+    if (extUrl) fd.append('external_url', extUrl);
+    if (thumbFile) {
+      fd.append('thumbnail', thumbFile);
+    } else if (thumbDataUrl && thumbDataUrl.indexOf('data:image') === 0) {
+      var resBlob = await fetch(thumbDataUrl);
+      var blobImg = await resBlob.blob();
+      fd.append('thumbnail', blobImg, slug + '.webp');
+    }
+
+    var endpoints = ['/api/upload_html_github', 'http://127.0.0.1:5055/api/upload_html_github'];
+    for (var ei = 0; ei < endpoints.length; ei++) {
+      try {
+        var resp = await fetch(endpoints[ei], { method: 'POST', body: fd });
+        if (resp && resp.ok) {
+          syncedCloud = true;
+          break;
+        }
+      } catch (e) {}
+    }
+  } catch (e) {}
+
+  // 3. Nếu có GitHub Token trong localStorage, đẩy trực tiếp qua GitHub REST API
+  if (!syncedCloud && finalHtmlContent) {
+    var ghToken = '';
+    try { ghToken = (localStorage.getItem(GH_TOKEN_STORAGE_KEY) || '').trim(); } catch (e) {}
+    if (ghToken) {
+      try {
+        var owner = 'dinhtung12368-design';
+        var repo = 'bai-giang-online';
+        var headers = {
+          'Authorization': 'token ' + ghToken,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        };
+        var lessonPath = 'lessons/' + slug + '/index.html';
+        var b64Html = btoa(unescape(encodeURIComponent(finalHtmlContent)));
+        await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + lessonPath, {
+          method: 'PUT',
+          headers: headers,
+          body: JSON.stringify({ message: 'Upload lesson ' + slug, content: b64Html })
+        });
+        syncedCloud = true;
+      } catch (e) {}
+    }
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '🚀 Đăng ngay lên Web'; }
+  closeUploadLessonModal();
+  showPortalToast('🎉 Đã đăng "' + title + '" lên Cổng học liệu thành công!', false);
+}
 
 // Initialize Portal
 renderSpotlight();
