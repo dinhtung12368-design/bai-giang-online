@@ -5807,5 +5807,395 @@ window.onload = function() {
   <span>🏠</span><span>Cổng bài giảng</span>
 </a>
 
+
+<!-- DT_FULLSCREEN_READABILITY_START -->
+
+<style id="dt-fullscreen-readability-quiz">
+  /* === FULL VIEWPORT & LARGE CLASSROOM TYPOGRAPHY FOR DAU TRUONG QUIZ === */
+  html, body {
+    width: 100vw !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    overflow-x: hidden !important;
+  }
+  .quiz-container {
+    width: 98vw !important;
+    max-width: 1820px !important;
+    min-height: 95vh !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(99, 102, 241, 0.35) !important;
+  }
+  .top-hud {
+    padding: 18px 36px !important;
+  }
+  .hud-title {
+    font-size: clamp(22px, 2.2vw, 32px) !important;
+  }
+  .stat-chip, .btn-auto-read-toggle {
+    font-size: clamp(16px, 1.5vw, 22px) !important;
+    padding: 10px 20px !important;
+    border-radius: 14px !important;
+  }
+  .timer-bar-wrap {
+    height: 10px !important;
+  }
+  .q-body-area {
+    padding: 28px 48px 36px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+  .q-meta-row {
+    margin-bottom: 20px !important;
+    gap: 14px !important;
+  }
+  .q-badge, .q-type-tag, .q-timer-text {
+    font-size: clamp(17px, 1.6vw, 23px) !important;
+    padding: 8px 20px !important;
+    border-radius: 999px !important;
+  }
+  .btn-read-aloud {
+    font-size: clamp(16px, 1.5vw, 21px) !important;
+    padding: 8px 18px !important;
+  }
+  .q-title-box {
+    margin-bottom: 28px !important;
+    padding: 26px 34px !important;
+    border-radius: 20px !important;
+    background: rgba(15, 23, 42, 0.78) !important;
+    border: 2px solid rgba(99, 102, 241, 0.35) !important;
+  }
+  .q-title-text {
+    font-size: clamp(26px, 2.7vw, 42px) !important;
+    line-height: 1.45 !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+  }
+  .q-instruction-sub {
+    font-size: clamp(18px, 1.7vw, 24px) !important;
+    margin-top: 10px !important;
+    color: #cbd5e1 !important;
+  }
+  /* Answer choices */
+  .single-grid, .multi-grid {
+    gap: 20px !important;
+  }
+  .btn-choice, .multi-item {
+    font-size: clamp(21px, 2.1vw, 31px) !important;
+    padding: 22px 28px !important;
+    border-radius: 18px !important;
+    line-height: 1.45 !important;
+    font-weight: 700 !important;
+    border-width: 2px !important;
+  }
+  .choice-prefix {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    font-size: clamp(20px, 1.9vw, 26px) !important;
+    border-radius: 14px !important;
+  }
+  /* True/False 4 statements & Ordering & Matching */
+  .tf4-list, .order-list {
+    gap: 16px !important;
+  }
+  .tf4-row-card, .order-item-card {
+    padding: 18px 26px !important;
+    border-radius: 18px !important;
+  }
+  .tf4-left-content, .order-item-text {
+    font-size: clamp(20px, 2vw, 29px) !important;
+    line-height: 1.45 !important;
+    font-weight: 600 !important;
+  }
+  .tf4-badge, .order-idx-badge {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    font-size: 20px !important;
+  }
+  .tf4-input-box {
+    width: 68px !important;
+    height: 54px !important;
+    font-size: 25px !important;
+  }
+  .tf4-quick-btn, .order-ctrl-btn {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+  }
+  .tf-btn {
+    font-size: clamp(24px, 2.4vw, 34px) !important;
+    padding: 28px !important;
+  }
+  .short-input-field, .fill-blank-input {
+    font-size: clamp(22px, 2.2vw, 32px) !important;
+    padding: 18px 26px !important;
+  }
+  .match-card {
+    font-size: clamp(19px, 1.9vw, 27px) !important;
+    padding: 18px 24px !important;
+    line-height: 1.45 !important;
+  }
+  /* Feedback Overlay (CHÍNH XÁC / CHƯA CHÍNH XÁC) */
+  .feedback-overlay {
+    padding: 40px 56px !important;
+    background: rgba(10, 15, 30, 0.96) !important;
+  }
+  .feedback-icon {
+    font-size: clamp(78px, 7.5vw, 118px) !important;
+    margin-bottom: 14px !important;
+  }
+  .feedback-title {
+    font-size: clamp(38px, 4.2vw, 62px) !important;
+    margin-bottom: 16px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .feedback-desc {
+    font-size: clamp(23px, 2.4vw, 35px) !important;
+    max-width: 1420px !important;
+    color: #f8fafc !important;
+    font-weight: 700 !important;
+    margin-bottom: 24px !important;
+    line-height: 1.5 !important;
+  }
+  .feedback-expl {
+    font-size: clamp(21px, 2.2vw, 31px) !important;
+    max-width: 1420px !important;
+    padding: 24px 34px !important;
+    border-radius: 18px !important;
+    line-height: 1.6 !important;
+    color: #ffffff !important;
+    background: rgba(30, 41, 59, 0.95) !important;
+    border: 2px solid rgba(56, 189, 248, 0.45) !important;
+    border-left: 8px solid #38bdf8 !important;
+    margin-bottom: 32px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  }
+  .btn-next-q, .btn-start-game, .btn-submit-action {
+    font-size: clamp(21px, 2.2vw, 30px) !important;
+    padding: 18px 48px !important;
+    border-radius: 18px !important;
+  }
+  .btn-fb-tts {
+    font-size: clamp(19px, 1.9vw, 26px) !important;
+    padding: 18px 34px !important;
+    border-radius: 18px !important;
+  }
+  /* Welcome / End Screens */
+  .screen-center {
+    padding: 40px 32px !important;
+  }
+  .hero-badge {
+    width: 112px !important;
+    height: 112px !important;
+    font-size: 56px !important;
+    border-radius: 30px !important;
+  }
+  .screen-title {
+    font-size: clamp(36px, 4.2vw, 60px) !important;
+    margin-bottom: 16px !important;
+  }
+  .screen-desc {
+    font-size: clamp(20px, 2.1vw, 29px) !important;
+    max-width: 1150px !important;
+    line-height: 1.55 !important;
+    color: #e2e8f0 !important;
+  }
+  .type-pills-wrap {
+    max-width: 1200px !important;
+    gap: 12px !important;
+    margin-bottom: 28px !important;
+  }
+  .type-pill {
+    font-size: clamp(16px, 1.5vw, 21px) !important;
+    padding: 9px 20px !important;
+  }
+  .player-name-box {
+    max-width: 780px !important;
+    padding: 22px 28px !important;
+    border-radius: 20px !important;
+  }
+  .player-name-label {
+    font-size: clamp(15px, 1.4vw, 19px) !important;
+    margin-bottom: 10px !important;
+  }
+  .player-name-input, .voice-select-box {
+    font-size: clamp(18px, 1.8vw, 24px) !important;
+    padding: 14px 20px !important;
+    border-radius: 14px !important;
+  }
+  /* Top-left floating buttons */
+  #dt-portal-back-btn {
+    top: 12px !important;
+    left: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 15px !important;
+    border-radius: 999px !important;
+  }
+  #eg-class-picker-btn {
+    top: 58px !important;
+    left: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 15px !important;
+  }
+  #eg-fs-toggle-btn {
+    top: 104px !important;
+    left: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 15px !important;
+  }
+  @media (max-width: 768px) {
+    .quiz-container { width: 100vw !important; min-height: 98vh !important; border-radius: 14px !important; }
+    .q-body-area { padding: 18px 16px 24px !important; }
+    .feedback-overlay { padding: 22px 16px !important; }
+  }
+</style>
+
+
+<script>
+(function(){
+  if (window.__dtAutoFullscreenInstalled) return;
+  window.__dtAutoFullscreenInstalled = true;
+
+  var manualExit = false;
+  var autoTriggered = false;
+
+  function isFullscreenNow() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+  }
+
+  function enterFullscreenSafe() {
+    if (isFullscreenNow()) return Promise.resolve(true);
+    var el = document.documentElement;
+    var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (!req) return Promise.resolve(false);
+    try {
+      var res = req.call(el);
+      if (res && typeof res.then === "function") {
+        return res.then(function(){ return true; }).catch(function(){ return false; });
+      }
+      return Promise.resolve(true);
+    } catch (e) {
+      return Promise.resolve(false);
+    }
+  }
+
+  function exitFullscreenSafe() {
+    var ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (!ex) return;
+    try { ex.call(document); } catch (e) {}
+  }
+
+  window.dtToggleFullscreen = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (isFullscreenNow()) {
+      manualExit = true;
+      exitFullscreenSafe();
+    } else {
+      manualExit = false;
+      enterFullscreenSafe();
+    }
+  };
+
+  function updateAllFullscreenButtons() {
+    var active = isFullscreenNow();
+    document.body.classList.toggle("dt-is-fullscreen", active);
+    document.body.classList.toggle("eg-fullscreen-zoom", active);
+    var btns = document.querySelectorAll("#eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].innerHTML = active ? "🗗 Thoát Full màn hình" : "⛶ Mở Full màn hình";
+      btns[i].setAttribute("aria-pressed", active ? "true" : "false");
+    }
+    if (typeof window.scaleSlide === "function") {
+      setTimeout(window.scaleSlide, 60);
+      setTimeout(window.scaleSlide, 220);
+    }
+  }
+
+  document.addEventListener("fullscreenchange", updateAllFullscreenButtons);
+  document.addEventListener("webkitfullscreenchange", updateAllFullscreenButtons);
+  window.addEventListener("resize", function(){
+    if (typeof window.scaleSlide === "function") {
+      window.scaleSlide();
+    }
+  });
+
+  // Ensure portal back button exists on all games/lessons
+  function ensureTopLeftControls() {
+    // If portal back link is missing, add it
+    var backBtn = document.getElementById("dt-portal-back-btn");
+    if (!backBtn && !document.querySelector(".topbar .back-btn")) {
+      backBtn = document.createElement("a");
+      backBtn.id = "dt-portal-back-btn";
+      backBtn.href = "../../index.html";
+      backBtn.innerHTML = "🏠 Cổng bài giảng";
+      document.body.appendChild(backBtn);
+    }
+
+    // If neither #eg-fs-toggle-btn nor .topbar exists, create #dt-fs-floating-btn
+    var hasEgBtn = !!document.getElementById("eg-fs-toggle-btn");
+    var topbar = document.querySelector(".topbar");
+    if (topbar && !document.getElementById("dt-elearning-fs-btn")) {
+      var fsBtn = document.createElement("button");
+      fsBtn.id = "dt-elearning-fs-btn";
+      fsBtn.type = "button";
+      fsBtn.className = "dt-topbar-fs-btn";
+      fsBtn.innerHTML = "⛶ Mở Full màn hình";
+      fsBtn.onclick = window.dtToggleFullscreen;
+      var slideCounter = topbar.querySelector(".slide-counter");
+      if (slideCounter) {
+        topbar.insertBefore(fsBtn, slideCounter);
+      } else {
+        topbar.appendChild(fsBtn);
+      }
+    } else if (!hasEgBtn && !topbar && !document.getElementById("dt-fs-floating-btn")) {
+      var floatBtn = document.createElement("button");
+      floatBtn.id = "dt-fs-floating-btn";
+      floatBtn.type = "button";
+      floatBtn.innerHTML = "⛶ Mở Full màn hình";
+      floatBtn.onclick = window.dtToggleFullscreen;
+      document.body.appendChild(floatBtn);
+    }
+    updateAllFullscreenButtons();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ensureTopLeftControls);
+  } else {
+    ensureTopLeftControls();
+  }
+  setTimeout(ensureTopLeftControls, 300);
+
+  // Auto-trigger Fullscreen on student's first meaningful click (e.g. Start Game, Choice, Next Slide, Play)
+  document.addEventListener("click", function(e) {
+    if (manualExit || isFullscreenNow()) return;
+    var t = e.target;
+    if (!t || !t.closest) return;
+    // Ignore clicks on Back to Portal, Fullscreen toggle itself, or Class Picker close
+    if (t.closest("#dt-portal-back-btn, .back-btn, #eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn, #eg-class-picker-btn, #eg-picker-overlay")) {
+      return;
+    }
+    // Trigger on start buttons, answer buttons, wheel spin, slide navigation, or first click inside game/lesson container
+    if (!autoTriggered) {
+      autoTriggered = true;
+      enterFullscreenSafe().then(function(){
+        updateAllFullscreenButtons();
+      });
+    } else if (t.closest(".btn-start-game, #start-btn, .spin-btn, .rescue-opt-btn, .btn-choice, .ans, .btn-play")) {
+      enterFullscreenSafe().then(function(){
+        updateAllFullscreenButtons();
+      });
+    }
+  }, true);
+})();
+</script>
+
+<!-- DT_FULLSCREEN_READABILITY_END -->
 </body>
 </html>

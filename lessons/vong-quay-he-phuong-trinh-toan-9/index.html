@@ -1000,5 +1000,257 @@ wheelRuntime([{"q":"Số 120 có chia hết cho 2 hoặc cho 5 không?","options
   <span>🏠</span><span>Cổng bài giảng</span>
 </a>
 
+
+<!-- DT_FULLSCREEN_READABILITY_START -->
+
+<style id="dt-fullscreen-readability-wheel">
+  /* === FULL VIEWPORT & LARGE CLASSROOM TYPOGRAPHY FOR VONG QUAY MAY MAN === */
+  html, body {
+    width: 100vw !important;
+    min-height: 100vh !important;
+  }
+  .wheel-app {
+    max-width: 98vw !important;
+    width: 98vw !important;
+    padding: 12px 24px !important;
+  }
+  .wheel-header {
+    padding: 10px 24px !important;
+    margin-bottom: 12px !important;
+  }
+  .game-title {
+    font-size: clamp(24px, 2.5vw, 38px) !important;
+  }
+  .stat-pill {
+    font-size: clamp(16px, 1.5vw, 22px) !important;
+    padding: 10px 20px !important;
+  }
+  .wheel-stage {
+    gap: 36px !important;
+  }
+  .canvas-wrap {
+    width: min(76vh, 660px, 90vw) !important;
+    height: min(76vh, 660px, 90vw) !important;
+  }
+  .wheel-sidebar {
+    width: 440px !important;
+    max-width: 95vw !important;
+  }
+  .status-card {
+    padding: 24px 28px !important;
+  }
+  .prize-banner {
+    font-size: clamp(22px, 2.2vw, 32px) !important;
+  }
+  .spin-btn {
+    font-size: clamp(22px, 2.2vw, 30px) !important;
+    padding: 20px 32px !important;
+  }
+  /* Question Modal when wheel stops */
+  .q-card {
+    width: min(96vw, 1420px) !important;
+    max-width: 1420px !important;
+    padding: 36px 48px !important;
+    border-radius: 26px !important;
+  }
+  .q-meta {
+    margin-bottom: 20px !important;
+  }
+  .q-badge, .q-prize-tag {
+    font-size: clamp(17px, 1.6vw, 23px) !important;
+    padding: 8px 20px !important;
+  }
+  .q-text {
+    font-size: clamp(26px, 2.7vw, 40px) !important;
+    line-height: 1.45 !important;
+    font-weight: 800 !important;
+    margin-bottom: 28px !important;
+  }
+  .opts-grid {
+    gap: 18px !important;
+  }
+  .opt-btn {
+    font-size: clamp(20px, 2.1vw, 30px) !important;
+    padding: 22px 28px !important;
+    border-radius: 18px !important;
+    line-height: 1.45 !important;
+  }
+  .opt-key {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    font-size: 22px !important;
+  }
+  .q-feedback {
+    font-size: clamp(20px, 2vw, 28px) !important;
+    padding: 20px 28px !important;
+    line-height: 1.55 !important;
+    margin-top: 22px !important;
+  }
+  .next-btn {
+    font-size: clamp(20px, 2vw, 28px) !important;
+    padding: 18px 40px !important;
+    margin-top: 22px !important;
+  }
+  #dt-portal-back-btn {
+    top: 12px !important;
+    left: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 15px !important;
+  }
+  #eg-class-picker-btn {
+    top: 58px !important;
+    left: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 15px !important;
+  }
+  #eg-fs-toggle-btn {
+    top: 104px !important;
+    left: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 15px !important;
+  }
+</style>
+
+
+<script>
+(function(){
+  if (window.__dtAutoFullscreenInstalled) return;
+  window.__dtAutoFullscreenInstalled = true;
+
+  var manualExit = false;
+  var autoTriggered = false;
+
+  function isFullscreenNow() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+  }
+
+  function enterFullscreenSafe() {
+    if (isFullscreenNow()) return Promise.resolve(true);
+    var el = document.documentElement;
+    var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (!req) return Promise.resolve(false);
+    try {
+      var res = req.call(el);
+      if (res && typeof res.then === "function") {
+        return res.then(function(){ return true; }).catch(function(){ return false; });
+      }
+      return Promise.resolve(true);
+    } catch (e) {
+      return Promise.resolve(false);
+    }
+  }
+
+  function exitFullscreenSafe() {
+    var ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (!ex) return;
+    try { ex.call(document); } catch (e) {}
+  }
+
+  window.dtToggleFullscreen = function(ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (isFullscreenNow()) {
+      manualExit = true;
+      exitFullscreenSafe();
+    } else {
+      manualExit = false;
+      enterFullscreenSafe();
+    }
+  };
+
+  function updateAllFullscreenButtons() {
+    var active = isFullscreenNow();
+    document.body.classList.toggle("dt-is-fullscreen", active);
+    document.body.classList.toggle("eg-fullscreen-zoom", active);
+    var btns = document.querySelectorAll("#eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].innerHTML = active ? "🗗 Thoát Full màn hình" : "⛶ Mở Full màn hình";
+      btns[i].setAttribute("aria-pressed", active ? "true" : "false");
+    }
+    if (typeof window.scaleSlide === "function") {
+      setTimeout(window.scaleSlide, 60);
+      setTimeout(window.scaleSlide, 220);
+    }
+  }
+
+  document.addEventListener("fullscreenchange", updateAllFullscreenButtons);
+  document.addEventListener("webkitfullscreenchange", updateAllFullscreenButtons);
+  window.addEventListener("resize", function(){
+    if (typeof window.scaleSlide === "function") {
+      window.scaleSlide();
+    }
+  });
+
+  // Ensure portal back button exists on all games/lessons
+  function ensureTopLeftControls() {
+    // If portal back link is missing, add it
+    var backBtn = document.getElementById("dt-portal-back-btn");
+    if (!backBtn && !document.querySelector(".topbar .back-btn")) {
+      backBtn = document.createElement("a");
+      backBtn.id = "dt-portal-back-btn";
+      backBtn.href = "../../index.html";
+      backBtn.innerHTML = "🏠 Cổng bài giảng";
+      document.body.appendChild(backBtn);
+    }
+
+    // If neither #eg-fs-toggle-btn nor .topbar exists, create #dt-fs-floating-btn
+    var hasEgBtn = !!document.getElementById("eg-fs-toggle-btn");
+    var topbar = document.querySelector(".topbar");
+    if (topbar && !document.getElementById("dt-elearning-fs-btn")) {
+      var fsBtn = document.createElement("button");
+      fsBtn.id = "dt-elearning-fs-btn";
+      fsBtn.type = "button";
+      fsBtn.className = "dt-topbar-fs-btn";
+      fsBtn.innerHTML = "⛶ Mở Full màn hình";
+      fsBtn.onclick = window.dtToggleFullscreen;
+      var slideCounter = topbar.querySelector(".slide-counter");
+      if (slideCounter) {
+        topbar.insertBefore(fsBtn, slideCounter);
+      } else {
+        topbar.appendChild(fsBtn);
+      }
+    } else if (!hasEgBtn && !topbar && !document.getElementById("dt-fs-floating-btn")) {
+      var floatBtn = document.createElement("button");
+      floatBtn.id = "dt-fs-floating-btn";
+      floatBtn.type = "button";
+      floatBtn.innerHTML = "⛶ Mở Full màn hình";
+      floatBtn.onclick = window.dtToggleFullscreen;
+      document.body.appendChild(floatBtn);
+    }
+    updateAllFullscreenButtons();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ensureTopLeftControls);
+  } else {
+    ensureTopLeftControls();
+  }
+  setTimeout(ensureTopLeftControls, 300);
+
+  // Auto-trigger Fullscreen on student's first meaningful click (e.g. Start Game, Choice, Next Slide, Play)
+  document.addEventListener("click", function(e) {
+    if (manualExit || isFullscreenNow()) return;
+    var t = e.target;
+    if (!t || !t.closest) return;
+    // Ignore clicks on Back to Portal, Fullscreen toggle itself, or Class Picker close
+    if (t.closest("#dt-portal-back-btn, .back-btn, #eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn, #eg-class-picker-btn, #eg-picker-overlay")) {
+      return;
+    }
+    // Trigger on start buttons, answer buttons, wheel spin, slide navigation, or first click inside game/lesson container
+    if (!autoTriggered) {
+      autoTriggered = true;
+      enterFullscreenSafe().then(function(){
+        updateAllFullscreenButtons();
+      });
+    } else if (t.closest(".btn-start-game, #start-btn, .spin-btn, .rescue-opt-btn, .btn-choice, .ans, .btn-play")) {
+      enterFullscreenSafe().then(function(){
+        updateAllFullscreenButtons();
+      });
+    }
+  }, true);
+})();
+</script>
+
+<!-- DT_FULLSCREEN_READABILITY_END -->
 </body>
 </html>
