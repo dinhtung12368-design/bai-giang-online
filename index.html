@@ -1368,7 +1368,7 @@
     .stat-num { font-size: 17px; }
   }
 
-  /* === FULL-VIEWPORT WIDE LAYOUT & LARGE READABILITY FOR PORTAL === */
+  /* === FULL-VIEWPORT WIDE LAYOUT & SUPER-LARGE CLASSROOM READABILITY FOR PORTAL === */
   .navbar-inner,
   .hero-wrap,
   .controls-section,
@@ -1378,23 +1378,33 @@
   .footer-inner {
     max-width: 97vw !important;
     width: 97vw !important;
-    padding-left: 22px !important;
-    padding-right: 22px !important;
+    padding-left: 26px !important;
+    padding-right: 26px !important;
   }
   .brand-logo {
-    width: 50px !important;
-    height: 50px !important;
-    font-size: 26px !important;
+    width: 58px !important;
+    height: 58px !important;
+    font-size: 30px !important;
+    border-radius: 15px !important;
   }
   .brand-title {
-    font-size: clamp(17px, 1.5vw, 22px) !important;
+    font-size: clamp(20px, 1.75vw, 26px) !important;
+    font-weight: 900 !important;
   }
   .brand-sub {
-    font-size: clamp(13px, 1.1vw, 15px) !important;
+    font-size: clamp(14.5px, 1.2vw, 17.5px) !important;
+    font-weight: 600 !important;
+    color: #cbd5e1 !important;
   }
   .nav-btn {
-    padding: 10px 18px !important;
-    font-size: clamp(13.5px, 1.15vw, 16px) !important;
+    padding: 12px 20px !important;
+    font-size: clamp(15.5px, 1.25vw, 18.5px) !important;
+    font-weight: 800 !important;
+  }
+  .theme-toggle {
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 22px !important;
   }
   .nav-btn-fullscreen {
     background: linear-gradient(135deg, #0284c7, #2563eb) !important;
@@ -1407,56 +1417,229 @@
     background: linear-gradient(135deg, #059669, #10b981) !important;
     border-color: #6ee7b7 !important;
   }
+  .hero-grid {
+    grid-template-columns: 1.12fr 0.88fr !important;
+    gap: 36px !important;
+  }
+  .school-pill {
+    font-size: clamp(15px, 1.25vw, 18.5px) !important;
+    padding: 9px 18px !important;
+    font-weight: 800 !important;
+  }
   .hero-title {
-    font-size: clamp(30px, 3.4vw, 50px) !important;
+    font-size: clamp(36px, 3.8vw, 56px) !important;
+    line-height: 1.18 !important;
   }
   .hero-desc {
-    font-size: clamp(16px, 1.35vw, 20px) !important;
-    max-width: 920px !important;
+    font-size: clamp(19px, 1.6vw, 24px) !important;
+    line-height: 1.65 !important;
+    max-width: 100% !important;
+    color: #e2e8f0 !important;
   }
   .btn-primary-hero, .btn-secondary-hero {
-    font-size: clamp(15px, 1.25vw, 18px) !important;
-    padding: 14px 26px !important;
+    font-size: clamp(17.5px, 1.45vw, 21.5px) !important;
+    padding: 16px 28px !important;
+    font-weight: 800 !important;
+    border-radius: 14px !important;
+  }
+  .stat-box {
+    padding: 18px 20px !important;
+    gap: 14px !important;
+    border-radius: 16px !important;
+  }
+  .stat-icon {
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 26px !important;
   }
   .stat-num {
-    font-size: clamp(22px, 1.9vw, 30px) !important;
+    font-size: clamp(28px, 2.3vw, 38px) !important;
   }
   .stat-lbl {
-    font-size: clamp(12.5px, 1vw, 15px) !important;
+    font-size: clamp(15px, 1.2vw, 18px) !important;
+    font-weight: 700 !important;
+    color: #cbd5e1 !important;
+  }
+  /* Spotlight Card (Right side of Hero) */
+  .spotlight-badge, .spotlight-slides {
+    font-size: clamp(14.5px, 1.15vw, 17.5px) !important;
+    padding: 8px 16px !important;
+    font-weight: 800 !important;
+  }
+  .spotlight-body {
+    padding: 24px 28px !important;
+    gap: 16px !important;
+  }
+  .spotlight-subject-meta {
+    font-size: clamp(15.5px, 1.25vw, 18.5px) !important;
+    font-weight: 800 !important;
+    color: var(--accent-blue) !important;
+    text-transform: uppercase !important;
+    margin-bottom: 6px !important;
+  }
+  .spotlight-title {
+    font-size: clamp(23px, 1.95vw, 30px) !important;
+    line-height: 1.35 !important;
+    font-weight: 900 !important;
+  }
+  .spotlight-desc {
+    font-size: clamp(17px, 1.4vw, 20.5px) !important;
+    line-height: 1.6 !important;
+    -webkit-line-clamp: 3 !important;
+    color: #e2e8f0 !important;
+  }
+  .spotlight-play-btn {
+    font-size: clamp(18px, 1.45vw, 21.5px) !important;
+    padding: 15px 24px !important;
+    border-radius: 13px !important;
+  }
+  .spotlight-actions .btn-card-share,
+  .spotlight-actions .btn-card-delete {
+    font-size: clamp(17px, 1.35vw, 20px) !important;
+    padding: 15px 20px !important;
+    border-radius: 13px !important;
+  }
+  /* Controls & Filters */
+  .controls-card {
+    padding: 22px 26px !important;
+    gap: 18px !important;
+    border-radius: 20px !important;
   }
   .search-input {
-    font-size: clamp(15px, 1.25vw, 18px) !important;
-    padding: 15px 44px 15px 48px !important;
+    font-size: clamp(18px, 1.5vw, 22px) !important;
+    padding: 18px 50px 18px 54px !important;
+    font-weight: 600 !important;
+    border-radius: 14px !important;
+  }
+  .search-icon {
+    font-size: 22px !important;
+    left: 18px !important;
   }
   .sort-select {
-    font-size: clamp(14px, 1.15vw, 17px) !important;
-    padding: 14px 20px !important;
+    font-size: clamp(17px, 1.4vw, 20.5px) !important;
+    padding: 17px 24px !important;
+    font-weight: 700 !important;
+    border-radius: 14px !important;
   }
   .filter-pill {
-    font-size: clamp(13.5px, 1.15vw, 16.5px) !important;
-    padding: 10px 18px !important;
+    font-size: clamp(16px, 1.35vw, 19.5px) !important;
+    padding: 12px 22px !important;
+    font-weight: 700 !important;
   }
+  .filter-count {
+    font-size: clamp(14.5px, 1.15vw, 17px) !important;
+    padding: 3px 10px !important;
+  }
+  /* Catalog Section & 3-Column Wide Lesson Grid */
   .section-title {
-    font-size: clamp(22px, 2vw, 30px) !important;
+    font-size: clamp(26px, 2.3vw, 36px) !important;
+  }
+  .section-result-info {
+    font-size: clamp(16.5px, 1.35vw, 20px) !important;
+    font-weight: 700 !important;
+    color: #e2e8f0 !important;
   }
   .lessons-grid {
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
-    gap: 24px !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 28px !important;
+  }
+  .card-type-badge, .card-slides-pill {
+    font-size: clamp(14px, 1.15vw, 17px) !important;
+    padding: 7px 14px !important;
+    font-weight: 800 !important;
+  }
+  .card-floating-delete {
+    font-size: clamp(14px, 1.15vw, 16.5px) !important;
+    padding: 8px 15px !important;
+  }
+  .card-body {
+    padding: 24px 26px 18px !important;
+    gap: 14px !important;
+  }
+  .card-subject {
+    font-size: clamp(15px, 1.2vw, 18px) !important;
+    font-weight: 800 !important;
+  }
+  .card-date {
+    font-size: clamp(14.5px, 1.15vw, 17px) !important;
+    font-weight: 600 !important;
+    color: #cbd5e1 !important;
   }
   .card-title {
-    font-size: clamp(18px, 1.45vw, 22px) !important;
+    font-size: clamp(21px, 1.75vw, 26px) !important;
+    line-height: 1.38 !important;
+    font-weight: 800 !important;
+    -webkit-line-clamp: 3 !important;
   }
   .card-desc {
-    font-size: clamp(14px, 1.1vw, 16.5px) !important;
+    font-size: clamp(16.5px, 1.35vw, 19.5px) !important;
+    line-height: 1.6 !important;
+    color: #e2e8f0 !important;
     -webkit-line-clamp: 3 !important;
   }
   .feature-chip {
-    font-size: clamp(12px, 0.95vw, 14px) !important;
-    padding: 5px 12px !important;
+    font-size: clamp(14px, 1.15vw, 16.5px) !important;
+    padding: 7px 14px !important;
+    font-weight: 700 !important;
+  }
+  .card-footer {
+    padding: 16px 26px 22px !important;
+    gap: 12px !important;
   }
   .btn-card-play, .btn-card-share, .btn-card-delete {
-    font-size: clamp(14px, 1.1vw, 16.5px) !important;
-    padding: 12px 18px !important;
+    font-size: clamp(16.5px, 1.35vw, 20px) !important;
+    padding: 14px 20px !important;
+    font-weight: 800 !important;
+    border-radius: 13px !important;
+  }
+  /* Features Showcase & Footer */
+  .features-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 24px !important;
+  }
+  .feature-box {
+    padding: 26px !important;
+    gap: 18px !important;
+    border-radius: 20px !important;
+  }
+  .feature-box-icon {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 28px !important;
+  }
+  .feature-box h4 {
+    font-size: clamp(18.5px, 1.5vw, 22px) !important;
+    margin-bottom: 8px !important;
+  }
+  .feature-box p {
+    font-size: clamp(15.5px, 1.25vw, 18.5px) !important;
+    line-height: 1.6 !important;
+    color: #cbd5e1 !important;
+  }
+  .footer-school {
+    font-size: clamp(18.5px, 1.5vw, 22px) !important;
+  }
+  .footer-meta {
+    font-size: clamp(15px, 1.2vw, 18px) !important;
+    line-height: 1.65 !important;
+    color: #cbd5e1 !important;
+  }
+  .footer-pill {
+    font-size: clamp(15px, 1.2vw, 18px) !important;
+    padding: 10px 18px !important;
+  }
+  .ai-fab {
+    font-size: clamp(16.5px, 1.3vw, 19.5px) !important;
+    padding: 14px 24px !important;
+  }
+  @media (max-width: 1360px) {
+    .lessons-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .features-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .hero-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 820px) {
+    .lessons-grid { grid-template-columns: 1fr !important; }
+    .features-grid { grid-template-columns: 1fr !important; }
   }
   /* Fullscreen Embedded Stage Player so entering a lesson NEVER drops browser Fullscreen */
   #dtLessonStageOverlay {
@@ -1480,7 +1663,6 @@
     background: #020617;
   }
 
-
   .floating-fs-pill {
     position: fixed;
     bottom: 22px;
@@ -1489,11 +1671,11 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 13px 22px;
+    padding: 14px 24px;
     border-radius: 999px;
     background: linear-gradient(135deg, #0284c7, #2563eb);
     color: #ffffff;
-    font-size: 15px;
+    font-size: clamp(16.5px, 1.3vw, 19.5px);
     font-weight: 800;
     border: 2px solid #7dd3fc;
     box-shadow: 0 10px 28px rgba(2, 132, 199, 0.55);
@@ -1509,7 +1691,6 @@
     background: linear-gradient(135deg, #059669, #10b981);
     border-color: #6ee7b7;
   }
-
 </style>
 </head>
 <body>
@@ -1641,8 +1822,8 @@
       <span id="catalogHeading">Kho Bài Giảng E-Learning &amp; Trò Chơi Học Tập</span>
     </h2>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <button type="button" class="nav-btn nav-btn-fullscreen portal-fs-sync-btn" onclick="togglePortalFullscreen(event)" style="padding:8px 16px;font-size:13px;">⛶ Bật Full màn hình</button>
-      <button type="button" class="nav-btn nav-btn-teacher" onclick="openRestoreModal()" style="padding:8px 16px;font-size:13px;">🔐 Quản lý / Khôi phục bài đã xóa</button>
+      <button type="button" class="nav-btn nav-btn-fullscreen portal-fs-sync-btn" onclick="togglePortalFullscreen(event)" style="padding:11px 20px;font-size:16px;">⛶ Bật Full màn hình</button>
+      <button type="button" class="nav-btn nav-btn-teacher" onclick="openRestoreModal()" style="padding:11px 20px;font-size:16px;">🔐 Quản lý / Khôi phục bài đã xóa</button>
       <div class="section-result-info" id="resultCountInfo">Đang hiển thị tất cả học liệu</div>
     </div>
   </div>
@@ -2066,7 +2247,7 @@ function renderSpotlight() {
       '</a>' +
       '<div class="spotlight-body">' +
         '<div>' +
-          '<div style="font-size:11.5px;font-weight:800;color:var(--accent-blue);text-transform:uppercase;margin-bottom:4px;">' +
+          '<div class="spotlight-subject-meta">' +
             (SUBJECT_ICONS[feat.subject] || '📘') + ' ' + feat.subject + ' • Cập nhật ' + feat.date +
           '</div>' +
           '<div class="spotlight-title">' + feat.title + '</div>' +
