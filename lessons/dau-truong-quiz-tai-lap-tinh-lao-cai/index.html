@@ -5808,10 +5808,14 @@ window.onload = function() {
 </a>
 
 
+
+
+
+
 <!-- DT_FULLSCREEN_READABILITY_START -->
 
 <style id="dt-fullscreen-readability-quiz">
-  /* === FULL VIEWPORT & LARGE CLASSROOM TYPOGRAPHY FOR DAU TRUONG QUIZ === */
+  /* === FULL VIEWPORT & HUGE CLASSROOM TYPOGRAPHY FOR DAU TRUONG QUIZ === */
   html, body {
     width: 100vw !important;
     min-height: 100vh !important;
@@ -5821,7 +5825,7 @@ window.onload = function() {
   }
   .quiz-container {
     width: 98vw !important;
-    max-width: 1820px !important;
+    max-width: 1840px !important;
     min-height: 95vh !important;
     border-radius: 24px !important;
     display: flex !important;
@@ -5829,19 +5833,18 @@ window.onload = function() {
     justify-content: space-between !important;
     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(99, 102, 241, 0.35) !important;
   }
-  .top-hud {
-    padding: 18px 36px !important;
+  .quiz-header, .top-hud {
+    padding: 18px 36px 18px 185px !important;
   }
-  .hud-title {
-    font-size: clamp(22px, 2.2vw, 32px) !important;
+  .q-badge, .q-type-tag, .stat-chip, .btn-auto-read-toggle {
+    font-size: clamp(17px, 1.6vw, 23px) !important;
+    padding: 9px 20px !important;
+    border-radius: 999px !important;
   }
-  .stat-chip, .btn-auto-read-toggle {
-    font-size: clamp(16px, 1.5vw, 22px) !important;
-    padding: 10px 20px !important;
-    border-radius: 14px !important;
-  }
-  .timer-bar-wrap {
-    height: 10px !important;
+  .btn-tts {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 24px !important;
   }
   .q-body-area {
     padding: 28px 48px 36px !important;
@@ -5850,193 +5853,146 @@ window.onload = function() {
     flex-direction: column !important;
     justify-content: center !important;
   }
-  .q-meta-row {
-    margin-bottom: 20px !important;
-    gap: 14px !important;
-  }
-  .q-badge, .q-type-tag, .q-timer-text {
-    font-size: clamp(17px, 1.6vw, 23px) !important;
-    padding: 8px 20px !important;
-    border-radius: 999px !important;
-  }
-  .btn-read-aloud {
-    font-size: clamp(16px, 1.5vw, 21px) !important;
-    padding: 8px 18px !important;
-  }
   .q-title-box {
     margin-bottom: 28px !important;
-    padding: 26px 34px !important;
-    border-radius: 20px !important;
-    background: rgba(15, 23, 42, 0.78) !important;
-    border: 2px solid rgba(99, 102, 241, 0.35) !important;
+    padding: 28px 36px !important;
+    border-radius: 22px !important;
+    background: rgba(15, 23, 42, 0.82) !important;
+    border: 2px solid rgba(99, 102, 241, 0.4) !important;
+    align-items: center !important;
   }
-  .q-title-text {
-    font-size: clamp(26px, 2.7vw, 42px) !important;
-    line-height: 1.45 !important;
+  .q-title-text, #q-text {
+    font-size: clamp(28px, 3vw, 44px) !important;
+    line-height: 1.42 !important;
     font-weight: 800 !important;
     color: #ffffff !important;
   }
-  .q-instruction-sub {
-    font-size: clamp(18px, 1.7vw, 24px) !important;
-    margin-top: 10px !important;
-    color: #cbd5e1 !important;
-  }
-  /* Answer choices */
   .single-grid, .multi-grid {
-    gap: 20px !important;
+    gap: 22px !important;
   }
   .btn-choice, .multi-item {
-    font-size: clamp(21px, 2.1vw, 31px) !important;
-    padding: 22px 28px !important;
-    border-radius: 18px !important;
-    line-height: 1.45 !important;
+    font-size: clamp(22px, 2.25vw, 33px) !important;
+    padding: 24px 30px !important;
+    border-radius: 20px !important;
+    line-height: 1.42 !important;
     font-weight: 700 !important;
-    border-width: 2px !important;
+    border-width: 2.5px !important;
   }
   .choice-prefix {
-    width: 50px !important;
-    height: 50px !important;
-    min-width: 50px !important;
-    font-size: clamp(20px, 1.9vw, 26px) !important;
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    font-size: clamp(21px, 2vw, 28px) !important;
     border-radius: 14px !important;
   }
-  /* True/False 4 statements & Ordering & Matching */
   .tf4-list, .order-list {
-    gap: 16px !important;
+    gap: 18px !important;
   }
   .tf4-row-card, .order-item-card {
-    padding: 18px 26px !important;
+    padding: 20px 28px !important;
     border-radius: 18px !important;
   }
   .tf4-left-content, .order-item-text {
-    font-size: clamp(20px, 2vw, 29px) !important;
-    line-height: 1.45 !important;
-    font-weight: 600 !important;
+    font-size: clamp(21px, 2.1vw, 31px) !important;
+    line-height: 1.42 !important;
+    font-weight: 700 !important;
   }
   .tf4-badge, .order-idx-badge {
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    font-size: 20px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    font-size: 22px !important;
   }
   .tf4-input-box {
-    width: 68px !important;
-    height: 54px !important;
-    font-size: 25px !important;
+    width: 72px !important;
+    height: 56px !important;
+    font-size: 26px !important;
   }
   .tf4-quick-btn, .order-ctrl-btn {
-    width: 50px !important;
-    height: 50px !important;
-    font-size: 20px !important;
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 21px !important;
   }
   .tf-btn {
-    font-size: clamp(24px, 2.4vw, 34px) !important;
-    padding: 28px !important;
+    font-size: clamp(26px, 2.6vw, 38px) !important;
+    padding: 30px !important;
   }
   .short-input-field, .fill-blank-input {
-    font-size: clamp(22px, 2.2vw, 32px) !important;
-    padding: 18px 26px !important;
+    font-size: clamp(24px, 2.4vw, 36px) !important;
+    padding: 20px 28px !important;
   }
   .match-card {
-    font-size: clamp(19px, 1.9vw, 27px) !important;
-    padding: 18px 24px !important;
-    line-height: 1.45 !important;
+    font-size: clamp(20px, 2vw, 29px) !important;
+    padding: 20px 26px !important;
+    line-height: 1.42 !important;
   }
-  /* Feedback Overlay (CHÍNH XÁC / CHƯA CHÍNH XÁC) */
+  /* Feedback Overlay */
   .feedback-overlay {
     padding: 40px 56px !important;
     background: rgba(10, 15, 30, 0.96) !important;
   }
   .feedback-icon {
-    font-size: clamp(78px, 7.5vw, 118px) !important;
+    font-size: clamp(80px, 7.5vw, 120px) !important;
     margin-bottom: 14px !important;
   }
   .feedback-title {
-    font-size: clamp(38px, 4.2vw, 62px) !important;
+    font-size: clamp(40px, 4.4vw, 64px) !important;
     margin-bottom: 16px !important;
-    letter-spacing: 0.5px !important;
   }
   .feedback-desc {
-    font-size: clamp(23px, 2.4vw, 35px) !important;
-    max-width: 1420px !important;
+    font-size: clamp(24px, 2.5vw, 36px) !important;
+    max-width: 1460px !important;
     color: #f8fafc !important;
     font-weight: 700 !important;
     margin-bottom: 24px !important;
     line-height: 1.5 !important;
   }
   .feedback-expl {
-    font-size: clamp(21px, 2.2vw, 31px) !important;
-    max-width: 1420px !important;
-    padding: 24px 34px !important;
-    border-radius: 18px !important;
+    font-size: clamp(22px, 2.3vw, 32px) !important;
+    max-width: 1460px !important;
+    padding: 26px 36px !important;
+    border-radius: 20px !important;
     line-height: 1.6 !important;
     color: #ffffff !important;
     background: rgba(30, 41, 59, 0.95) !important;
-    border: 2px solid rgba(56, 189, 248, 0.45) !important;
+    border: 2px solid rgba(56, 189, 248, 0.5) !important;
     border-left: 8px solid #38bdf8 !important;
     margin-bottom: 32px !important;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
   }
   .btn-next-q, .btn-start-game, .btn-submit-action {
-    font-size: clamp(21px, 2.2vw, 30px) !important;
-    padding: 18px 48px !important;
+    font-size: clamp(22px, 2.2vw, 32px) !important;
+    padding: 20px 52px !important;
     border-radius: 18px !important;
   }
   .btn-fb-tts {
-    font-size: clamp(19px, 1.9vw, 26px) !important;
-    padding: 18px 34px !important;
+    font-size: clamp(20px, 2vw, 28px) !important;
+    padding: 20px 36px !important;
     border-radius: 18px !important;
   }
-  /* Welcome / End Screens */
-  .screen-center {
-    padding: 40px 32px !important;
-  }
-  .hero-badge {
-    width: 112px !important;
-    height: 112px !important;
-    font-size: 56px !important;
-    border-radius: 30px !important;
-  }
   .screen-title {
-    font-size: clamp(36px, 4.2vw, 60px) !important;
-    margin-bottom: 16px !important;
+    font-size: clamp(38px, 4.4vw, 62px) !important;
   }
   .screen-desc {
-    font-size: clamp(20px, 2.1vw, 29px) !important;
-    max-width: 1150px !important;
-    line-height: 1.55 !important;
-    color: #e2e8f0 !important;
-  }
-  .type-pills-wrap {
-    max-width: 1200px !important;
-    gap: 12px !important;
-    margin-bottom: 28px !important;
+    font-size: clamp(21px, 2.1vw, 30px) !important;
+    max-width: 1180px !important;
   }
   .type-pill {
-    font-size: clamp(16px, 1.5vw, 21px) !important;
-    padding: 9px 20px !important;
+    font-size: clamp(17px, 1.6vw, 22px) !important;
+    padding: 10px 22px !important;
   }
   .player-name-box {
-    max-width: 780px !important;
-    padding: 22px 28px !important;
-    border-radius: 20px !important;
-  }
-  .player-name-label {
-    font-size: clamp(15px, 1.4vw, 19px) !important;
-    margin-bottom: 10px !important;
+    max-width: 820px !important;
+    padding: 24px 32px !important;
   }
   .player-name-input, .voice-select-box {
-    font-size: clamp(18px, 1.8vw, 24px) !important;
-    padding: 14px 20px !important;
-    border-radius: 14px !important;
+    font-size: clamp(20px, 2vw, 26px) !important;
+    padding: 16px 22px !important;
   }
-  /* Top-left floating buttons */
-  #dt-portal-back-btn {
+  .dt-portal-back-fab, #dt-portal-back-btn {
     top: 12px !important;
     left: 12px !important;
     padding: 10px 18px !important;
     font-size: 15px !important;
-    border-radius: 999px !important;
   }
   #eg-class-picker-btn {
     top: 58px !important;
@@ -6050,19 +6006,243 @@ window.onload = function() {
     padding: 10px 18px !important;
     font-size: 15px !important;
   }
-  @media (max-width: 768px) {
-    .quiz-container { width: 100vw !important; min-height: 98vh !important; border-radius: 14px !important; }
-    .q-body-area { padding: 18px 16px 24px !important; }
-    .feedback-overlay { padding: 22px 16px !important; }
-  }
 </style>
 
 
 <script>
 (function(){
-  if (window.__dtAutoFullscreenInstalled) return;
-  window.__dtAutoFullscreenInstalled = true;
+  if (window.__dtUniversalClassroomEngine) return;
+  window.__dtUniversalClassroomEngine = true;
 
+  // =========================================================================
+  // 1. UNIVERSAL VIETNAMESE TTS ENGINE (Google Translate TTS no-referrer + WebSpeech)
+  // =========================================================================
+  var dtTtsToken = 0;
+  var dtCurrentAudio = null;
+  var dtPendingSpeechText = null;
+  var dtPendingSpeechCb = null;
+  var dtUserInteracted = false;
+  window.dtAutoReadEnabled = true;
+
+  function dtSplitChunks(str, maxLen) {
+    maxLen = maxLen || 165;
+    str = String(str || "").replace(/\s+/g, " ").trim();
+    if (!str) return [];
+    if (str.length <= maxLen) return [str];
+    var parts = str.match(/[^.!?;:]+[.!?;:]+|[^.!?;:]+$/g) || [str];
+    var chunks = [];
+    var cur = "";
+    for (var i = 0; i < parts.length; i++) {
+      var s = parts[i].trim();
+      if (!s) continue;
+      if ((cur + " " + s).trim().length <= maxLen) {
+        cur = (cur + " " + s).trim();
+      } else {
+        if (cur) chunks.push(cur);
+        if (s.length <= maxLen) {
+          cur = s;
+        } else {
+          var words = s.split(/\s+/);
+          cur = "";
+          for (var w = 0; w < words.length; w++) {
+            if ((cur + " " + words[w]).trim().length <= maxLen) {
+              cur = (cur + " " + words[w]).trim();
+            } else {
+              if (cur) chunks.push(cur);
+              cur = words[w];
+            }
+          }
+        }
+      }
+    }
+    if (cur) chunks.push(cur);
+    return chunks;
+  }
+
+  function dtCleanForSpeech(rawText) {
+    if (!rawText) return "";
+    var s = String(rawText)
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, " và ")
+      .replace(/&lt;/g, " nhỏ hơn ")
+      .replace(/&gt;/g, " lớn hơn ");
+    if (typeof window.mathToSpeech === "function") {
+      try { s = window.mathToSpeech(s); } catch (e) {}
+    }
+    s = s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ")
+         .replace(/\s+/g, " ")
+         .trim();
+    return s;
+  }
+
+  function dtFindViVoice() {
+    if (!("speechSynthesis" in window)) return null;
+    try {
+      var voices = window.speechSynthesis.getVoices() || [];
+      for (var i = 0; i < voices.length; i++) {
+        var lang = String(voices[i].lang || "").toLowerCase();
+        var name = String(voices[i].name || "").toLowerCase();
+        if (lang.indexOf("vi") === 0 && (name.indexOf("natural") !== -1 || name.indexOf("online") !== -1 || name.indexOf("google") !== -1)) {
+          return voices[i];
+        }
+      }
+      for (var j = 0; j < voices.length; j++) {
+        var lang2 = String(voices[j].lang || "").toLowerCase();
+        if (lang2.indexOf("vi") === 0) return voices[j];
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  window.dtStopSpeech = function() {
+    dtTtsToken++;
+    if (dtCurrentAudio) {
+      try { dtCurrentAudio.pause(); dtCurrentAudio.src = ""; } catch (e) {}
+      dtCurrentAudio = null;
+    }
+    if ("speechSynthesis" in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    var spkBtns = document.querySelectorAll("#rescue-tts-btn, #btn-question-speaker, #btnSpeaker");
+    for (var i = 0; i < spkBtns.length; i++) {
+      spkBtns[i].classList.remove("speaking");
+    }
+  };
+
+  function dtPlayGoogleTtsChunks(chunks, idx, token, onDone, fullSpokenFallback) {
+    if (token !== dtTtsToken) return;
+    if (idx >= chunks.length) {
+      dtCurrentAudio = null;
+      if (onDone) onDone();
+      return;
+    }
+    var chunk = chunks[idx];
+    var url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + encodeURIComponent(chunk);
+    var audio = document.createElement("audio");
+    audio.setAttribute("referrerpolicy", "no-referrer");
+    audio.crossOrigin = "anonymous";
+    audio.preload = "auto";
+    audio.src = url;
+    dtCurrentAudio = audio;
+
+    var moved = false;
+    var nextChunk = function() {
+      if (moved || token !== dtTtsToken) return;
+      moved = true;
+      dtPlayGoogleTtsChunks(chunks, idx + 1, token, onDone, fullSpokenFallback);
+    };
+
+    audio.onended = nextChunk;
+    audio.onerror = function() {
+      if (moved || token !== dtTtsToken) return;
+      moved = true;
+      dtCurrentAudio = null;
+      dtSpeakWebSpeechFallback(chunks.slice(idx).join(". "), token, onDone);
+    };
+
+    var playPromise = audio.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(function(err) {
+        if (token !== dtTtsToken) return;
+        // If blocked by browser autoplay policy before user click, queue it for immediate playback on first click/key
+        if (!dtUserInteracted && err && (err.name === "NotAllowedError" || String(err).indexOf("NotAllowed") !== -1)) {
+          dtPendingSpeechText = fullSpokenFallback;
+          dtPendingSpeechCb = onDone;
+          dtShowAutoplayPromptBanner();
+          return;
+        }
+        if (!moved) {
+          moved = true;
+          dtSpeakWebSpeechFallback(chunks.slice(idx).join(". "), token, onDone);
+        }
+      });
+    }
+  }
+
+  function dtSpeakWebSpeechFallback(text, token, onDone) {
+    if (token !== dtTtsToken) return;
+    if (!("speechSynthesis" in window)) {
+      if (onDone) onDone();
+      return;
+    }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "vi-VN";
+      u.rate = 1.0;
+      var viVoice = dtFindViVoice();
+      if (viVoice) u.voice = viVoice;
+      u.onend = function() { if (token === dtTtsToken && onDone) onDone(); };
+      u.onerror = function() { if (token === dtTtsToken && onDone) onDone(); };
+      window.speechSynthesis.speak(u);
+    } catch (e) {
+      if (onDone) onDone();
+    }
+  }
+
+  window.dtSpeakVietnamese = function(rawText, onDone) {
+    window.dtStopSpeech();
+    var spoken = dtCleanForSpeech(rawText);
+    if (!spoken) {
+      if (onDone) onDone();
+      return;
+    }
+    var token = dtTtsToken;
+    var spkBtns = document.querySelectorAll("#rescue-tts-btn, #btn-question-speaker, #btnSpeaker");
+    for (var i = 0; i < spkBtns.length; i++) {
+      spkBtns[i].classList.add("speaking");
+    }
+    var finishCb = function() {
+      for (var j = 0; j < spkBtns.length; j++) {
+        spkBtns[j].classList.remove("speaking");
+      }
+      if (onDone) onDone();
+    };
+
+    // Prefer natural Vietnamese WebSpeech voice if Edge/Windows Natural Vi voice is installed, otherwise Google Translate Vi TTS (no-referrer)
+    var naturalVi = dtFindViVoice();
+    if (naturalVi && (String(naturalVi.name).toLowerCase().indexOf("natural") !== -1 || String(naturalVi.name).toLowerCase().indexOf("hoaimy") !== -1 || String(naturalVi.name).toLowerCase().indexOf("namminh") !== -1)) {
+      dtSpeakWebSpeechFallback(spoken, token, finishCb);
+      return;
+    }
+
+    var chunks = dtSplitChunks(spoken, 165);
+    dtPlayGoogleTtsChunks(chunks, 0, token, finishCb, spoken);
+  };
+
+  function dtShowAutoplayPromptBanner() {
+    if (document.getElementById("dt-tts-unlock-banner")) return;
+    var b = document.createElement("div");
+    b.id = "dt-tts-unlock-banner";
+    b.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999999;background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;padding:14px 28px;border-radius:999px;font-family:system-ui,sans-serif;font-size:18px;font-weight:800;box-shadow:0 12px 35px rgba(0,0,0,0.6);border:2px solid #7dd3fc;cursor:pointer;display:flex;align-items:center;gap:10px;animation:dtPulseBanner 1.2s infinite alternate;";
+    b.innerHTML = "🔊 Nhấn vào đây hoặc bất kỳ đâu để Bật đọc câu hỏi tự động & Full màn hình";
+    document.body.appendChild(b);
+  }
+
+  function dtUnlockAudioAndReplayPending() {
+    dtUserInteracted = true;
+    var banner = document.getElementById("dt-tts-unlock-banner");
+    if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
+    if (dtPendingSpeechText) {
+      var txt = dtPendingSpeechText;
+      var cb = dtPendingSpeechCb;
+      dtPendingSpeechText = null;
+      dtPendingSpeechCb = null;
+      setTimeout(function() {
+        window.dtSpeakVietnamese(txt, cb);
+      }, 80);
+    }
+  }
+
+  document.addEventListener("pointerdown", dtUnlockAudioAndReplayPending, true);
+  document.addEventListener("keydown", dtUnlockAudioAndReplayPending, true);
+
+  // =========================================================================
+  // 2. FULLSCREEN CONTROLLER
+  // =========================================================================
   var manualExit = false;
   var autoTriggered = false;
 
@@ -6126,19 +6306,17 @@ window.onload = function() {
     }
   });
 
-  // Ensure portal back button exists on all games/lessons
   function ensureTopLeftControls() {
-    // If portal back link is missing, add it
-    var backBtn = document.getElementById("dt-portal-back-btn");
+    var backBtn = document.getElementById("dt-portal-back-btn") || document.querySelector(".dt-portal-back-fab");
     if (!backBtn && !document.querySelector(".topbar .back-btn")) {
       backBtn = document.createElement("a");
       backBtn.id = "dt-portal-back-btn";
+      backBtn.className = "dt-portal-back-fab";
       backBtn.href = "../../index.html";
       backBtn.innerHTML = "🏠 Cổng bài giảng";
       document.body.appendChild(backBtn);
     }
 
-    // If neither #eg-fs-toggle-btn nor .topbar exists, create #dt-fs-floating-btn
     var hasEgBtn = !!document.getElementById("eg-fs-toggle-btn");
     var topbar = document.querySelector(".topbar");
     if (topbar && !document.getElementById("dt-elearning-fs-btn")) {
@@ -6172,27 +6350,62 @@ window.onload = function() {
   }
   setTimeout(ensureTopLeftControls, 300);
 
-  // Auto-trigger Fullscreen on student's first meaningful click (e.g. Start Game, Choice, Next Slide, Play)
   document.addEventListener("click", function(e) {
     if (manualExit || isFullscreenNow()) return;
     var t = e.target;
     if (!t || !t.closest) return;
-    // Ignore clicks on Back to Portal, Fullscreen toggle itself, or Class Picker close
-    if (t.closest("#dt-portal-back-btn, .back-btn, #eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn, #eg-class-picker-btn, #eg-picker-overlay")) {
+    if (t.closest("#dt-portal-back-btn, .dt-portal-back-fab, .back-btn, #eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn, #eg-class-picker-btn, #eg-picker-overlay")) {
       return;
     }
-    // Trigger on start buttons, answer buttons, wheel spin, slide navigation, or first click inside game/lesson container
     if (!autoTriggered) {
       autoTriggered = true;
-      enterFullscreenSafe().then(function(){
-        updateAllFullscreenButtons();
-      });
-    } else if (t.closest(".btn-start-game, #start-btn, .spin-btn, .rescue-opt-btn, .btn-choice, .ans, .btn-play")) {
-      enterFullscreenSafe().then(function(){
-        updateAllFullscreenButtons();
-      });
+      enterFullscreenSafe().then(updateAllFullscreenButtons);
+    } else if (t.closest(".btn-start-game, #start-btn, .spin-action-btn, .center-spin-btn, .rescue-opt-btn, .btn-choice, .ans, .btn-play")) {
+      enterFullscreenSafe().then(updateAllFullscreenButtons);
     }
   }, true);
+})();
+</script>
+
+
+<script>
+(function(){
+  // Upgrade speakVoice & readQuestionVoice in Dau Truong Quiz so it uses Universal Vietnamese TTS and reads options A, B, C, D
+  window.speakVoice = function(text, onEnd) {
+    if (typeof window.dtSpeakVietnamese === "function") {
+      window.dtSpeakVietnamese(text, onEnd);
+    }
+  };
+  window.stopVoice = function() {
+    if (typeof window.dtStopSpeech === "function") {
+      window.dtStopSpeech();
+    }
+  };
+  window.readQuestionVoice = function() {
+    if (typeof RAW_QUESTIONS === "undefined" || typeof currentQIdx === "undefined") return;
+    var q = RAW_QUESTIONS[currentQIdx];
+    if (!q) return;
+    var btn = document.getElementById("btn-question-speaker");
+    if (btn) btn.classList.add("speaking");
+
+    var qType = (typeof detectQuestionType === "function") ? detectQuestionType(q) : "single";
+    var fullReadText = q.q;
+    if ((qType === "single" || qType === "multiple" || qType === "tf4") && Array.isArray(q.options) && q.options.length) {
+      var letters = ["A", "B", "C", "D", "E", "F"];
+      var optsSpeech = q.options.map(function(o, idx) {
+        return o ? ("Đáp án " + (letters[idx] || (idx + 1)) + ": " + o) : "";
+      }).filter(Boolean).join(". ");
+      if (optsSpeech) {
+        fullReadText = q.q + ". " + optsSpeech;
+      }
+      if (qType === "tf4") {
+        fullReadText += ". Đáp án đúng điền Đ, đáp án sai điền S.";
+      }
+    }
+    window.dtSpeakVietnamese(fullReadText, function() {
+      if (btn) btn.classList.remove("speaking");
+    });
+  };
 })();
 </script>
 

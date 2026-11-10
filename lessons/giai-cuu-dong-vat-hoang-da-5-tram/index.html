@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<meta name="referrer" content="no-referrer">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Giải Cứu Động Vật Hoang Dã (5 Trạm) - EduGame Studio</title>
@@ -3648,6 +3649,10 @@ function animalRescueRuntime(questions, voicePref) {
             if ('speechSynthesis' in window) { try { window.speechSynthesis.cancel(); } catch (e) {} }
         }
         function speakVi(txt, cb) {
+            if (typeof window.dtSpeakVietnamese === 'function') {
+                window.dtSpeakVietnamese(txt, cb);
+                return;
+            }
             stopSpeech();
             var token = ttsToken;
             var done = function() { if (token !== ttsToken) return; if (cb) cb(); };
@@ -3754,7 +3759,7 @@ function animalRescueRuntime(questions, voicePref) {
                 '.rescue-stage-card { background: rgba(15,23,42,0.84); border: 2px solid rgba(52,211,153,0.45); border-radius: 18px; padding: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }' +
                 '.rescue-q-card { background: rgba(15,23,42,0.88); border: 2px solid rgba(56,189,248,0.45); border-radius: 18px; padding: 18px 20px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }' +
                 '.rescue-opt-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }' +
-                '.rescue-opt-btn { padding: 14px 16px; border-radius: 14px; border: 2px solid rgba(148,163,184,0.4); background: linear-gradient(135deg, #1e293b, #0f172a); color: #f8fafc; font-size: 16.5px; font-weight: 700; text-align: left; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }' +
+                '.rescue-opt-btn { padding: 14px 16px; border-radius: 14px; border: 2px solid rgba(148,163,184,0.4); background: linear-gradient(135deg, #1e293b, #0f172a); color: #f8fafc; font-size: clamp(23px, 2.3vw, 34px); font-weight: 700; text-align: left; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }' +
                 '.rescue-opt-btn:hover:not(:disabled) { border-color: #38bdf8; transform: translateY(-2px); background: linear-gradient(135deg, #1e3a8a, #0f172a); }' +
                 '.rescue-opt-btn.correct { background: linear-gradient(135deg, #059669, #047857) !important; border-color: #6ee7b7 !important; color: #fff !important; }' +
                 '.rescue-opt-btn.wrong { background: linear-gradient(135deg, #dc2626, #991b1b) !important; border-color: #fca5a5 !important; color: #fff !important; }' +
@@ -3881,7 +3886,7 @@ function animalRescueRuntime(questions, voicePref) {
                     '</span>' +
                     '<button type="button" id="rescue-tts-btn" style="padding:5px 12px;border-radius:999px;border:1px solid #38bdf8;background:rgba(15,23,42,0.8);color:#7dd3fc;font-size:12.5px;font-weight:700;cursor:pointer;">🔊 Đọc câu hỏi</button>' +
                 '</div>' +
-                '<div id="rescue-q-text" style="font-size:clamp(18px,2.1vw,23px);font-weight:800;line-height:1.45;color:#f8fafc;padding:10px 4px;">' +
+                '<div id="rescue-q-text" style="font-size:clamp(30px,3.1vw,46px);font-weight:800;line-height:1.42;color:#ffffff;padding:18px 8px;">' +
                     fmtMath(currentQ.q) +
                 '</div>' +
                 '<div id="rescue-q-media"></div>' +
@@ -3917,10 +3922,19 @@ function animalRescueRuntime(questions, voicePref) {
                 }
             }
 
+            var fullQSpeech = currentQ.q + '. ' + (currentQ.options || []).map(function(o, idx) {
+                return 'Đáp án ' + (['A', 'B', 'C', 'D'][idx] || (idx + 1)) + ': ' + o;
+            }).join('. ');
             var ttsBtn = document.getElementById('rescue-tts-btn');
             if (ttsBtn) {
-                ttsBtn.onclick = function() { speakVi(currentQ.q); };
+                ttsBtn.innerHTML = '🔊 Đọc lại câu hỏi';
+                ttsBtn.onclick = function() { speakVi(fullQSpeech); };
             }
+            setTimeout(function() {
+                if (window.dtAutoReadEnabled !== false) {
+                    speakVi(fullQSpeech);
+                }
+            }, 150);
             if (typeof latexLite === 'function') {
                 try { latexLite().render(qCard); } catch (e) {}
             }
@@ -4251,97 +4265,445 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
 </a>
 
 
+
+
+
+
 <!-- DT_FULLSCREEN_READABILITY_START -->
 
 <style id="dt-fullscreen-readability-rescue">
-  /* === FULL VIEWPORT & LARGE CLASSROOM TYPOGRAPHY FOR GIAI CUU DONG VAT === */
-  .rescue-shell {
-    max-width: 98vw !important;
-    width: 98vw !important;
-    padding: 14px 24px 24px !important;
+  /* === FULL VIEWPORT & HUGE CLASSROOM TYPOGRAPHY FOR GIAI CUU DONG VAT (5 TRAM) === */
+  @keyframes dtPulseBanner {
+    from { transform: translateX(-50%) scale(1); }
+    to { transform: translateX(-50%) scale(1.04); }
   }
+  html, body {
+    width: 100vw !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+  .rescue-wrap {
+    min-height: 100vh !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding: 14px 26px 32px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+  /* Header */
   .rescue-header {
-    padding: 16px 28px !important;
-    margin-left: 170px !important;
+    padding: 16px 28px 16px 190px !important;
+    border-radius: 20px !important;
+    margin-bottom: 4px !important;
   }
-  .rescue-title-wrap h1 {
-    font-size: clamp(22px, 2.3vw, 34px) !important;
+  .rescue-title {
+    font-size: clamp(26px, 2.7vw, 40px) !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
   }
-  .rescue-stat-pill {
-    font-size: clamp(16px, 1.5vw, 22px) !important;
-    padding: 10px 20px !important;
+  .rescue-stats {
+    gap: 14px !important;
   }
-  .rescue-main-grid {
-    grid-template-columns: minmax(340px, 470px) 1fr !important;
-    gap: 24px !important;
-  }
-  .rescue-q-card {
-    padding: 32px 40px !important;
-    border-radius: 26px !important;
-  }
-  .rescue-q-badge {
-    font-size: clamp(16px, 1.5vw, 21px) !important;
-    padding: 8px 18px !important;
-  }
-  #rescue-q-text, .rescue-q-text {
-    font-size: clamp(24px, 2.5vw, 38px) !important;
-    line-height: 1.45 !important;
+  .rescue-pill {
+    font-size: clamp(18px, 1.7vw, 25px) !important;
+    padding: 10px 22px !important;
+    border-radius: 999px !important;
     font-weight: 800 !important;
   }
-  .rescue-options-grid {
-    gap: 18px !important;
+  /* 5 Station Cards Bar */
+  .rescue-map-bar {
+    gap: 14px !important;
+    margin-bottom: 4px !important;
+  }
+  .rescue-st-node {
+    padding: 14px 16px !important;
+    border-radius: 18px !important;
+  }
+  .rescue-st-node > div:nth-child(1) {
+    font-size: clamp(28px, 2.6vw, 40px) !important;
+  }
+  .rescue-st-node > div:nth-child(2) {
+    font-size: clamp(17px, 1.6vw, 23px) !important;
+    margin-top: 4px !important;
+  }
+  .rescue-st-node > div:nth-child(3) {
+    font-size: clamp(15px, 1.35vw, 19px) !important;
+    margin-top: 2px !important;
+  }
+  .rescue-st-node > div:nth-child(4) {
+    font-size: clamp(14.5px, 1.3vw, 18.5px) !important;
+    margin-top: 6px !important;
+  }
+  /* Main 2-column stage */
+  .rescue-main-grid {
+    grid-template-columns: minmax(360px, 470px) 1fr !important;
+    gap: 24px !important;
+    flex: 1 !important;
+    align-items: stretch !important;
+  }
+  .rescue-stage-card {
+    padding: 22px 24px !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  .rescue-stage-card > div:first-child > div > div:first-child {
+    font-size: clamp(16px, 1.5vw, 21px) !important;
+  }
+  .rescue-stage-card > div:first-child > div > div:last-child {
+    font-size: clamp(22px, 2vw, 30px) !important;
+    margin-top: 4px !important;
+  }
+  #btn-preview-animal-sound {
+    font-size: clamp(16px, 1.4vw, 20px) !important;
+    padding: 10px 18px !important;
+    border-radius: 14px !important;
+  }
+  .rescue-stage-card > div:last-child {
+    padding: 16px 18px !important;
+    border-radius: 16px !important;
+  }
+  .rescue-stage-card > div:last-child > div:first-child {
+    font-size: clamp(16px, 1.5vw, 21px) !important;
+    margin-bottom: 10px !important;
+  }
+  .rescue-stage-card > div:last-child > div:last-child {
+    font-size: clamp(20px, 1.9vw, 28px) !important;
+    margin-top: 10px !important;
+  }
+  /* Right Question Card */
+  .rescue-q-card {
+    padding: 34px 44px !important;
+    border-radius: 26px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-height: 58vh !important;
+  }
+  .rescue-q-card > div:first-child {
+    margin-bottom: 20px !important;
+  }
+  .rescue-q-card > div:first-child > span:first-child {
+    font-size: clamp(18px, 1.7vw, 25px) !important;
+    padding: 10px 24px !important;
+    border-radius: 999px !important;
+  }
+  #rescue-tts-btn {
+    font-size: clamp(18px, 1.7vw, 24px) !important;
+    padding: 10px 24px !important;
+    border-radius: 999px !important;
+    border-width: 2px !important;
+    transition: all 0.2s !important;
+  }
+  #rescue-tts-btn.speaking {
+    background: #38bdf8 !important;
+    color: #0f172a !important;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.8) !important;
+  }
+  #rescue-q-text {
+    font-size: clamp(30px, 3.1vw, 46px) !important;
+    line-height: 1.42 !important;
+    font-weight: 800 !important;
+    padding: 18px 8px 24px !important;
+    color: #ffffff !important;
+  }
+  .rescue-opt-grid {
+    gap: 22px !important;
+    margin-top: 12px !important;
   }
   .rescue-opt-btn {
-    font-size: clamp(20px, 2vw, 28px) !important;
-    padding: 20px 26px !important;
-    border-radius: 18px !important;
-    line-height: 1.45 !important;
+    font-size: clamp(23px, 2.3vw, 34px) !important;
+    padding: 24px 30px !important;
+    border-radius: 20px !important;
+    line-height: 1.42 !important;
+    gap: 18px !important;
+    border-width: 2.5px !important;
   }
-  .rescue-opt-letter {
-    width: 46px !important;
-    height: 46px !important;
-    min-width: 46px !important;
-    font-size: 21px !important;
+  .rescue-opt-btn > span:first-child {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    font-size: clamp(22px, 2.1vw, 30px) !important;
+    border-radius: 14px !important;
   }
   #rescue-feedback-box {
-    font-size: clamp(19px, 1.9vw, 27px) !important;
-    padding: 20px 26px !important;
-    line-height: 1.55 !important;
+    font-size: clamp(22px, 2.2vw, 32px) !important;
+    line-height: 1.5 !important;
+    margin-top: 22px !important;
+    min-height: 44px !important;
+    padding: 12px 18px !important;
+    border-radius: 16px !important;
+    background: rgba(15, 23, 42, 0.65) !important;
   }
-  #dt-portal-back-btn {
-    top: 12px !important;
-    left: 12px !important;
+  /* Floating Portal & Fullscreen Controls */
+  .dt-portal-back-fab, #dt-portal-back-btn {
+    top: 18px !important;
+    left: 20px !important;
     padding: 10px 18px !important;
     font-size: 15px !important;
   }
   #dt-fs-floating-btn {
     position: fixed !important;
-    top: 58px !important;
-    left: 12px !important;
+    top: 66px !important;
+    left: 20px !important;
     z-index: 99999 !important;
     padding: 10px 18px !important;
     border-radius: 999px !important;
-    border: 1.5px solid rgba(56, 189, 248, 0.5) !important;
+    border: 1.5px solid rgba(56, 189, 248, 0.6) !important;
     background: linear-gradient(135deg, #0284c7, #2563eb) !important;
     color: #fff !important;
-    font-family: 'Nunito', system-ui, sans-serif !important;
+    font-family: system-ui, sans-serif !important;
     font-weight: 800 !important;
     font-size: 15px !important;
     cursor: pointer !important;
-    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.4) !important;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.45) !important;
   }
   @media (max-width: 1024px) {
-    .rescue-header { margin-left: 0 !important; margin-top: 90px !important; }
+    .rescue-header { padding: 14px 18px !important; margin-top: 96px !important; }
     .rescue-main-grid { grid-template-columns: 1fr !important; }
+    .rescue-q-card { min-height: auto !important; padding: 24px 20px !important; }
   }
 </style>
 
 
 <script>
 (function(){
-  if (window.__dtAutoFullscreenInstalled) return;
-  window.__dtAutoFullscreenInstalled = true;
+  if (window.__dtUniversalClassroomEngine) return;
+  window.__dtUniversalClassroomEngine = true;
 
+  // =========================================================================
+  // 1. UNIVERSAL VIETNAMESE TTS ENGINE (Google Translate TTS no-referrer + WebSpeech)
+  // =========================================================================
+  var dtTtsToken = 0;
+  var dtCurrentAudio = null;
+  var dtPendingSpeechText = null;
+  var dtPendingSpeechCb = null;
+  var dtUserInteracted = false;
+  window.dtAutoReadEnabled = true;
+
+  function dtSplitChunks(str, maxLen) {
+    maxLen = maxLen || 165;
+    str = String(str || "").replace(/\s+/g, " ").trim();
+    if (!str) return [];
+    if (str.length <= maxLen) return [str];
+    var parts = str.match(/[^.!?;:]+[.!?;:]+|[^.!?;:]+$/g) || [str];
+    var chunks = [];
+    var cur = "";
+    for (var i = 0; i < parts.length; i++) {
+      var s = parts[i].trim();
+      if (!s) continue;
+      if ((cur + " " + s).trim().length <= maxLen) {
+        cur = (cur + " " + s).trim();
+      } else {
+        if (cur) chunks.push(cur);
+        if (s.length <= maxLen) {
+          cur = s;
+        } else {
+          var words = s.split(/\s+/);
+          cur = "";
+          for (var w = 0; w < words.length; w++) {
+            if ((cur + " " + words[w]).trim().length <= maxLen) {
+              cur = (cur + " " + words[w]).trim();
+            } else {
+              if (cur) chunks.push(cur);
+              cur = words[w];
+            }
+          }
+        }
+      }
+    }
+    if (cur) chunks.push(cur);
+    return chunks;
+  }
+
+  function dtCleanForSpeech(rawText) {
+    if (!rawText) return "";
+    var s = String(rawText)
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, " ")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, " và ")
+      .replace(/&lt;/g, " nhỏ hơn ")
+      .replace(/&gt;/g, " lớn hơn ");
+    if (typeof window.mathToSpeech === "function") {
+      try { s = window.mathToSpeech(s); } catch (e) {}
+    }
+    s = s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, " ")
+         .replace(/\s+/g, " ")
+         .trim();
+    return s;
+  }
+
+  function dtFindViVoice() {
+    if (!("speechSynthesis" in window)) return null;
+    try {
+      var voices = window.speechSynthesis.getVoices() || [];
+      for (var i = 0; i < voices.length; i++) {
+        var lang = String(voices[i].lang || "").toLowerCase();
+        var name = String(voices[i].name || "").toLowerCase();
+        if (lang.indexOf("vi") === 0 && (name.indexOf("natural") !== -1 || name.indexOf("online") !== -1 || name.indexOf("google") !== -1)) {
+          return voices[i];
+        }
+      }
+      for (var j = 0; j < voices.length; j++) {
+        var lang2 = String(voices[j].lang || "").toLowerCase();
+        if (lang2.indexOf("vi") === 0) return voices[j];
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  window.dtStopSpeech = function() {
+    dtTtsToken++;
+    if (dtCurrentAudio) {
+      try { dtCurrentAudio.pause(); dtCurrentAudio.src = ""; } catch (e) {}
+      dtCurrentAudio = null;
+    }
+    if ("speechSynthesis" in window) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    var spkBtns = document.querySelectorAll("#rescue-tts-btn, #btn-question-speaker, #btnSpeaker");
+    for (var i = 0; i < spkBtns.length; i++) {
+      spkBtns[i].classList.remove("speaking");
+    }
+  };
+
+  function dtPlayGoogleTtsChunks(chunks, idx, token, onDone, fullSpokenFallback) {
+    if (token !== dtTtsToken) return;
+    if (idx >= chunks.length) {
+      dtCurrentAudio = null;
+      if (onDone) onDone();
+      return;
+    }
+    var chunk = chunks[idx];
+    var url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + encodeURIComponent(chunk);
+    var audio = document.createElement("audio");
+    audio.setAttribute("referrerpolicy", "no-referrer");
+    audio.crossOrigin = "anonymous";
+    audio.preload = "auto";
+    audio.src = url;
+    dtCurrentAudio = audio;
+
+    var moved = false;
+    var nextChunk = function() {
+      if (moved || token !== dtTtsToken) return;
+      moved = true;
+      dtPlayGoogleTtsChunks(chunks, idx + 1, token, onDone, fullSpokenFallback);
+    };
+
+    audio.onended = nextChunk;
+    audio.onerror = function() {
+      if (moved || token !== dtTtsToken) return;
+      moved = true;
+      dtCurrentAudio = null;
+      dtSpeakWebSpeechFallback(chunks.slice(idx).join(". "), token, onDone);
+    };
+
+    var playPromise = audio.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(function(err) {
+        if (token !== dtTtsToken) return;
+        // If blocked by browser autoplay policy before user click, queue it for immediate playback on first click/key
+        if (!dtUserInteracted && err && (err.name === "NotAllowedError" || String(err).indexOf("NotAllowed") !== -1)) {
+          dtPendingSpeechText = fullSpokenFallback;
+          dtPendingSpeechCb = onDone;
+          dtShowAutoplayPromptBanner();
+          return;
+        }
+        if (!moved) {
+          moved = true;
+          dtSpeakWebSpeechFallback(chunks.slice(idx).join(". "), token, onDone);
+        }
+      });
+    }
+  }
+
+  function dtSpeakWebSpeechFallback(text, token, onDone) {
+    if (token !== dtTtsToken) return;
+    if (!("speechSynthesis" in window)) {
+      if (onDone) onDone();
+      return;
+    }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "vi-VN";
+      u.rate = 1.0;
+      var viVoice = dtFindViVoice();
+      if (viVoice) u.voice = viVoice;
+      u.onend = function() { if (token === dtTtsToken && onDone) onDone(); };
+      u.onerror = function() { if (token === dtTtsToken && onDone) onDone(); };
+      window.speechSynthesis.speak(u);
+    } catch (e) {
+      if (onDone) onDone();
+    }
+  }
+
+  window.dtSpeakVietnamese = function(rawText, onDone) {
+    window.dtStopSpeech();
+    var spoken = dtCleanForSpeech(rawText);
+    if (!spoken) {
+      if (onDone) onDone();
+      return;
+    }
+    var token = dtTtsToken;
+    var spkBtns = document.querySelectorAll("#rescue-tts-btn, #btn-question-speaker, #btnSpeaker");
+    for (var i = 0; i < spkBtns.length; i++) {
+      spkBtns[i].classList.add("speaking");
+    }
+    var finishCb = function() {
+      for (var j = 0; j < spkBtns.length; j++) {
+        spkBtns[j].classList.remove("speaking");
+      }
+      if (onDone) onDone();
+    };
+
+    // Prefer natural Vietnamese WebSpeech voice if Edge/Windows Natural Vi voice is installed, otherwise Google Translate Vi TTS (no-referrer)
+    var naturalVi = dtFindViVoice();
+    if (naturalVi && (String(naturalVi.name).toLowerCase().indexOf("natural") !== -1 || String(naturalVi.name).toLowerCase().indexOf("hoaimy") !== -1 || String(naturalVi.name).toLowerCase().indexOf("namminh") !== -1)) {
+      dtSpeakWebSpeechFallback(spoken, token, finishCb);
+      return;
+    }
+
+    var chunks = dtSplitChunks(spoken, 165);
+    dtPlayGoogleTtsChunks(chunks, 0, token, finishCb, spoken);
+  };
+
+  function dtShowAutoplayPromptBanner() {
+    if (document.getElementById("dt-tts-unlock-banner")) return;
+    var b = document.createElement("div");
+    b.id = "dt-tts-unlock-banner";
+    b.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999999;background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;padding:14px 28px;border-radius:999px;font-family:system-ui,sans-serif;font-size:18px;font-weight:800;box-shadow:0 12px 35px rgba(0,0,0,0.6);border:2px solid #7dd3fc;cursor:pointer;display:flex;align-items:center;gap:10px;animation:dtPulseBanner 1.2s infinite alternate;";
+    b.innerHTML = "🔊 Nhấn vào đây hoặc bất kỳ đâu để Bật đọc câu hỏi tự động & Full màn hình";
+    document.body.appendChild(b);
+  }
+
+  function dtUnlockAudioAndReplayPending() {
+    dtUserInteracted = true;
+    var banner = document.getElementById("dt-tts-unlock-banner");
+    if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
+    if (dtPendingSpeechText) {
+      var txt = dtPendingSpeechText;
+      var cb = dtPendingSpeechCb;
+      dtPendingSpeechText = null;
+      dtPendingSpeechCb = null;
+      setTimeout(function() {
+        window.dtSpeakVietnamese(txt, cb);
+      }, 80);
+    }
+  }
+
+  document.addEventListener("pointerdown", dtUnlockAudioAndReplayPending, true);
+  document.addEventListener("keydown", dtUnlockAudioAndReplayPending, true);
+
+  // =========================================================================
+  // 2. FULLSCREEN CONTROLLER
+  // =========================================================================
   var manualExit = false;
   var autoTriggered = false;
 
@@ -4405,19 +4767,17 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     }
   });
 
-  // Ensure portal back button exists on all games/lessons
   function ensureTopLeftControls() {
-    // If portal back link is missing, add it
-    var backBtn = document.getElementById("dt-portal-back-btn");
+    var backBtn = document.getElementById("dt-portal-back-btn") || document.querySelector(".dt-portal-back-fab");
     if (!backBtn && !document.querySelector(".topbar .back-btn")) {
       backBtn = document.createElement("a");
       backBtn.id = "dt-portal-back-btn";
+      backBtn.className = "dt-portal-back-fab";
       backBtn.href = "../../index.html";
       backBtn.innerHTML = "🏠 Cổng bài giảng";
       document.body.appendChild(backBtn);
     }
 
-    // If neither #eg-fs-toggle-btn nor .topbar exists, create #dt-fs-floating-btn
     var hasEgBtn = !!document.getElementById("eg-fs-toggle-btn");
     var topbar = document.querySelector(".topbar");
     if (topbar && !document.getElementById("dt-elearning-fs-btn")) {
@@ -4451,29 +4811,23 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
   }
   setTimeout(ensureTopLeftControls, 300);
 
-  // Auto-trigger Fullscreen on student's first meaningful click (e.g. Start Game, Choice, Next Slide, Play)
   document.addEventListener("click", function(e) {
     if (manualExit || isFullscreenNow()) return;
     var t = e.target;
     if (!t || !t.closest) return;
-    // Ignore clicks on Back to Portal, Fullscreen toggle itself, or Class Picker close
-    if (t.closest("#dt-portal-back-btn, .back-btn, #eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn, #eg-class-picker-btn, #eg-picker-overlay")) {
+    if (t.closest("#dt-portal-back-btn, .dt-portal-back-fab, .back-btn, #eg-fs-toggle-btn, #dt-fs-floating-btn, #dt-elearning-fs-btn, #eg-class-picker-btn, #eg-picker-overlay")) {
       return;
     }
-    // Trigger on start buttons, answer buttons, wheel spin, slide navigation, or first click inside game/lesson container
     if (!autoTriggered) {
       autoTriggered = true;
-      enterFullscreenSafe().then(function(){
-        updateAllFullscreenButtons();
-      });
-    } else if (t.closest(".btn-start-game, #start-btn, .spin-btn, .rescue-opt-btn, .btn-choice, .ans, .btn-play")) {
-      enterFullscreenSafe().then(function(){
-        updateAllFullscreenButtons();
-      });
+      enterFullscreenSafe().then(updateAllFullscreenButtons);
+    } else if (t.closest(".btn-start-game, #start-btn, .spin-action-btn, .center-spin-btn, .rescue-opt-btn, .btn-choice, .ans, .btn-play")) {
+      enterFullscreenSafe().then(updateAllFullscreenButtons);
     }
   }, true);
 })();
 </script>
+
 
 <!-- DT_FULLSCREEN_READABILITY_END -->
 </body>
