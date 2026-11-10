@@ -1368,7 +1368,10 @@
     .stat-num { font-size: 17px; }
   }
 
-  /* === FULL-VIEWPORT WIDE LAYOUT & SUPER-LARGE CLASSROOM READABILITY FOR PORTAL === */
+  /* === FULL-VIEWPORT WIDE LAYOUT & UNBOUNDED VW GIANT CLASSROOM TYPOGRAPHY === */
+  :root {
+    --dt-font-scale: 1.22;
+  }
   .navbar-inner,
   .hero-wrap,
   .controls-section,
@@ -1378,33 +1381,40 @@
   .footer-inner {
     max-width: 97vw !important;
     width: 97vw !important;
-    padding-left: 26px !important;
-    padding-right: 26px !important;
+    padding-left: 1.8vw !important;
+    padding-right: 1.8vw !important;
   }
   .brand-logo {
-    width: 58px !important;
-    height: 58px !important;
-    font-size: 30px !important;
-    border-radius: 15px !important;
+    width: calc(max(56px, 3.4vw) * var(--dt-font-scale, 1.22)) !important;
+    height: calc(max(56px, 3.4vw) * var(--dt-font-scale, 1.22)) !important;
+    font-size: calc(max(28px, 1.8vw) * var(--dt-font-scale, 1.22)) !important;
+    border-radius: 1vw !important;
   }
   .brand-title {
-    font-size: clamp(20px, 1.75vw, 26px) !important;
+    font-size: calc(max(22px, 1.55vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 900 !important;
   }
   .brand-sub {
-    font-size: clamp(14.5px, 1.2vw, 17.5px) !important;
-    font-weight: 600 !important;
-    color: #cbd5e1 !important;
+    font-size: calc(max(16px, 1.12vw) * var(--dt-font-scale, 1.22)) !important;
+    font-weight: 700 !important;
+    color: #e2e8f0 !important;
   }
   .nav-btn {
-    padding: 12px 20px !important;
-    font-size: clamp(15.5px, 1.25vw, 18.5px) !important;
+    padding: 0.7vw 1.2vw !important;
+    font-size: calc(max(16.5px, 1.12vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 800 !important;
+    border-radius: 0.8vw !important;
+  }
+  .nav-btn-fontscale {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5) !important;
+    color: #ffffff !important;
+    border-color: #c4b5fd !important;
+    font-weight: 900 !important;
   }
   .theme-toggle {
-    width: 46px !important;
-    height: 46px !important;
-    font-size: 22px !important;
+    width: calc(max(46px, 2.8vw) * var(--dt-font-scale, 1.22)) !important;
+    height: calc(max(46px, 2.8vw) * var(--dt-font-scale, 1.22)) !important;
+    font-size: calc(max(22px, 1.4vw) * var(--dt-font-scale, 1.22)) !important;
   }
   .nav-btn-fullscreen {
     background: linear-gradient(135deg, #0284c7, #2563eb) !important;
@@ -1418,228 +1428,236 @@
     border-color: #6ee7b7 !important;
   }
   .hero-grid {
-    grid-template-columns: 1.12fr 0.88fr !important;
-    gap: 36px !important;
+    grid-template-columns: 1.08fr 0.92fr !important;
+    gap: 2.4vw !important;
   }
   .school-pill {
-    font-size: clamp(15px, 1.25vw, 18.5px) !important;
-    padding: 9px 18px !important;
+    font-size: calc(max(16.5px, 1.18vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.6vw 1.3vw !important;
     font-weight: 800 !important;
   }
   .hero-title {
-    font-size: clamp(36px, 3.8vw, 56px) !important;
+    font-size: calc(max(38px, 2.85vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.18 !important;
   }
   .hero-desc {
-    font-size: clamp(19px, 1.6vw, 24px) !important;
-    line-height: 1.65 !important;
+    font-size: calc(max(20px, 1.48vw) * var(--dt-font-scale, 1.22)) !important;
+    line-height: 1.62 !important;
     max-width: 100% !important;
-    color: #e2e8f0 !important;
+    color: #f1f5f9 !important;
   }
   .btn-primary-hero, .btn-secondary-hero {
-    font-size: clamp(17.5px, 1.45vw, 21.5px) !important;
-    padding: 16px 28px !important;
+    font-size: calc(max(18.5px, 1.32vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.95vw 1.6vw !important;
     font-weight: 800 !important;
-    border-radius: 14px !important;
+    border-radius: 0.9vw !important;
   }
   .stat-box {
-    padding: 18px 20px !important;
-    gap: 14px !important;
-    border-radius: 16px !important;
+    padding: 1.1vw 1.3vw !important;
+    gap: 0.9vw !important;
+    border-radius: 1vw !important;
   }
   .stat-icon {
-    width: 52px !important;
-    height: 52px !important;
-    font-size: 26px !important;
+    width: calc(max(50px, 3.1vw) * var(--dt-font-scale, 1.22)) !important;
+    height: calc(max(50px, 3.1vw) * var(--dt-font-scale, 1.22)) !important;
+    font-size: calc(max(25px, 1.65vw) * var(--dt-font-scale, 1.22)) !important;
   }
   .stat-num {
-    font-size: clamp(28px, 2.3vw, 38px) !important;
+    font-size: calc(max(28px, 2.15vw) * var(--dt-font-scale, 1.22)) !important;
   }
   .stat-lbl {
-    font-size: clamp(15px, 1.2vw, 18px) !important;
+    font-size: calc(max(16px, 1.15vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 700 !important;
-    color: #cbd5e1 !important;
+    color: #e2e8f0 !important;
   }
   /* Spotlight Card (Right side of Hero) */
   .spotlight-badge, .spotlight-slides {
-    font-size: clamp(14.5px, 1.15vw, 17.5px) !important;
-    padding: 8px 16px !important;
+    font-size: calc(max(15.5px, 1.1vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.5vw 1.1vw !important;
     font-weight: 800 !important;
   }
   .spotlight-body {
-    padding: 24px 28px !important;
-    gap: 16px !important;
+    padding: 1.6vw 1.8vw !important;
+    gap: 1.1vw !important;
   }
   .spotlight-subject-meta {
-    font-size: clamp(15.5px, 1.25vw, 18.5px) !important;
+    font-size: calc(max(16.5px, 1.18vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 800 !important;
     color: var(--accent-blue) !important;
     text-transform: uppercase !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 0.4vw !important;
   }
   .spotlight-title {
-    font-size: clamp(23px, 1.95vw, 30px) !important;
+    font-size: calc(max(24px, 1.8vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.35 !important;
     font-weight: 900 !important;
   }
   .spotlight-desc {
-    font-size: clamp(17px, 1.4vw, 20.5px) !important;
+    font-size: calc(max(18.5px, 1.35vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.6 !important;
     -webkit-line-clamp: 3 !important;
-    color: #e2e8f0 !important;
+    color: #f1f5f9 !important;
   }
-  .spotlight-play-btn {
-    font-size: clamp(18px, 1.45vw, 21.5px) !important;
-    padding: 15px 24px !important;
-    border-radius: 13px !important;
-  }
+  .spotlight-play-btn,
   .spotlight-actions .btn-card-share,
   .spotlight-actions .btn-card-delete {
-    font-size: clamp(17px, 1.35vw, 20px) !important;
-    padding: 15px 20px !important;
-    border-radius: 13px !important;
+    font-size: calc(max(18.5px, 1.32vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.95vw 1.4vw !important;
+    border-radius: 0.85vw !important;
   }
   /* Controls & Filters */
   .controls-card {
-    padding: 22px 26px !important;
-    gap: 18px !important;
-    border-radius: 20px !important;
+    padding: 1.5vw 1.8vw !important;
+    gap: 1.2vw !important;
+    border-radius: 1.2vw !important;
   }
   .search-input {
-    font-size: clamp(18px, 1.5vw, 22px) !important;
-    padding: 18px 50px 18px 54px !important;
+    font-size: calc(max(20px, 1.42vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 1.1vw 3.2vw 1.1vw 3.6vw !important;
     font-weight: 600 !important;
-    border-radius: 14px !important;
+    border-radius: 0.9vw !important;
   }
   .search-icon {
-    font-size: 22px !important;
-    left: 18px !important;
+    font-size: calc(max(22px, 1.5vw) * var(--dt-font-scale, 1.22)) !important;
+    left: 1.2vw !important;
   }
   .sort-select {
-    font-size: clamp(17px, 1.4vw, 20.5px) !important;
-    padding: 17px 24px !important;
+    font-size: calc(max(18.5px, 1.32vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 1.05vw 1.6vw !important;
     font-weight: 700 !important;
-    border-radius: 14px !important;
+    border-radius: 0.9vw !important;
   }
   .filter-pill {
-    font-size: clamp(16px, 1.35vw, 19.5px) !important;
-    padding: 12px 22px !important;
+    font-size: calc(max(17.5px, 1.25vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.75vw 1.4vw !important;
     font-weight: 700 !important;
   }
   .filter-count {
-    font-size: clamp(14.5px, 1.15vw, 17px) !important;
-    padding: 3px 10px !important;
+    font-size: calc(max(15px, 1.08vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.2vw 0.65vw !important;
   }
-  /* Catalog Section & 3-Column Wide Lesson Grid */
+  /* Catalog Section & 2-Column Huge Lesson Grid */
   .section-title {
-    font-size: clamp(26px, 2.3vw, 36px) !important;
+    font-size: calc(max(28px, 2.15vw) * var(--dt-font-scale, 1.22)) !important;
   }
   .section-result-info {
-    font-size: clamp(16.5px, 1.35vw, 20px) !important;
+    font-size: calc(max(18px, 1.28vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 700 !important;
-    color: #e2e8f0 !important;
+    color: #f1f5f9 !important;
   }
   .lessons-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 28px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 2vw !important;
   }
-  .card-type-badge, .card-slides-pill {
-    font-size: clamp(14px, 1.15vw, 17px) !important;
-    padding: 7px 14px !important;
+  .lesson-card {
+    border-radius: 1.3vw !important;
+  }
+  .card-type-badge, .card-slides-pill, .card-floating-delete {
+    font-size: calc(max(15.5px, 1.12vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.55vw 1.1vw !important;
     font-weight: 800 !important;
   }
-  .card-floating-delete {
-    font-size: clamp(14px, 1.15vw, 16.5px) !important;
-    padding: 8px 15px !important;
-  }
   .card-body {
-    padding: 24px 26px 18px !important;
-    gap: 14px !important;
+    padding: 1.6vw 1.8vw 1.2vw !important;
+    gap: 0.95vw !important;
   }
   .card-subject {
-    font-size: clamp(15px, 1.2vw, 18px) !important;
+    font-size: calc(max(16.5px, 1.2vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 800 !important;
   }
   .card-date {
-    font-size: clamp(14.5px, 1.15vw, 17px) !important;
+    font-size: calc(max(16px, 1.15vw) * var(--dt-font-scale, 1.22)) !important;
     font-weight: 600 !important;
-    color: #cbd5e1 !important;
+    color: #e2e8f0 !important;
   }
   .card-title {
-    font-size: clamp(21px, 1.75vw, 26px) !important;
+    font-size: calc(max(24px, 1.8vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.38 !important;
-    font-weight: 800 !important;
+    font-weight: 900 !important;
     -webkit-line-clamp: 3 !important;
   }
   .card-desc {
-    font-size: clamp(16.5px, 1.35vw, 19.5px) !important;
+    font-size: calc(max(18.5px, 1.35vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.6 !important;
-    color: #e2e8f0 !important;
+    color: #f1f5f9 !important;
     -webkit-line-clamp: 3 !important;
   }
   .feature-chip {
-    font-size: clamp(14px, 1.15vw, 16.5px) !important;
-    padding: 7px 14px !important;
+    font-size: calc(max(15.5px, 1.12vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.45vw 1vw !important;
     font-weight: 700 !important;
   }
   .card-footer {
-    padding: 16px 26px 22px !important;
-    gap: 12px !important;
+    padding: 1.1vw 1.8vw 1.5vw !important;
+    gap: 0.9vw !important;
   }
   .btn-card-play, .btn-card-share, .btn-card-delete {
-    font-size: clamp(16.5px, 1.35vw, 20px) !important;
-    padding: 14px 20px !important;
+    font-size: calc(max(18.5px, 1.32vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.95vw 1.4vw !important;
     font-weight: 800 !important;
-    border-radius: 13px !important;
+    border-radius: 0.85vw !important;
+  }
+  /* Empty State */
+  .empty-state {
+    padding: 3.5vw 2vw !important;
+    border-radius: 1.4vw !important;
+  }
+  .empty-state-icon {
+    font-size: calc(max(54px, 3.8vw) * var(--dt-font-scale, 1.22)) !important;
+  }
+  .empty-state h3 {
+    font-size: calc(max(26px, 1.95vw) * var(--dt-font-scale, 1.22)) !important;
+    margin-bottom: 0.6vw !important;
+  }
+  .empty-state p {
+    font-size: calc(max(19px, 1.4vw) * var(--dt-font-scale, 1.22)) !important;
+    color: #e2e8f0 !important;
+    margin-bottom: 1.4vw !important;
   }
   /* Features Showcase & Footer */
   .features-grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 24px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.8vw !important;
   }
   .feature-box {
-    padding: 26px !important;
-    gap: 18px !important;
-    border-radius: 20px !important;
+    padding: 1.8vw !important;
+    gap: 1.2vw !important;
+    border-radius: 1.2vw !important;
   }
   .feature-box-icon {
-    width: 56px !important;
-    height: 56px !important;
-    font-size: 28px !important;
+    width: calc(max(56px, 3.6vw) * var(--dt-font-scale, 1.22)) !important;
+    height: calc(max(56px, 3.6vw) * var(--dt-font-scale, 1.22)) !important;
+    font-size: calc(max(28px, 1.9vw) * var(--dt-font-scale, 1.22)) !important;
   }
   .feature-box h4 {
-    font-size: clamp(18.5px, 1.5vw, 22px) !important;
-    margin-bottom: 8px !important;
+    font-size: calc(max(21px, 1.55vw) * var(--dt-font-scale, 1.22)) !important;
+    margin-bottom: 0.5vw !important;
   }
   .feature-box p {
-    font-size: clamp(15.5px, 1.25vw, 18.5px) !important;
+    font-size: calc(max(18px, 1.3vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.6 !important;
-    color: #cbd5e1 !important;
+    color: #e2e8f0 !important;
   }
-  .footer-school {
-    font-size: clamp(18.5px, 1.5vw, 22px) !important;
+  .footer-info h4 {
+    font-size: calc(max(20px, 1.48vw) * var(--dt-font-scale, 1.22)) !important;
   }
-  .footer-meta {
-    font-size: clamp(15px, 1.2vw, 18px) !important;
+  .footer-info p {
+    font-size: calc(max(17px, 1.22vw) * var(--dt-font-scale, 1.22)) !important;
     line-height: 1.65 !important;
-    color: #cbd5e1 !important;
+    color: #e2e8f0 !important;
   }
   .footer-pill {
-    font-size: clamp(15px, 1.2vw, 18px) !important;
-    padding: 10px 18px !important;
+    font-size: calc(max(16.5px, 1.18vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.7vw 1.3vw !important;
   }
   .ai-fab {
-    font-size: clamp(16.5px, 1.3vw, 19.5px) !important;
-    padding: 14px 24px !important;
+    font-size: calc(max(18.5px, 1.32vw) * var(--dt-font-scale, 1.22)) !important;
+    padding: 0.9vw 1.6vw !important;
   }
-  @media (max-width: 1360px) {
-    .lessons-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    .features-grid { grid-template-columns: repeat(2, 1fr) !important; }
-    .hero-grid { grid-template-columns: 1fr !important; }
-  }
-  @media (max-width: 820px) {
+  @media (max-width: 900px) {
     .lessons-grid { grid-template-columns: 1fr !important; }
     .features-grid { grid-template-columns: 1fr !important; }
+    .hero-grid { grid-template-columns: 1fr !important; }
   }
   /* Fullscreen Embedded Stage Player so entering a lesson NEVER drops browser Fullscreen */
   #dtLessonStageOverlay {
@@ -1671,11 +1689,11 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 14px 24px;
+    padding: 0.9vw 1.6vw;
     border-radius: 999px;
     background: linear-gradient(135deg, #0284c7, #2563eb);
     color: #ffffff;
-    font-size: clamp(16.5px, 1.3vw, 19.5px);
+    font-size: calc(max(18.5px, 1.32vw) * var(--dt-font-scale, 1.22));
     font-weight: 800;
     border: 2px solid #7dd3fc;
     box-shadow: 0 10px 28px rgba(2, 132, 199, 0.55);
@@ -1713,6 +1731,8 @@
       <button class="nav-btn" onclick="quickFilter('game', this)">🎮 Trò chơi tương tác</button>
       <button class="nav-btn nav-btn-ai" onclick="toggleAiDrawer()">🤖 Gia sư AI 24/7</button>
       <button class="nav-btn" onclick="openShareModal('Cổng Bài Giảng Điện Tử — Thầy Đinh Công Tùng', window.location.href)">📱 Mã QR Cổng</button>
+      <button class="nav-btn nav-btn-fontscale" onclick="changePortalFontScale(-0.15, event)" title="Thu nhỏ cỡ chữ">🔍 A-</button>
+      <button class="nav-btn nav-btn-fontscale" onclick="changePortalFontScale(0.15, event)" title="Phóng to cỡ chữ hơn nữa">🔍 Phóng to chữ A+ (<span id="fontScaleLabel">122%</span>)</button>
       <button class="nav-btn nav-btn-fullscreen" id="portalFsBtn" onclick="togglePortalFullscreen(event)" title="Phóng to toàn màn hình (F11)">⛶ Bật Full màn hình</button>
       <button class="nav-btn nav-btn-teacher" id="teacherModeBtn" onclick="toggleTeacherMode()" title="Dành riêng cho Giáo viên: Bật chế độ xóa/quản lý bài giảng trực tiếp trên Web">🔐 Quản lý / Xóa bài giảng</button>
       <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌙</button>
@@ -1822,8 +1842,8 @@
       <span id="catalogHeading">Kho Bài Giảng E-Learning &amp; Trò Chơi Học Tập</span>
     </h2>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <button type="button" class="nav-btn nav-btn-fullscreen portal-fs-sync-btn" onclick="togglePortalFullscreen(event)" style="padding:11px 20px;font-size:16px;">⛶ Bật Full màn hình</button>
-      <button type="button" class="nav-btn nav-btn-teacher" onclick="openRestoreModal()" style="padding:11px 20px;font-size:16px;">🔐 Quản lý / Khôi phục bài đã xóa</button>
+      <button type="button" class="nav-btn nav-btn-fullscreen portal-fs-sync-btn" onclick="togglePortalFullscreen(event)">⛶ Bật Full màn hình</button>
+      <button type="button" class="nav-btn nav-btn-teacher" onclick="openRestoreModal()">🔐 Quản lý / Khôi phục bài đã xóa</button>
       <div class="section-result-info" id="resultCountInfo">Đang hiển thị tất cả học liệu</div>
     </div>
   </div>
@@ -2367,7 +2387,7 @@ function renderAll() {
         '<div class="empty-state-icon">🔍</div>' +
         '<h3>Không tìm thấy học liệu phù hợp</h3>' +
         '<p>Hãy thử từ khóa khác hoặc bấm nút bên dưới để xem toàn bộ kho bài giảng &amp; trò chơi.</p>' +
-        '<button class="btn-primary-hero" data-filter="all" onclick="clearSearch();setFilter(this.dataset.filter)">🔄 Xem tất cả học liệu</button>' +
+        '<button class="btn-primary-hero" data-filter="all" onclick="restoreAllDeletedLessons();clearSearch();setFilter(this.dataset.filter)">🔄 Khôi phục &amp; Xem tất cả học liệu</button>' +
       '</div>';
     return;
   }
@@ -2504,7 +2524,7 @@ async function sendAiMsg() {
 // =========================================================================
 // CHẾ ĐỘ GIÁO VIÊN: QUẢN LÝ & XÓA BÀI GIẢNG TRỰC TIẾP TRÊN WEB
 // =========================================================================
-var DELETED_STORAGE_KEY = 'dt_portal_deleted_ids_v1';
+var DELETED_STORAGE_KEY = 'dt_portal_deleted_ids_v2';
 var TEACHER_UNLOCKED_KEY = 'dt_portal_teacher_unlocked_v1';
 var GH_TOKEN_STORAGE_KEY = 'dt_portal_gh_token_v1';
 var isTeacherMode = false;
@@ -2939,6 +2959,36 @@ document.addEventListener('click', function(e) {
     }
   }
 }, true);
+
+
+// =========================================================================
+// ĐIỀU CHỈNH CỠ CHỮ TRỰC TIẾP TRÊN TRANG WEB (A- / A+)
+// =========================================================================
+var PORTAL_FONT_SCALE_KEY = 'dt_portal_font_scale_v1';
+var currentPortalFontScale = 1.22;
+try {
+  var savedScale = parseFloat(localStorage.getItem(PORTAL_FONT_SCALE_KEY));
+  if (!isNaN(savedScale) && savedScale >= 0.85 && savedScale <= 2.2) {
+    currentPortalFontScale = savedScale;
+  }
+} catch (e) {}
+
+function applyPortalFontScale() {
+  document.documentElement.style.setProperty('--dt-font-scale', currentPortalFontScale.toFixed(2));
+  var lbl = document.getElementById('fontScaleLabel');
+  if (lbl) {
+    lbl.textContent = Math.round(currentPortalFontScale * 100) + '%';
+  }
+}
+
+function changePortalFontScale(delta, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  currentPortalFontScale = Math.max(0.9, Math.min(2.0, currentPortalFontScale + delta));
+  try { localStorage.setItem(PORTAL_FONT_SCALE_KEY, currentPortalFontScale.toFixed(2)); } catch (e) {}
+  applyPortalFontScale();
+}
+
+applyPortalFontScale();
 
 // Initialize Portal
 renderSpotlight();

@@ -3748,7 +3748,7 @@ function animalRescueRuntime(questions, voicePref) {
                 '<style>' +
                 '.rescue-wrap { min-height: 100vh; padding: 14px 18px 86px; background: radial-gradient(circle at top, #065f46 0%, #022c22 55%, #0f172a 100%); color: #f8fafc; font-family: "Segoe UI", system-ui, sans-serif; }' +
                 '.rescue-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: rgba(15,23,42,0.82); border: 1.5px solid rgba(52,211,153,0.45); border-radius: 16px; padding: 10px 16px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }' +
-                '.rescue-title { font-size: clamp(18px, 2.4vw, 25px); font-weight: 900; color: #6ee7b7; display: flex; align-items: center; gap: 8px; }' +
+                '.rescue-title { font-size: max(18px, 2.4vw); font-weight: 900; color: #6ee7b7; display: flex; align-items: center; gap: 8px; }' +
                 '.rescue-stats { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }' +
                 '.rescue-pill { background: rgba(6,78,59,0.85); border: 1.5px solid #34d399; padding: 6px 13px; border-radius: 999px; font-weight: 800; font-size: 14px; color: #ecfdf5; }' +
                 '.rescue-map-bar { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 8px; margin-bottom: 14px; }' +
@@ -3759,7 +3759,7 @@ function animalRescueRuntime(questions, voicePref) {
                 '.rescue-stage-card { background: rgba(15,23,42,0.84); border: 2px solid rgba(52,211,153,0.45); border-radius: 18px; padding: 14px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }' +
                 '.rescue-q-card { background: rgba(15,23,42,0.88); border: 2px solid rgba(56,189,248,0.45); border-radius: 18px; padding: 18px 20px; box-shadow: 0 10px 28px rgba(0,0,0,0.4); }' +
                 '.rescue-opt-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }' +
-                '.rescue-opt-btn { padding: 14px 16px; border-radius: 14px; border: 2px solid rgba(148,163,184,0.4); background: linear-gradient(135deg, #1e293b, #0f172a); color: #f8fafc; font-size: clamp(23px, 2.3vw, 34px); font-weight: 700; text-align: left; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }' +
+                '.rescue-opt-btn { padding: 14px 16px; border-radius: 14px; border: 2px solid rgba(148,163,184,0.4); background: linear-gradient(135deg, #1e293b, #0f172a); color: #f8fafc; font-size: max(23px, 2.3vw); font-weight: 700; text-align: left; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }' +
                 '.rescue-opt-btn:hover:not(:disabled) { border-color: #38bdf8; transform: translateY(-2px); background: linear-gradient(135deg, #1e3a8a, #0f172a); }' +
                 '.rescue-opt-btn.correct { background: linear-gradient(135deg, #059669, #047857) !important; border-color: #6ee7b7 !important; color: #fff !important; }' +
                 '.rescue-opt-btn.wrong { background: linear-gradient(135deg, #dc2626, #991b1b) !important; border-color: #fca5a5 !important; color: #fff !important; }' +
@@ -3886,7 +3886,7 @@ function animalRescueRuntime(questions, voicePref) {
                     '</span>' +
                     '<button type="button" id="rescue-tts-btn" style="padding:5px 12px;border-radius:999px;border:1px solid #38bdf8;background:rgba(15,23,42,0.8);color:#7dd3fc;font-size:12.5px;font-weight:700;cursor:pointer;">🔊 Đọc câu hỏi</button>' +
                 '</div>' +
-                '<div id="rescue-q-text" style="font-size:clamp(30px,3.1vw,46px);font-weight:800;line-height:1.42;color:#ffffff;padding:18px 8px;">' +
+                '<div id="rescue-q-text" style="font-size:max(30px, 3.1vw);font-weight:800;line-height:1.42;color:#ffffff;padding:18px 8px;">' +
                     fmtMath(currentQ.q) +
                 '</div>' +
                 '<div id="rescue-q-media"></div>' +
@@ -4106,7 +4106,7 @@ function animalRescueRuntime(questions, voicePref) {
                     '<div style="display:inline-block;background:rgba(0,0,0,0.45);border:1.5px solid ' + st.accent + ';padding:4px 14px;border-radius:999px;font-size:13px;font-weight:800;color:#fef08a;margin-bottom:6px;">' +
                         '🔓 ĐÃ PHÁ KHÓA ' + reqCount + '/' + reqCount + ' CÂU ĐÚNG — MỞ CỬA ' + st.name.toUpperCase() +
                     '</div>' +
-                    '<h2 style="font-size:clamp(22px,3vw,30px);font-weight:900;margin:4px 0 6px;color:#ffffff;text-shadow:0 2px 8px rgba(0,0,0,0.5);">' +
+                    '<h2 style="font-size:max(22px, 3vw);font-weight:900;margin:4px 0 6px;color:#ffffff;text-shadow:0 2px 8px rgba(0,0,0,0.5);">' +
                         '🎉 GIẢI CỨU THÀNH CÔNG: ' + st.animalTitle.toUpperCase() + '!' +
                     '</h2>' +
                     '<div style="font-size:15px;color:#d1fae5;font-weight:700;margin-bottom:8px;">' + st.soundDesc + '</div>' +
@@ -4302,7 +4302,7 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     margin-bottom: 4px !important;
   }
   .rescue-title {
-    font-size: clamp(26px, 2.7vw, 40px) !important;
+    font-size: max(26px, 2.7vw) !important;
     font-weight: 900 !important;
     letter-spacing: 0.5px !important;
   }
@@ -4310,7 +4310,7 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     gap: 14px !important;
   }
   .rescue-pill {
-    font-size: clamp(18px, 1.7vw, 25px) !important;
+    font-size: max(18px, 1.7vw) !important;
     padding: 10px 22px !important;
     border-radius: 999px !important;
     font-weight: 800 !important;
@@ -4325,18 +4325,18 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     border-radius: 18px !important;
   }
   .rescue-st-node > div:nth-child(1) {
-    font-size: clamp(28px, 2.6vw, 40px) !important;
+    font-size: max(28px, 2.6vw) !important;
   }
   .rescue-st-node > div:nth-child(2) {
-    font-size: clamp(17px, 1.6vw, 23px) !important;
+    font-size: max(17px, 1.6vw) !important;
     margin-top: 4px !important;
   }
   .rescue-st-node > div:nth-child(3) {
-    font-size: clamp(15px, 1.35vw, 19px) !important;
+    font-size: max(15px, 1.35vw) !important;
     margin-top: 2px !important;
   }
   .rescue-st-node > div:nth-child(4) {
-    font-size: clamp(14.5px, 1.3vw, 18.5px) !important;
+    font-size: max(14.5px, 1.3vw) !important;
     margin-top: 6px !important;
   }
   /* Main 2-column stage */
@@ -4354,14 +4354,14 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     justify-content: space-between !important;
   }
   .rescue-stage-card > div:first-child > div > div:first-child {
-    font-size: clamp(16px, 1.5vw, 21px) !important;
+    font-size: max(16px, 1.5vw) !important;
   }
   .rescue-stage-card > div:first-child > div > div:last-child {
-    font-size: clamp(22px, 2vw, 30px) !important;
+    font-size: max(22px, 2vw) !important;
     margin-top: 4px !important;
   }
   #btn-preview-animal-sound {
-    font-size: clamp(16px, 1.4vw, 20px) !important;
+    font-size: max(16px, 1.4vw) !important;
     padding: 10px 18px !important;
     border-radius: 14px !important;
   }
@@ -4370,11 +4370,11 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     border-radius: 16px !important;
   }
   .rescue-stage-card > div:last-child > div:first-child {
-    font-size: clamp(16px, 1.5vw, 21px) !important;
+    font-size: max(16px, 1.5vw) !important;
     margin-bottom: 10px !important;
   }
   .rescue-stage-card > div:last-child > div:last-child {
-    font-size: clamp(20px, 1.9vw, 28px) !important;
+    font-size: max(20px, 1.9vw) !important;
     margin-top: 10px !important;
   }
   /* Right Question Card */
@@ -4390,12 +4390,12 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     margin-bottom: 20px !important;
   }
   .rescue-q-card > div:first-child > span:first-child {
-    font-size: clamp(18px, 1.7vw, 25px) !important;
+    font-size: max(18px, 1.7vw) !important;
     padding: 10px 24px !important;
     border-radius: 999px !important;
   }
   #rescue-tts-btn {
-    font-size: clamp(18px, 1.7vw, 24px) !important;
+    font-size: max(18px, 1.7vw) !important;
     padding: 10px 24px !important;
     border-radius: 999px !important;
     border-width: 2px !important;
@@ -4407,7 +4407,7 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.8) !important;
   }
   #rescue-q-text {
-    font-size: clamp(30px, 3.1vw, 46px) !important;
+    font-size: max(30px, 3.1vw) !important;
     line-height: 1.42 !important;
     font-weight: 800 !important;
     padding: 18px 8px 24px !important;
@@ -4418,7 +4418,7 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     margin-top: 12px !important;
   }
   .rescue-opt-btn {
-    font-size: clamp(23px, 2.3vw, 34px) !important;
+    font-size: max(23px, 2.3vw) !important;
     padding: 24px 30px !important;
     border-radius: 20px !important;
     line-height: 1.42 !important;
@@ -4429,11 +4429,11 @@ animalRescueRuntime([{"q":"Loài động vật có vú nào lớn nhất trên c
     width: 54px !important;
     height: 54px !important;
     min-width: 54px !important;
-    font-size: clamp(22px, 2.1vw, 30px) !important;
+    font-size: max(22px, 2.1vw) !important;
     border-radius: 14px !important;
   }
   #rescue-feedback-box {
-    font-size: clamp(22px, 2.2vw, 32px) !important;
+    font-size: max(22px, 2.2vw) !important;
     line-height: 1.5 !important;
     margin-top: 22px !important;
     min-height: 44px !important;
