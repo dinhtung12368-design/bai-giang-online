@@ -1480,36 +1480,6 @@
     background: #020617;
   }
 
-
-  .floating-fs-pill {
-    position: fixed;
-    bottom: 22px;
-    left: 24px;
-    z-index: 99995;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 13px 22px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #0284c7, #2563eb);
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 800;
-    border: 2px solid #7dd3fc;
-    box-shadow: 0 10px 28px rgba(2, 132, 199, 0.55);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s ease;
-  }
-  .floating-fs-pill:hover {
-    transform: translateY(-2px) scale(1.03);
-    filter: brightness(1.1);
-  }
-  .floating-fs-pill.is-fs-active {
-    background: linear-gradient(135deg, #059669, #10b981);
-    border-color: #6ee7b7;
-  }
-
 </style>
 </head>
 <body>
@@ -1641,7 +1611,6 @@
       <span id="catalogHeading">Kho Bài Giảng E-Learning &amp; Trò Chơi Học Tập</span>
     </h2>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <button type="button" class="nav-btn nav-btn-fullscreen portal-fs-sync-btn" onclick="togglePortalFullscreen(event)" style="padding:8px 16px;font-size:13px;">⛶ Bật Full màn hình</button>
       <button type="button" class="nav-btn nav-btn-teacher" onclick="openRestoreModal()" style="padding:8px 16px;font-size:13px;">🔐 Quản lý / Khôi phục bài đã xóa</button>
       <div class="section-result-info" id="resultCountInfo">Đang hiển thị tất cả học liệu</div>
     </div>
@@ -1795,10 +1764,6 @@
 <div id="dtLessonStageOverlay">
   <iframe id="dtLessonStageIframe" allow="fullscreen; autoplay; microphone; clipboard-write" allowfullscreen></iframe>
 </div>
-
-
-<!-- Nút Nổi Bật Full Màn Hình Luôn Hiển Thị -->
-<button type="button" class="floating-fs-pill portal-fs-sync-btn" id="floatingPortalFsBtn" onclick="togglePortalFullscreen(event)" title="Phóng to toàn màn hình (F11)">⛶ Bật Full màn hình</button>
 
 <!-- Floating AI Tutor Widget -->
 <button id="portal-ai-fab" onclick="toggleAiDrawer()">
@@ -2186,7 +2151,7 @@ function renderAll() {
         '<div class="empty-state-icon">🔍</div>' +
         '<h3>Không tìm thấy học liệu phù hợp</h3>' +
         '<p>Hãy thử từ khóa khác hoặc bấm nút bên dưới để xem toàn bộ kho bài giảng &amp; trò chơi.</p>' +
-        '<button class="btn-primary-hero" data-filter="all" onclick="restoreAllDeletedLessons();clearSearch();setFilter(this.dataset.filter)">🔄 Khôi phục &amp; Xem tất cả học liệu</button>' +
+        '<button class="btn-primary-hero" data-filter="all" onclick="clearSearch();setFilter(this.dataset.filter)">🔄 Xem tất cả học liệu</button>' +
       '</div>';
     return;
   }
@@ -2690,11 +2655,11 @@ function togglePortalFullscreen(ev) {
 
 function syncPortalFullscreenBtn() {
   var active = isPortalFullscreen();
-  var btns = document.querySelectorAll('#portalFsBtn, .portal-fs-sync-btn');
-  btns.forEach(function(btn) {
+  var btn = document.getElementById('portalFsBtn');
+  if (btn) {
     btn.classList.toggle('is-fs-active', active);
     btn.innerHTML = active ? '🗗 Thoát Full màn hình' : '⛶ Bật Full màn hình';
-  });
+  }
 }
 
 document.addEventListener('fullscreenchange', syncPortalFullscreenBtn);
@@ -2753,11 +2718,17 @@ document.addEventListener('click', function(e) {
     }
   }
   if (!portalManualExitFs && !isPortalFullscreen()) {
-    if (!t.closest('#portalFsBtn') && !t.closest('.portal-fs-sync-btn')) {
+    if (!t.closest('#portalFsBtn')) {
       requestPortalFullscreen().then(syncPortalFullscreenBtn);
     }
   }
 }, true);
+
+
+try {
+  localStorage.removeItem('dt_portal_font_scale_v1');
+  document.documentElement.style.removeProperty('--dt-font-scale');
+} catch (e) {}
 
 // Initialize Portal
 renderSpotlight();
