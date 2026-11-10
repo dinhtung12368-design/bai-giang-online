@@ -1005,6 +1005,8 @@ wheelRuntime([{"q":"Số 120 có chia hết cho 2 hoặc cho 5 không?","options
 
 
 
+
+
 <!-- DT_FULLSCREEN_READABILITY_START -->
 
 <style id="dt-fullscreen-readability-wheel">
@@ -1397,11 +1399,29 @@ wheelRuntime([{"q":"Số 120 có chia hết cho 2 hoặc cho 5 không?","options
   var autoTriggered = false;
 
   function isFullscreenNow() {
+    try {
+      if (window.parent && window.parent !== window && (window.parent.document.fullscreenElement || window.parent.document.webkitFullscreenElement)) {
+        return true;
+      }
+    } catch (e) {}
     return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
   }
 
   function enterFullscreenSafe() {
     if (isFullscreenNow()) return Promise.resolve(true);
+    try {
+      if (window.parent && window.parent !== window && window.parent.document) {
+        var pel = window.parent.document.documentElement;
+        var preq = pel.requestFullscreen || pel.webkitRequestFullscreen || pel.msRequestFullscreen;
+        if (preq) {
+          var pres = preq.call(pel);
+          if (pres && typeof pres.then === "function") {
+            return pres.then(function(){ return true; }).catch(function(){ return false; });
+          }
+          return Promise.resolve(true);
+        }
+      }
+    } catch (e) {}
     var el = document.documentElement;
     var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
     if (!req) return Promise.resolve(false);
@@ -1417,6 +1437,12 @@ wheelRuntime([{"q":"Số 120 có chia hết cho 2 hoặc cho 5 không?","options
   }
 
   function exitFullscreenSafe() {
+    try {
+      if (window.parent && window.parent !== window && (window.parent.document.fullscreenElement || window.parent.document.webkitFullscreenElement)) {
+        var pex = window.parent.document.exitFullscreen || window.parent.document.webkitExitFullscreen;
+        if (pex) { pex.call(window.parent.document); return; }
+      }
+    } catch (e) {}
     var ex = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
     if (!ex) return;
     try { ex.call(document); } catch (e) {}
@@ -1457,14 +1483,25 @@ wheelRuntime([{"q":"Số 120 có chia hết cho 2 hoặc cho 5 không?","options
   });
 
   function ensureTopLeftControls() {
-    var backBtn = document.getElementById("dt-portal-back-btn") || document.querySelector(".dt-portal-back-fab");
-    if (!backBtn && !document.querySelector(".topbar .back-btn")) {
+    var backBtn = document.getElementById("dt-portal-back-btn") || document.querySelector(".dt-portal-back-fab") || document.querySelector(".topbar .back-btn");
+    if (!backBtn) {
       backBtn = document.createElement("a");
       backBtn.id = "dt-portal-back-btn";
       backBtn.className = "dt-portal-back-fab";
       backBtn.href = "../../index.html";
       backBtn.innerHTML = "🏠 Cổng bài giảng";
       document.body.appendChild(backBtn);
+    }
+    if (backBtn && !backBtn.__dtBackHooked) {
+      backBtn.__dtBackHooked = true;
+      backBtn.addEventListener("click", function(ev) {
+        if (window.parent && window.parent !== window) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if (typeof window.dtStopSpeech === "function") window.dtStopSpeech();
+          try { window.parent.postMessage("dt-close-lesson-stage", "*"); } catch (e) {}
+        }
+      }, true);
     }
 
     var hasEgBtn = !!document.getElementById("eg-fs-toggle-btn");
