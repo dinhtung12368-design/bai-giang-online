@@ -1153,6 +1153,201 @@
     font-size: 15px;
   }
 
+
+  /* === TEACHER MANAGEMENT & DELETE MODE === */
+  .nav-btn-teacher {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(234, 88, 12, 0.14));
+    border-color: rgba(245, 158, 11, 0.45);
+    color: #fbbf24;
+    font-weight: 800;
+  }
+  [data-theme="light"] .nav-btn-teacher {
+    color: #b45309;
+    border-color: rgba(217, 119, 6, 0.45);
+    background: rgba(245, 158, 11, 0.12);
+  }
+  .nav-btn-teacher:hover {
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    color: #fff !important;
+    border-color: transparent;
+  }
+  .nav-btn-teacher.active-teacher {
+    background: linear-gradient(135deg, #dc2626, #ea580c) !important;
+    color: #ffffff !important;
+    border-color: #fca5a5 !important;
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.45);
+  }
+  .teacher-toolbar {
+    max-width: 1380px;
+    margin: 0 auto 18px;
+    padding: 0 24px;
+    display: none;
+  }
+  .teacher-toolbar.show {
+    display: block;
+  }
+  .teacher-toolbar-inner {
+    background: linear-gradient(135deg, rgba(127, 29, 29, 0.92), rgba(30, 41, 59, 0.96));
+    border: 1.5px solid rgba(248, 113, 113, 0.55);
+    border-radius: 18px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+    color: #fef2f2;
+  }
+  .teacher-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .teacher-pulse-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #f87171;
+    box-shadow: 0 0 12px #ef4444;
+    flex-shrink: 0;
+  }
+  .teacher-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-teacher-action {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(15, 23, 42, 0.75);
+    color: #f8fafc;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-teacher-action:hover {
+    background: #2563eb;
+    border-color: #93c5fd;
+    color: #fff;
+  }
+  .btn-card-delete {
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.18), rgba(185, 28, 28, 0.28));
+    color: #fca5a5;
+    border: 1.5px solid rgba(248, 113, 113, 0.55);
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  [data-theme="light"] .btn-card-delete {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fca5a5;
+  }
+  .btn-card-delete:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    color: #ffffff !important;
+    border-color: #fecaca !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.45);
+  }
+  body.teacher-mode-on .btn-card-delete {
+    display: inline-flex;
+  }
+  .card-floating-delete {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 15;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    color: #fff;
+    border: 1.5px solid #fca5a5;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
+    display: none;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+    transition: transform 0.2s, filter 0.2s;
+  }
+  .card-floating-delete:hover {
+    transform: scale(1.06);
+    filter: brightness(1.12);
+  }
+  body.teacher-mode-on .card-floating-delete {
+    display: inline-flex;
+  }
+  body.teacher-mode-on .lesson-card {
+    border-color: rgba(248, 113, 113, 0.45);
+  }
+  /* Toast notification */
+  .dt-toast-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 99999;
+    background: rgba(15, 23, 42, 0.96);
+    color: #f8fafc;
+    border: 1.5px solid rgba(56, 189, 248, 0.5);
+    border-radius: 16px;
+    padding: 14px 20px;
+    display: none;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+    font-size: 13.5px;
+    font-weight: 700;
+    max-width: 92vw;
+  }
+  .dt-toast-bar.show {
+    display: flex;
+  }
+  .dt-toast-undo {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    font-weight: 800;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .deleted-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-color);
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
   /* Responsive */
   @media (max-width: 1024px) {
     .hero-grid { grid-template-columns: 1fr; }
@@ -1190,6 +1385,7 @@
       <button class="nav-btn" onclick="quickFilter('game', this)">🎮 Trò chơi tương tác</button>
       <button class="nav-btn nav-btn-ai" onclick="toggleAiDrawer()">🤖 Gia sư AI 24/7</button>
       <button class="nav-btn" onclick="openShareModal('Cổng Bài Giảng Điện Tử — Thầy Đinh Công Tùng', window.location.href)">📱 Mã QR Cổng</button>
+      <button class="nav-btn nav-btn-teacher" id="teacherModeBtn" onclick="toggleTeacherMode()" title="Dành riêng cho Giáo viên: Bật chế độ xóa/quản lý bài giảng trực tiếp trên Web">🔐 Quản lý / Xóa bài giảng</button>
       <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Đổi giao diện Sáng / Tối">🌙</button>
     </div>
   </div>
@@ -1275,6 +1471,20 @@
   </div>
 </section>
 
+<!-- Teacher Management Toolbar -->
+<div class="teacher-toolbar" id="teacherToolbar">
+  <div class="teacher-toolbar-inner">
+    <div class="teacher-toolbar-left">
+      <span class="teacher-pulse-dot"></span>
+      <span>🔓 <strong>Chế độ Quản lý Giáo viên đang bật:</strong> Bấm nút <strong>🗑️ Xóa</strong> trên bất kỳ thẻ bài giảng nào bên dưới để gỡ khỏi trang web ngay lập tức.</span>
+    </div>
+    <div class="teacher-toolbar-actions">
+      <button class="btn-teacher-action" onclick="openRestoreModal()">🔄 Bài đã xóa (<span id="deletedCountBadge">0</span>) &amp; Đồng bộ GitHub</button>
+      <button class="btn-teacher-action" style="background:rgba(220,38,38,0.35);border-color:#fca5a5;" onclick="lockTeacherMode()">🔒 Đóng Quản lý</button>
+    </div>
+  </div>
+</div>
+
 <!-- Main Lesson & Game Grid -->
 <main class="catalog-section">
   <div class="section-header">
@@ -1353,6 +1563,74 @@
       <button class="share-copy-btn" id="shareCopyBtn" onclick="copyShareUrl()">📋 Sao chép</button>
     </div>
   </div>
+</div>
+
+
+<!-- Teacher PIN / Delete / Restore Modals -->
+<div class="modal-backdrop" id="teacherPinModal" onclick="if(event.target===this)closeTeacherPinModal()">
+  <div class="modal-box" style="max-width:430px;">
+    <div class="modal-header">
+      <div class="modal-title">🔐 Mở Chế Độ Quản Lý Giáo Viên</div>
+      <button class="modal-close" onclick="closeTeacherPinModal()">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:12px;">
+      Nhập mã PIN Giáo viên để hiện nút <strong>🗑️ Xóa</strong> trực tiếp trên từng thẻ bài giảng (Mặc định: <strong>7217</strong> hoặc SĐT <strong>0378417217</strong>):
+    </p>
+    <input type="password" id="teacherPinInput" class="share-url-input" placeholder="Nhập mã PIN (VD: 7217)..." style="width:100%;margin-bottom:10px;font-size:15px;padding:11px 14px;" onkeydown="if(event.key==='Enter')confirmTeacherPin()">
+    <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;cursor:pointer;">
+      <input type="checkbox" id="teacherRememberChk" checked> Ghi nhớ quyền Giáo viên trên trình duyệt máy tính này
+    </label>
+    <div id="teacherPinError" style="color:#ef4444;font-size:12.5px;font-weight:700;margin-bottom:10px;display:none;">⚠️ Mã PIN chưa đúng! Vui lòng nhập 7217 hoặc 0378417217.</div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button class="btn-card-share" onclick="closeTeacherPinModal()">Hủy</button>
+      <button class="share-copy-btn" onclick="confirmTeacherPin()">🔓 Mở chế độ Xóa bài</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-backdrop" id="deleteConfirmModal" onclick="if(event.target===this)closeDeleteConfirmModal()">
+  <div class="modal-box" style="max-width:460px;">
+    <div class="modal-header">
+      <div class="modal-title" style="color:#ef4444;">🗑️ Xác nhận xóa bài giảng khỏi Web</div>
+      <button class="modal-close" onclick="closeDeleteConfirmModal()">✕</button>
+    </div>
+    <p style="font-size:14px;color:var(--text-primary);line-height:1.55;margin-bottom:8px;">
+      Bạn có chắc chắn muốn gỡ học liệu này khỏi trang web không?
+    </p>
+    <div id="deleteTargetTitle" style="padding:12px 14px;border-radius:12px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;font-weight:800;font-size:14px;margin-bottom:16px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button class="btn-card-share" onclick="closeDeleteConfirmModal()">Hủy bỏ</button>
+      <button class="share-copy-btn" id="confirmDeleteBtn" style="background:linear-gradient(135deg,#dc2626,#991b1b);" onclick="executeConfirmedDelete()">🗑️ Xóa ngay khỏi Web</button>
+    </div>
+  </div>
+</div>
+
+<!-- Restore / Cloud Sync Modal -->
+<div class="modal-backdrop" id="restoreLessonsModal" onclick="if(event.target===this)closeRestoreModal()">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header">
+      <div class="modal-title">🔄 Quản lý &amp; Khôi phục bài giảng đã xóa</div>
+      <button class="modal-close" onclick="closeRestoreModal()">✕</button>
+    </div>
+    <div id="deletedLessonsContainer" style="max-height:260px;overflow-y:auto;margin-bottom:14px;"></div>
+    <div style="border-top:1px solid var(--border-color);padding-top:12px;margin-top:8px;">
+      <div style="font-size:12.5px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">☁️ Đồng bộ xóa vĩnh viễn trên kho GitHub (Tùy chọn):</div>
+      <p style="font-size:11.5px;color:var(--text-secondary);margin-bottom:8px;line-height:1.45;">
+        Nếu bạn mở trang web từ máy khác không bật sẵn phần mềm Studio, bạn có thể dán GitHub Personal Access Token vào đây để khi bấm Xóa, hệ thống tự động xóa file trực tiếp trên GitHub repository:
+      </p>
+      <div class="share-url-box">
+        <input type="password" id="githubTokenInput" class="share-url-input" placeholder="ghp_... (GitHub Token tùy chọn)">
+        <button class="share-copy-btn" onclick="savePortalGithubToken()">💾 Lưu Token</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Bar -->
+<div class="dt-toast-bar" id="dtToastBar">
+  <span id="dtToastMsg">Đã xóa bài giảng</span>
+  <button class="dt-toast-undo" id="dtToastUndoBtn" onclick="undoLastDelete()">↩️ Hoàn tác</button>
 </div>
 
 <!-- Floating AI Tutor Widget -->
@@ -1599,8 +1877,12 @@ function openShareById(id) {
 
 function renderSpotlight() {
   var container = document.getElementById('spotlightContainer');
-  if (!container || !LESSONS.length) return;
-  var enriched = LESSONS.map(getLessonMeta);
+  var activeList = getActiveLessons();
+  if (!container || !activeList.length) {
+    if (container) container.innerHTML = '';
+    return;
+  }
+  var enriched = activeList.map(getLessonMeta);
   var feat = enriched.find(function(x) { return x.featured; }) || enriched[0];
   var chipsHtml = feat.features.map(function(f) {
     return '<span class="feature-chip">' + f + '</span>';
@@ -1627,13 +1909,14 @@ function renderSpotlight() {
         '<div class="spotlight-actions">' +
           '<a href="' + feat.file + '" class="spotlight-play-btn">▶ Vào học ngay</a>' +
           '<button class="btn-card-share" data-id="' + feat.id + '" onclick="openShareById(this.dataset.id)">🔗 Mã QR</button>' +
+          '<button class="btn-card-delete" data-id="' + feat.id + '" onclick="promptDeleteLesson(this.dataset.id, event)" title="Xóa bài giảng này khỏi Web">🗑️ Xóa</button>' +
         '</div>' +
       '</div>' +
     '</div>';
 }
 
 function renderFilterPills() {
-  var enriched = LESSONS.map(getLessonMeta);
+  var enriched = getActiveLessons().map(getLessonMeta);
   var lessonCount = enriched.filter(function(x) { return x.type === 'lesson'; }).length;
   var gameCount = enriched.filter(function(x) { return x.type === 'game'; }).length;
 
@@ -1684,7 +1967,7 @@ function clearSearch() {
 }
 
 function renderAll() {
-  var enriched = LESSONS.map(getLessonMeta);
+  var enriched = getActiveLessons().map(getLessonMeta);
   var rawQuery = (document.getElementById('searchInput').value || '').trim();
   var qNorm = normalizeVN(rawQuery);
   var sortMode = document.getElementById('sortSelect').value;
@@ -1753,14 +2036,17 @@ function renderAll() {
 
     return (
       '<article class="lesson-card">' +
-        '<a href="' + item.file + '" class="card-thumb-wrap">' +
-          '<img class="card-thumb-img" src="' + item.thumbnail + '" alt="' + item.title.replace(/"/g, '&quot;') + '" loading="lazy" onerror="handleThumbError(this)">' +
-          '<div class="card-thumb-fallback" style="display:none;"><span>' + icon + '</span></div>' +
+        '<div class="card-thumb-wrap">' +
+          '<a href="' + item.file + '" style="display:block;width:100%;height:100%;">' +
+            '<img class="card-thumb-img" src="' + item.thumbnail + '" alt="' + item.title.replace(/"/g, '&quot;') + '" loading="lazy" onerror="handleThumbError(this)">' +
+            '<div class="card-thumb-fallback" style="display:none;"><span>' + icon + '</span></div>' +
+          '</a>' +
           '<div class="card-top-badges">' +
             '<span class="card-type-badge ' + badgeClass + '">' + item.badge + '</span>' +
             '<span class="card-slides-pill">📑 ' + unitLabel + '</span>' +
           '</div>' +
-        '</a>' +
+          '<button type="button" class="card-floating-delete" data-id="' + item.id + '" onclick="promptDeleteLesson(this.dataset.id, event)" title="Xóa bài này khỏi trang web">🗑️ Xóa bài này</button>' +
+        '</div>' +
         '<div class="card-body">' +
           '<div class="card-subject-row">' +
             '<span class="card-subject">' + icon + ' ' + item.subject + '</span>' +
@@ -1772,7 +2058,8 @@ function renderAll() {
         '</div>' +
         '<div class="card-footer">' +
           '<a href="' + item.file + '" class="btn-card-play ' + (isGame ? 'is-game-btn' : '') + '">' + playLabel + '</a>' +
-          '<button class="btn-card-share" data-id="' + item.id + '" onclick="openShareById(this.dataset.id)" title="Lấy mã QR và liên kết chia sẻ">🔗 QR / Chia sẻ</button>' +
+          '<button class="btn-card-share" data-id="' + item.id + '" onclick="openShareById(this.dataset.id)" title="Lấy mã QR và liên kết chia sẻ">🔗 QR</button>' +
+          '<button type="button" class="btn-card-delete" data-id="' + item.id + '" onclick="promptDeleteLesson(this.dataset.id, event)" title="Gỡ bài giảng này khỏi trang web">🗑️ Xóa</button>' +
         '</div>' +
       '</article>'
     );
@@ -1864,6 +2151,307 @@ async function sendAiMsg() {
     box.scrollTop = box.scrollHeight;
   }, 320);
 }
+
+
+// =========================================================================
+// CHẾ ĐỘ GIÁO VIÊN: QUẢN LÝ & XÓA BÀI GIẢNG TRỰC TIẾP TRÊN WEB
+// =========================================================================
+var DELETED_STORAGE_KEY = 'dt_portal_deleted_ids_v1';
+var TEACHER_UNLOCKED_KEY = 'dt_portal_teacher_unlocked_v1';
+var GH_TOKEN_STORAGE_KEY = 'dt_portal_gh_token_v1';
+var isTeacherMode = false;
+var pendingDeleteId = null;
+var lastDeletedId = null;
+var toastTimer = null;
+
+function getDeletedIds() {
+  try {
+    var raw = localStorage.getItem(DELETED_STORAGE_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveDeletedIds(arr) {
+  try {
+    localStorage.setItem(DELETED_STORAGE_KEY, JSON.stringify(arr));
+  } catch (e) {}
+  updateDeletedBadgeCount();
+}
+
+function getActiveLessons() {
+  var del = getDeletedIds();
+  return LESSONS.filter(function(l) {
+    return del.indexOf(l.id) === -1;
+  });
+}
+
+function updateDeletedBadgeCount() {
+  var el = document.getElementById('deletedCountBadge');
+  if (el) el.textContent = getDeletedIds().length;
+}
+
+function applyTeacherModeUI() {
+  document.body.classList.toggle('teacher-mode-on', isTeacherMode);
+  var btn = document.getElementById('teacherModeBtn');
+  var bar = document.getElementById('teacherToolbar');
+  if (btn) {
+    btn.classList.toggle('active-teacher', isTeacherMode);
+    btn.innerHTML = isTeacherMode ? '🔓 Đang bật Xóa bài (Đóng)' : '🔐 Quản lý / Xóa bài giảng';
+  }
+  if (bar) {
+    bar.classList.toggle('show', isTeacherMode);
+  }
+  updateDeletedBadgeCount();
+}
+
+function toggleTeacherMode() {
+  if (isTeacherMode) {
+    lockTeacherMode();
+    return;
+  }
+  try {
+    if (localStorage.getItem(TEACHER_UNLOCKED_KEY) === '1') {
+      isTeacherMode = true;
+      applyTeacherModeUI();
+      document.getElementById('catalog-anchor').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+  } catch (e) {}
+  openTeacherPinModal();
+}
+
+function lockTeacherMode() {
+  isTeacherMode = false;
+  applyTeacherModeUI();
+}
+
+function openTeacherPinModal() {
+  var m = document.getElementById('teacherPinModal');
+  var inp = document.getElementById('teacherPinInput');
+  var err = document.getElementById('teacherPinError');
+  if (err) err.style.display = 'none';
+  if (inp) inp.value = '';
+  if (m) m.classList.add('open');
+  setTimeout(function() { if (inp) inp.focus(); }, 80);
+}
+
+function closeTeacherPinModal() {
+  var m = document.getElementById('teacherPinModal');
+  if (m) m.classList.remove('open');
+}
+
+function confirmTeacherPin() {
+  var inp = document.getElementById('teacherPinInput');
+  var err = document.getElementById('teacherPinError');
+  var rem = document.getElementById('teacherRememberChk');
+  var val = (inp ? inp.value : '').trim();
+  // Chấp nhận mã PIN 7217, SĐT 0378417217 hoặc 123456
+  if (val === '7217' || val === '0378417217' || val === '123456') {
+    if (rem && rem.checked) {
+      try { localStorage.setItem(TEACHER_UNLOCKED_KEY, '1'); } catch (e) {}
+    }
+    closeTeacherPinModal();
+    isTeacherMode = true;
+    applyTeacherModeUI();
+    document.getElementById('catalog-anchor').scrollIntoView({ behavior: 'smooth' });
+  } else {
+    if (err) err.style.display = 'block';
+  }
+}
+
+function promptDeleteLesson(id, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (ev && ev.preventDefault) ev.preventDefault();
+  var item = LESSONS.find(function(x) { return x.id === id; });
+  if (!item) return;
+  pendingDeleteId = id;
+  var titleBox = document.getElementById('deleteTargetTitle');
+  if (titleBox) titleBox.textContent = item.title || id;
+  var modal = document.getElementById('deleteConfirmModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeDeleteConfirmModal() {
+  pendingDeleteId = null;
+  var modal = document.getElementById('deleteConfirmModal');
+  if (modal) modal.classList.remove('open');
+}
+
+async function syncDeleteToServerAndGithub(slug, title) {
+  // 1. Nếu đang mở trên máy có chạy Studio Server (127.0.0.1:5055)
+  try {
+    fetch('/api/delete_github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: slug, title: title })
+    }).catch(function(){});
+  } catch (e) {}
+
+  // 2. Nếu Giáo viên đã lưu GitHub Token trên trình duyệt, gọi trực tiếp GitHub REST API để xóa trên kho lưu trữ
+  var ghToken = '';
+  try { ghToken = (localStorage.getItem(GH_TOKEN_STORAGE_KEY) || '').trim(); } catch (e) {}
+  if (!ghToken) return;
+
+  var owner = 'dinhtung12368-design';
+  var repo = 'bai-giang-online';
+  var headers = {
+    'Authorization': 'token ' + ghToken,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+
+  try {
+    // Xóa file bài giảng lessons/<slug>/index.html trên GitHub
+    var lessonPath = 'lessons/' + slug + '/index.html';
+    var resFile = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + lessonPath, { headers: headers });
+    if (resFile.ok) {
+      var fileData = await resFile.json();
+      if (fileData && fileData.sha) {
+        await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + lessonPath, {
+          method: 'DELETE',
+          headers: headers,
+          body: JSON.stringify({ message: 'Delete lesson ' + slug, sha: fileData.sha })
+        });
+      }
+    }
+
+    // Cập nhật mảng LESSONS trong index.html trên GitHub
+    var resIdx = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/index.html', { headers: headers });
+    if (resIdx.ok) {
+      var idxData = await resIdx.json();
+      var decoded = decodeURIComponent(escape(atob(idxData.content.replace(/\n/g, ''))));
+      var activeNow = getActiveLessons();
+      var newLessonsJson = JSON.stringify(activeNow, null, 2);
+      var updatedHtml = decoded.replace(/var LESSONS = \[[\s\S]*?\];/, 'var LESSONS = ' + newLessonsJson + ';');
+      var encoded = btoa(unescape(encodeURIComponent(updatedHtml)));
+      await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/index.html', {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify({
+          message: 'Remove lesson ' + slug + ' from portal',
+          content: encoded,
+          sha: idxData.sha
+        })
+      });
+    }
+  } catch (e) {
+    console.warn('GitHub API sync info:', e);
+  }
+}
+
+function executeConfirmedDelete() {
+  if (!pendingDeleteId) return;
+  var id = pendingDeleteId;
+  var item = LESSONS.find(function(x) { return x.id === id; });
+  closeDeleteConfirmModal();
+
+  var del = getDeletedIds();
+  if (del.indexOf(id) === -1) {
+    del.push(id);
+    saveDeletedIds(del);
+  }
+  lastDeletedId = id;
+
+  renderSpotlight();
+  renderFilterPills();
+  renderAll();
+
+  showPortalToast('🗑️ Đã gỡ "' + (item ? item.title : id) + '" khỏi trang web!', true);
+  syncDeleteToServerAndGithub(id, item ? item.title : id);
+}
+
+function showPortalToast(msg, allowUndo) {
+  var bar = document.getElementById('dtToastBar');
+  var msgEl = document.getElementById('dtToastMsg');
+  var undoBtn = document.getElementById('dtToastUndoBtn');
+  if (!bar || !msgEl) return;
+  msgEl.textContent = msg;
+  if (undoBtn) undoBtn.style.display = allowUndo ? 'inline-block' : 'none';
+  bar.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() {
+    bar.classList.remove('show');
+  }, 6000);
+}
+
+function undoLastDelete() {
+  if (!lastDeletedId) return;
+  restoreDeletedLesson(lastDeletedId);
+  lastDeletedId = null;
+  var bar = document.getElementById('dtToastBar');
+  if (bar) bar.classList.remove('show');
+}
+
+function restoreDeletedLesson(id) {
+  var del = getDeletedIds().filter(function(x) { return x !== id; });
+  saveDeletedIds(del);
+  renderSpotlight();
+  renderFilterPills();
+  renderAll();
+  renderDeletedLessonsModalList();
+  showPortalToast('✅ Đã khôi phục bài giảng lên trang web!', false);
+}
+
+function restoreAllDeletedLessons() {
+  saveDeletedIds([]);
+  renderSpotlight();
+  renderFilterPills();
+  renderAll();
+  renderDeletedLessonsModalList();
+  showPortalToast('✅ Đã khôi phục toàn bộ bài giảng!', false);
+}
+
+function renderDeletedLessonsModalList() {
+  var box = document.getElementById('deletedLessonsContainer');
+  if (!box) return;
+  var del = getDeletedIds();
+  if (!del.length) {
+    box.innerHTML = '<div style="text-align:center;padding:18px;color:var(--text-muted);font-size:13px;">🎉 Hiện không có bài giảng nào bị ẩn/xóa.</div>';
+    return;
+  }
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+    '<span style="font-size:12.5px;font-weight:700;color:var(--text-secondary);">Danh sách ' + del.length + ' bài đã gỡ:</span>' +
+    '<button class="btn-card-share" style="padding:5px 10px;font-size:12px;" onclick="restoreAllDeletedLessons()">🔄 Khôi phục tất cả</button>' +
+  '</div>';
+  del.forEach(function(id) {
+    var item = LESSONS.find(function(x) { return x.id === id; });
+    var title = item ? item.title : id;
+    html += '<div class="deleted-list-item">' +
+      '<span style="font-weight:700;color:var(--text-primary);flex:1;">' + title + '</span>' +
+      '<button class="share-copy-btn" style="padding:6px 12px;font-size:12px;" data-id="' + id + '" onclick="restoreDeletedLesson(this.dataset.id)">↩️ Khôi phục</button>' +
+    '</div>';
+  });
+  box.innerHTML = html;
+}
+
+function openRestoreModal() {
+  renderDeletedLessonsModalList();
+  var inp = document.getElementById('githubTokenInput');
+  if (inp) {
+    try { inp.value = localStorage.getItem(GH_TOKEN_STORAGE_KEY) || ''; } catch (e) {}
+  }
+  var m = document.getElementById('restoreLessonsModal');
+  if (m) m.classList.add('open');
+}
+
+function closeRestoreModal() {
+  var m = document.getElementById('restoreLessonsModal');
+  if (m) m.classList.remove('open');
+}
+
+function savePortalGithubToken() {
+  var inp = document.getElementById('githubTokenInput');
+  if (!inp) return;
+  try {
+    localStorage.setItem(GH_TOKEN_STORAGE_KEY, inp.value.trim());
+    showPortalToast('✅ Đã lưu GitHub Token đồng bộ!', false);
+  } catch (e) {}
+}
+
+updateDeletedBadgeCount();
 
 // Initialize Portal
 renderSpotlight();
