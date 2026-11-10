@@ -1,0 +1,18 @@
+{
+  "id": "bai-giang-onlike",
+  "title": "Trải Nghiệm Lớp Học Tương Tác Thông Minh & Gia Sư AI 24/7",
+  "description": "Bài giảng mẫu trải nghiệm các dạng tương tác thế hệ mới: Trắc nghiệm phân hóa, nối cột kiến thức, lật thẻ ghi nhớ và hỏi đáp trực tiếp cùng Gia sư AI.",
+  "subject": "Kỹ năng số",
+  "file": "lessons/bai-giang-onlike/index.html",
+  "slides": 4,
+  "date": "19/08/2026",
+  "thumbnail": "thumbnails/bai-giang-onlike.webp",
+  "type": "lesson",
+  "badge": "📘 Bài giảng tương tác",
+  "features": [
+    "🎙️ Thuyết minh AI",
+    "🎯 Bài tập kéo thả",
+    "🤖 Gia sư AI T-Bot"
+  ],
+  "featured": false
+}

@@ -1,0 +1,18 @@
+{
+  "id": "giai-ma-he-phuong-trinh-toan-9",
+  "title": "Bí Ẩn Làng Toán Cổ: Giải Mã Hệ Phương Trình Bậc Nhất Hai Ẩn — Toán 9",
+  "description": "Bài giảng E-Learning tương tác 12 slide cốt truyện Làng Toán Cổ: Tích hợp thuyết minh AI truyền cảm, Vòng quay may mắn, Kéo thả tương tác, Đúng/Sai và Gia sư AI Thầy Tùng Caha.",
+  "subject": "Toán học 9",
+  "file": "lessons/giai-ma-he-phuong-trinh-toan-9/index.html",
+  "slides": 12,
+  "date": "20/08/2026",
+  "thumbnail": "thumbnails/giai-ma-he-phuong-trinh-toan-9.webp",
+  "type": "lesson",
+  "badge": "⭐ Bài giảng tiêu biểu",
+  "features": [
+    "🎙️ Thuyết minh AI",
+    "🎡 Vòng quay & Quiz",
+    "🤖 Gia sư AI T-Bot"
+  ],
+  "featured": true
+}

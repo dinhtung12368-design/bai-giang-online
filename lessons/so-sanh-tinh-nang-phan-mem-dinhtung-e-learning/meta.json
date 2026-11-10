@@ -1,0 +1,18 @@
+{
+  "id": "so-sanh-tinh-nang-phan-mem-dinhtung-e-learning",
+  "title": "Khám Phá Hệ Sinh Thái DinhTung E-Learning Studio Pro V4 (So Sánh Tính Năng)",
+  "description": "Bài trình chiếu đa phương tiện giới thiệu đột phá công nghệ của DinhTung E-Learning Studio Pro V4 so với các công cụ truyền thống, tích hợp thuyết minh AI và trò chơi tương tác.",
+  "subject": "Chuyên đề AI & CNTT",
+  "file": "lessons/so-sanh-tinh-nang-phan-mem-dinhtung-e-learning/index.html",
+  "slides": 4,
+  "date": "19/08/2026",
+  "thumbnail": "thumbnails/so-sanh-tinh-nang-phan-mem-dinhtung-e-learning.webp",
+  "type": "lesson",
+  "badge": "🚀 Chuyên đề Chuyển đổi số",
+  "features": [
+    "🎙️ Thuyết minh AI",
+    "🧩 Trò chơi tương tác",
+    "🤖 Gia sư AI T-Bot"
+  ],
+  "featured": false
+}

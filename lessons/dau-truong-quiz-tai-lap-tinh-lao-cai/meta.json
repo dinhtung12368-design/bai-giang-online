@@ -1,0 +1,17 @@
+{
+  "id": "dau-truong-quiz-tai-lap-tinh-lao-cai",
+  "title": "Đấu Trường Lịch Sử: Kỷ Niệm Tái Lập Tỉnh Lào Cai (01/10/1991)",
+  "description": "Game trắc nghiệm tốc độ tìm hiểu lịch sử, địa lý, văn hóa và chặng đường phát triển rực rỡ của tỉnh Lào Cai từ năm 1991 đến nay.",
+  "subject": "Giáo dục địa phương",
+  "file": "lessons/dau-truong-quiz-tai-lap-tinh-lao-cai/index.html",
+  "slides": 15,
+  "date": "18/08/2026",
+  "thumbnail": "thumbnails/dau-truong-quiz-tai-lap-tinh-lao-cai.webp",
+  "type": "game",
+  "badge": "⚡ Đấu trường Quiz",
+  "features": [
+    "⏱️ Đếm ngược tốc độ",
+    "🏔️ Lịch sử Lào Cai",
+    "📊 Bảng điểm"
+  ]
+}

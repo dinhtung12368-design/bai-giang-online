@@ -1,0 +1,17 @@
+{
+  "id": "ai-la-trieu-phu-tai-lap-tinh-lao-cai",
+  "title": "Ai Là Triệu Phú: Hành Trình Lịch Sử Tỉnh Lào Cai",
+  "description": "Trải nghiệm ghế nóng Ai Là Triệu Phú với 15 mốc câu hỏi khám phá vùng đất, con người và truyền thống lịch sử tỉnh Lào Cai.",
+  "subject": "Giáo dục địa phương",
+  "file": "lessons/ai-la-trieu-phu-tai-lap-tinh-lao-cai/index.html",
+  "slides": 15,
+  "date": "18/08/2026",
+  "thumbnail": "thumbnails/ai-la-trieu-phu-tai-lap-tinh-lao-cai.webp",
+  "type": "game",
+  "badge": "👑 Ai Là Triệu Phú",
+  "features": [
+    "💎 15 Mốc câu hỏi",
+    "🛟 4 Quyền trợ giúp",
+    "🔊 Âm thanh kịch tính"
+  ]
+}

@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ai Là Triệu Phú - EduGame</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="referrer" content="no-referrer">
+<script>window.__INITIAL_CLASS_ROSTER = {"className":"Mặc định (Số thứ tự 1 → 40)","students":["Số thứ tự 01","Số thứ tự 02","Số thứ tự 03","Số thứ tự 04","Số thứ tự 05","Số thứ tự 06","Số thứ tự 07","Số thứ tự 08","Số thứ tự 09","Số thứ tự 10","Số thứ tự 11","Số thứ tự 12","Số thứ tự 13","Số thứ tự 14","Số thứ tự 15","Số thứ tự 16","Số thứ tự 17","Số thứ tự 18","Số thứ tự 19","Số thứ tự 20","Số thứ tự 21","Số thứ tự 22","Số thứ tự 23","Số thứ tự 24","Số thứ tự 25","Số thứ tự 26","Số thứ tự 27","Số thứ tự 28","Số thứ tự 29","Số thứ tự 30","Số thứ tự 31","Số thứ tự 32","Số thứ tự 33","Số thứ tự 34","Số thứ tự 35","Số thứ tự 36","Số thứ tự 37","Số thứ tự 38","Số thứ tự 39","Số thứ tự 40"],"isDefault":true};
+function installSafety() {
+    // 1) Canvas: bù ctx.roundRect cho trình duyệt cũ
+    try {
+        var P = window.CanvasRenderingContext2D && window.CanvasRenderingContext2D.prototype;
+        if (P && !P.roundRect) P.roundRect = function (x, y, w, h, r) {
+            r = typeof r === "number" ? r : (r && r.length ? r[0] : 0); r = Math.max(0, Math.min(r, w / 2, h / 2));
+            this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath();
+        };
+    } catch (e) { }
+    // 2) Giọng đọc của trình duyệt: WebView (Zalo...) thường KHÔNG có speechSynthesis -> bù bản giả để game không chết
+    try {
+        if (!window.speechSynthesis) {
+            var fake = {
+                speaking: false, pending: false, paused: false, onvoiceschanged: null,
+                getVoices: function () { return []; },
+                speak: function (u) { setTimeout(function () { try { if (u && u.onend) u.onend({}); } catch (e) { } }, 0); },
+                cancel: function () { }, pause: function () { }, resume: function () { },
+                addEventListener: function () { }, removeEventListener: function () { }
+            };
+            Object.defineProperty(window, "speechSynthesis", { value: fake, configurable: true, writable: true });
+            window.__fakeTTS = true;
+        }
+        if (!window.SpeechSynthesisUtterance) {
+            window.SpeechSynthesisUtterance = function (t) { this.text = t; this.lang = ""; this.voice = null; this.rate = 1; this.pitch = 1; this.volume = 1; };
+        }
+    } catch (e) { }
+    // 2b) Giọng trình duyệt đã chọn lúc tạo game (vd Hoài My) có thể KHÔNG có trên điện thoại học sinh -> game tự chuyển sang giọng Google
+    window.__voiceMissing = function (name) {
+        try {
+            var vs = window.speechSynthesis.getVoices();
+            if (!vs || !vs.length) return false;
+            for (var i = 0; i < vs.length; i++) { if (vs[i].name === name || vs[i].voiceURI === name) return false; }
+            return true;
+        } catch (e) { return false; }
+    };
+    // 3) Âm thanh hiệu ứng: nếu không có AudioContext thì bù bản im lặng
+    try {
+        if (!window.AudioContext && !window.webkitAudioContext) {
+            var param = function () { return { value: 0, setValueAtTime: function () { }, linearRampToValueAtTime: function () { }, exponentialRampToValueAtTime: function () { }, setTargetAtTime: function () { }, cancelScheduledValues: function () { } }; };
+            var node = function () { return { connect: function (n) { return n; }, disconnect: function () { }, start: function () { }, stop: function () { }, type: "", frequency: param(), gain: param(), detune: param(), Q: param(), buffer: null, loop: false }; };
+            window.AudioContext = function () {
+                this.state = "running"; this.currentTime = 0; this.sampleRate = 44100; this.destination = node();
+                this.resume = function () { return Promise.resolve(); }; this.suspend = this.resume; this.close = this.resume;
+                this.createOscillator = node; this.createGain = node; this.createBiquadFilter = node; this.createBufferSource = node;
+                this.createBuffer = function () { return { getChannelData: function () { return []; } }; };
+                this.createDynamicsCompressor = node; this.createDelay = node; this.createStereoPanner = node;
+            };
+        }
+    } catch (e) { }
+    // 4) Hiện lỗi JS (cộng dồn) ở góc dưới màn hình để chẩn đoán trên điện thoại
+    var errs = [];
+    window.addEventListener("error", function (e) {
+        try {
+            if (!e || !e.message) return;
+            if (String(location.href).indexOf("debug") < 0) return; // chỉ hiện khung lỗi khi mở link có thêm ?debug (để chẩn đoán); học sinh không thấy
+            errs.push(e.message + " (dong " + (e.lineno || "?") + ")");
+            if (errs.length > 4) errs.shift();
+            var d = document.getElementById("__err");
+            if (!d) {
+                d = document.createElement("div"); d.id = "__err";
+                d.style.cssText = "position:fixed;left:4px;bottom:4px;right:150px;z-index:2147483647;background:rgba(150,0,0,.9);color:#fff;font:11px/1.3 monospace;padding:4px 6px;border-radius:4px;pointer-events:none;max-height:140px;overflow:hidden;white-space:pre-wrap;word-break:break-all";
+                (document.body || document.documentElement).appendChild(d);
+            }
+            d.textContent = "Loi: " + errs.join("\n");
+        } catch (x) { }
+    });
+}
+function installConfettiFallback() {
+    if (typeof window.confetti === "function") return;
+    var cv = null, cx = null, bits = [], running = false;
+    var COLORS = ["#ff4d4d", "#ffd93d", "#4dd0e1", "#7cff6b", "#ff7ad9", "#ffffff", "#ffa726"];
+    function ensure() {
+        if (cv) return;
+        cv = document.createElement("canvas");
+        cv.style.cssText = "position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:99999";
+        cv.width = window.innerWidth; cv.height = window.innerHeight;
+        document.body.appendChild(cv); cx = cv.getContext("2d");
+        window.addEventListener("resize", function () { cv.width = window.innerWidth; cv.height = window.innerHeight; });
+    }
+    function step() {
+        cx.clearRect(0, 0, cv.width, cv.height);
+        for (var i = bits.length - 1; i >= 0; i--) {
+            var p = bits[i];
+            p.vy += 0.35; p.vx *= 0.992; p.vy *= 0.992; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life -= 0.006;
+            if (p.y > cv.height + 30 || p.life <= 0) { bits.splice(i, 1); continue; }
+            cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.globalAlpha = Math.min(1, p.life * 2); cx.fillStyle = p.c;
+            cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore();
+        }
+        if (bits.length) requestAnimationFrame(step); else { running = false; cx.clearRect(0, 0, cv.width, cv.height); }
+    }
+    window.confetti = function (opts) {
+        opts = opts || {}; ensure();
+        var n = Math.min(opts.particleCount || 100, 220);
+        var o = opts.origin || {};
+        var ox = (o.x === undefined ? 0.5 : o.x) * cv.width, oy = (o.y === undefined ? 0.5 : o.y) * cv.height;
+        var spread = opts.spread || 60, angle = opts.angle === undefined ? 90 : opts.angle;
+        for (var i = 0; i < n; i++) {
+            var a = (angle + (Math.random() - 0.5) * spread) * Math.PI / 180, v = 12 + Math.random() * 14;
+            bits.push({ x: ox, y: oy, vx: Math.cos(a) * v, vy: -Math.sin(a) * v, w: 6 + Math.random() * 8, h: 4 + Math.random() * 6, r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.4, c: COLORS[Math.floor(Math.random() * COLORS.length)], life: 1 });
+        }
+        if (!running) { running = true; requestAnimationFrame(step); }
+    };
+}
+function installTtsUnlock() {
+    var el = null, unlocked = false;
+    var SILENT = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YQAAAAA=";
+    window.ttsEl = function (url) {
+        if (!el) el = new Audio();
+        el.onended = null; el.onerror = null; el.src = url;
+        return el;
+    };
+    function unlock() {
+        if (unlocked) return; unlocked = true;
+        try {
+            if (el && !el.paused) return;
+            var p = window.ttsEl(SILENT).play();
+            if (p && p.catch) p.catch(function () { unlocked = false; });
+        } catch (e) { unlocked = false; }
+    }
+    document.addEventListener("pointerdown", unlock, true);
+    document.addEventListener("touchend", unlock, true);
+    document.addEventListener("click", unlock, true);
+}
+function installLandscape() {
+    var skipped = false, box = null, tried = false;
+    function isPhone() {
+        var coarse = false;
+        try { coarse = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches); } catch (e) { }
+        return coarse && Math.min(window.innerWidth, window.innerHeight) < 700;
+    }
+    function build() {
+        box = document.createElement("div"); box.id = "__rot";
+        box.style.cssText = "position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;background:rgba(12,20,48,.97);color:#ffd166;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font:bold 22px/1.5 Arial,sans-serif;touch-action:manipulation";
+        box.innerHTML = '<div style="font-size:72px;animation:__spin 1.6s ease-in-out infinite alternate">\uD83D\uDCF1</div>' +
+            '<div style="margin-top:14px">Xoay ngang điện thoại<br>để chơi dễ hơn nhé!</div>' +
+            '<div style="margin-top:8px;font-size:15px;font-weight:normal;color:#fff;opacity:.8">(hoặc chạm vào màn hình để tự xoay)</div>' +
+            '<button id="__skip" style="margin-top:26px;padding:10px 18px;font-size:16px;border-radius:10px;border:2px solid #ffd166;background:transparent;color:#ffd166;cursor:pointer">Vẫn chơi màn hình dọc</button>';
+        var st = document.createElement("style"); st.textContent = "@keyframes __spin{from{transform:rotate(0)}to{transform:rotate(-90deg)}}";
+        (document.head || document.documentElement).appendChild(st);
+        (document.body || document.documentElement).appendChild(box);
+        document.getElementById("__skip").addEventListener("click", function (ev) { ev.stopPropagation(); skipped = true; update(); });
+    }
+    function update() {
+        var need = isPhone() && window.innerHeight > window.innerWidth && !skipped;
+        if (need && !box && document.body) build();
+        if (box) box.style.display = need ? "flex" : "none";
+    }
+    function tryLock(ev) {
+        if (tried || skipped || !isPhone()) return;
+        if (ev && ev.target && ev.target.id === "__skip") return;
+        tried = true;
+        try {
+            var de = document.documentElement, rq = de.requestFullscreen || de.webkitRequestFullscreen;
+            var lockIt = function () { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(function () { }); } catch (e) { } };
+            var pr = rq ? rq.call(de) : null;
+            if (pr && pr.then) pr.then(lockIt).catch(function () { lockIt(); }); else lockIt();
+        } catch (e) { }
+    }
+    window.addEventListener("resize", update); window.addEventListener("orientationchange", function () { setTimeout(update, 200); });
+    document.addEventListener("pointerup", tryLock, true); document.addEventListener("click", tryLock, true);
+    var n = 0, iv = setInterval(function () { update(); if (++n > 20) clearInterval(iv); }, 300);
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", update); else update();
+}
+function installQuestionMedia() {
+    if (!document.getElementById('eg-qmedia-style')) {
+        var st = document.createElement('style');
+        st.id = 'eg-qmedia-style';
+        st.textContent = `
+            .game-q-img-wrap {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                margin: 10px auto;
+                max-width: 100%;
+                z-index: 5;
+            }
+            .game-q-img {
+                max-height: clamp(80px, 20vh, 150px);
+                max-width: 85%;
+                object-fit: contain;
+                border-radius: 8px;
+                border: 2px solid rgba(255, 255, 255, 0.45);
+                box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+                cursor: zoom-in;
+                background: rgba(255, 255, 255, 0.06);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .game-q-img:hover {
+                transform: scale(1.025);
+                box-shadow: 0 6px 24px rgba(0, 255, 204, 0.55);
+                border-color: #00ffcc;
+            }
+            .game-q-img-hint {
+                font-size: 11px;
+                color: #e2e8f0;
+                opacity: 0.85;
+                margin-top: 4px;
+                text-shadow: 1px 1px 2px #000;
+                pointer-events: none;
+                user-select: none;
+            }
+            .eg-lightbox-modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.9);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                z-index: 999999;
+                align-items: center;
+                justify-content: center;
+                cursor: zoom-out;
+            }
+            .eg-lightbox-img {
+                max-width: 95vw;
+                max-height: 92vh;
+                object-fit: contain;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+                border: 2px solid rgba(255, 255, 255, 0.35);
+                cursor: default;
+                transition: transform 0.2s ease-out;
+            }
+            .eg-lightbox-close {
+                position: absolute;
+                top: 14px;
+                right: 18px;
+                font-size: 32px;
+                font-weight: bold;
+                color: #fff;
+                background: rgba(255, 255, 255, 0.2);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                line-height: 38px;
+                text-align: center;
+                cursor: pointer;
+                user-select: none;
+                transition: background 0.2s, transform 0.2s;
+            }
+            .eg-lightbox-close:hover {
+                background: rgba(255, 77, 77, 0.85);
+                transform: scale(1.1);
+            }
+        `;
+        document.head.appendChild(st);
+    }
+
+    window.zoomGameImage = function(src) {
+        if (!src) return;
+        var modal = document.getElementById('eg-zoom-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'eg-zoom-modal';
+            modal.className = 'eg-lightbox-modal';
+            modal.innerHTML = '<span class="eg-lightbox-close" title="Đóng">&times;</span><img class="eg-lightbox-img" src="" alt="Hình minh họa phóng to">';
+            modal.onclick = function(e) {
+                if (e.target !== modal.querySelector('.eg-lightbox-img')) {
+                    modal.style.display = 'none';
+                }
+            };
+            modal.querySelector('.eg-lightbox-close').onclick = function() {
+                modal.style.display = 'none';
+            };
+            document.body.appendChild(modal);
+        }
+        modal.querySelector('.eg-lightbox-img').src = src;
+        modal.style.display = 'flex';
+    };
+
+    window.renderQuestionImage = function(qObj, container) {
+        if (!container) return;
+        var old = container.querySelectorAll('.game-q-img-wrap');
+        old.forEach(function(el) { el.remove(); });
+        
+        if (!qObj || !qObj.img) return;
+
+        var wrap = document.createElement('div');
+        wrap.className = 'game-q-img-wrap';
+        wrap.innerHTML = '<img class="game-q-img" src="' + qObj.img + '" alt="Hình minh họa" title="Nhấn vào hình để phóng to xem chi tiết"><div class="game-q-img-hint">🔍 Nhấn vào hình để phóng to</div>';
+        wrap.querySelector('img').onclick = function(e) {
+            e.stopPropagation();
+            if (typeof window.zoomGameImage === 'function') window.zoomGameImage(this.src);
+        };
+        container.appendChild(wrap);
+    };
+}
+function installUniversalTf4Engine() {
+    if (window.__universalTf4EngineInstalled) return;
+    window.__universalTf4EngineInstalled = true;
+
+    function ensureStyles() {
+        if (document.getElementById("eg-universal-tf4-style")) return;
+        var st = document.createElement("style");
+        st.id = "eg-universal-tf4-style";
+        st.textContent =
+            ".eg-tf4-host-btn{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;text-align:left!important}" +
+            ".eg-tf4-stmt-wrap{flex:1;min-width:0;display:flex;align-items:center;gap:8px;text-align:left;overflow-wrap:anywhere}" +
+            ".eg-tf4-ctrl{display:inline-flex;align-items:center;gap:5px;flex:none;margin-left:auto;background:rgba(15,23,42,0.82);border:1.5px solid rgba(251,191,36,0.75);padding:4px 6px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.35);z-index:10;pointer-events:auto}" +
+            ".eg-tf4-inp{width:42px;height:34px;border-radius:7px;border:2px solid #94a3b8;background:#0f172a;color:#f8fafc;font-size:16px;font-weight:900;text-align:center;text-transform:uppercase;outline:none;transition:all 0.15s;padding:0;font-family:inherit;cursor:text}" +
+            ".eg-tf4-inp:focus{border-color:#fbbf24;box-shadow:0 0 0 3px rgba(251,191,36,0.35);background:#1e293b}" +
+            ".eg-tf4-inp.val-d{background:linear-gradient(135deg,#059669,#10b981)!important;border-color:#6ee7b7!important;color:#fff!important}" +
+            ".eg-tf4-inp.val-s{background:linear-gradient(135deg,#e11d48,#f43f5e)!important;border-color:#fda4af!important;color:#fff!important}" +
+            ".eg-tf4-inp.shake-warn{border-color:#ef4444!important;box-shadow:0 0 0 3px rgba(239,68,68,0.5)!important;animation:egTf4Shake 0.35s ease}" +
+            ".eg-tf4-qbtn{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:34px;padding:0 8px;border-radius:7px;font-size:14px;font-weight:900;cursor:pointer;user-select:none;transition:all 0.15s;border:1.5px solid rgba(255,255,255,0.28);background:rgba(255,255,255,0.1);color:#e2e8f0}" +
+            ".eg-tf4-qbtn.eg-btn-d:hover,.eg-tf4-qbtn.eg-btn-d.active{background:linear-gradient(135deg,#10b981,#059669)!important;border-color:#a7f3d0!important;color:#fff!important;box-shadow:0 0 10px rgba(16,185,129,0.55)}" +
+            ".eg-tf4-qbtn.eg-btn-s:hover,.eg-tf4-qbtn.eg-btn-s.active{background:linear-gradient(135deg,#f43f5e,#e11d48)!important;border-color:#fecdd3!important;color:#fff!important;box-shadow:0 0 10px rgba(244,63,94,0.55)}" +
+            ".eg-tf4-badge-res{font-size:13px;font-weight:900;padding:4px 8px;border-radius:6px;white-space:nowrap;letter-spacing:0.3px}" +
+            ".eg-tf4-badge-res.ok{background:#059669;color:#ecfdf5;border:1px solid #6ee7b7}" +
+            ".eg-tf4-badge-res.bad{background:#be123c;color:#ffe4e6;border:1px solid #fda4af}" +
+            ".eg-tf4-submit-wrap{grid-column:1 / -1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:10px;gap:6px;z-index:12}" +
+            ".eg-tf4-submit-btn{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#fff;border:2px solid #fef08a;border-radius:30px;padding:11px 28px;font-size:clamp(15px,1.8vw,19px);font-weight:900;cursor:pointer;box-shadow:0 6px 20px rgba(245,158,11,0.45);transition:transform 0.15s,box-shadow 0.15s,background 0.2s;font-family:inherit;letter-spacing:0.4px}" +
+            ".eg-tf4-submit-btn.ready{background:linear-gradient(135deg,#10b981 0%,#059669 100%);border-color:#a7f3d0;box-shadow:0 6px 22px rgba(16,185,129,0.55);animation:egTf4Pulse 1.1s infinite alternate}" +
+            ".eg-tf4-submit-btn:hover:not(:disabled){transform:translateY(-2px) scale(1.02)}" +
+            ".eg-tf4-submit-btn:disabled{opacity:0.6;cursor:not-allowed;animation:none}" +
+            ".eg-tf4-hint-msg{font-size:13px;font-weight:700;color:#fde68a;text-shadow:0 1px 3px rgba(0,0,0,0.8);text-align:center}" +
+            ".eg-tf4-panel-box{margin-top:10px;background:rgba(15,23,42,0.92);border:2px solid rgba(251,191,36,0.65);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;text-align:left;max-width:720px;margin-left:auto;margin-right:auto;box-shadow:0 8px 25px rgba(0,0,0,0.5);pointer-events:auto}" +
+            ".eg-tf4-panel-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(30,41,59,0.88);border:1px solid rgba(255,255,255,0.16);border-radius:10px;padding:6px 10px;color:#f8fafc;font-size:14px;font-weight:600;line-height:1.35}" +
+            ".eg-tf4-panel-row.row-ok{border-color:#10b981;background:rgba(6,95,70,0.55)}" +
+            ".eg-tf4-panel-row.row-bad{border-color:#f43f5e;background:rgba(136,19,55,0.55)}" +
+            ".eg-blank-inline-wrap{grid-column:1 / -1;width:100%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(15,23,42,0.88);border:2px dashed #fbbf24;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.35);z-index:12;pointer-events:auto}" +
+            ".eg-blank-lbl{font-size:15px;font-weight:900;color:#fde047}" +
+            ".eg-blank-prefix{font-size:16px;font-weight:800;color:#93c5fd;font-style:italic}" +
+            ".eg-blank-inp{min-width:180px;flex:1;max-width:320px;height:38px;border:none;border-bottom:2.5px dotted #fbbf24;background:rgba(30,41,59,0.9);color:#fff;font-size:17px;font-weight:800;padding:4px 12px;border-radius:8px 8px 0 0;outline:none;text-align:center;font-family:inherit}" +
+            ".eg-blank-inp:focus{border-bottom-style:solid;border-bottom-color:#38bdf8;background:#0f172a}" +
+            ".eg-blank-submit-btn{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:2px solid #a7f3d0;border-radius:22px;padding:7px 18px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(16,185,129,0.4)}" +
+            "@keyframes egTf4Shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}" +
+            "@keyframes egTf4Pulse{from{transform:scale(1)}to{transform:scale(1.04)}}" +
+            "@media (max-width:640px){.eg-tf4-ctrl{padding:3px 4px;gap:3px}.eg-tf4-inp{width:34px;height:30px;font-size:14px}.eg-tf4-qbtn{min-width:26px;height:30px;padding:0 5px;font-size:12.5px}}";
+        (document.head || document.documentElement).appendChild(st);
+    }
+
+    if (document.head) ensureStyles();
+    else window.addEventListener("DOMContentLoaded", ensureStyles);
+
+    window.isTf4Question = function(q) {
+        if (!q) return false;
+        if (q.isTf4 || q.type === "tf4" || q.origType === "tf4") return true;
+        if (Array.isArray(q.tfValues) && q.tfValues.length === 4) return true;
+        if (/Điền\s+Đ\s*\(?Đúng\)?\s*hoặc\s+S\s*\(?Sai\)?/i.test(String(q.q || ""))) return true;
+        return false;
+    };
+
+    window.isBlankQuestion = function(q) {
+        if (!q || window.isTf4Question(q)) return false;
+        return !!(q.isBlank || q.type === "blank" || q.origType === "blank");
+    };
+
+    window.getTf4Expected = function(q) {
+        if (!q) return ["Đ", "S", "Đ", "S"];
+        if (Array.isArray(q.tfValues) && q.tfValues.length === 4) {
+            return q.tfValues.map(function(v) {
+                var s = String(v || "").trim().toUpperCase();
+                return (s === "S" || s === "SAI" || s === "FALSE" || s === "F" || s === "0") ? "S" : "Đ";
+            });
+        }
+        var ansArr = Array.isArray(q.answers) ? q.answers.map(Number) : [Number(q.answer) || 0];
+        return [0, 1, 2, 3].map(function(i) {
+            return ansArr.indexOf(i) >= 0 ? "Đ" : "S";
+        });
+    };
+
+    window.getTf4SummaryText = function(q) {
+        var exp = window.getTf4Expected(q);
+        var L = ["A", "B", "C", "D"];
+        return L.map(function(ch, i) { return ch + ": " + exp[i]; }).join(" • ");
+    };
+
+    window.getTf4SpeechText = function(q) {
+        var exp = window.getTf4Expected(q);
+        var L = ["A", "B", "C", "D"];
+        return L.map(function(ch, i) { return ch + " " + (exp[i] === "Đ" ? "Đúng" : "Sai"); }).join(", ");
+    };
+
+    function normalizeBlankAns(s) {
+        return String(s || "").trim().toLowerCase()
+            .replace(/^[a-z]\s*=\s*/i, "")
+            .replace(/\s+/g, " ")
+            .replace(/,/g, ".");
+    }
+
+    window.checkBlankUserAnswer = function(q, userStr) {
+        var u = normalizeBlankAns(userStr);
+        if (!u) return false;
+        var candidates = [];
+        if (Array.isArray(q.blanks)) candidates = candidates.concat(q.blanks);
+        if (q.rawBlankAnswer) candidates.push(q.rawBlankAnswer);
+        if (Array.isArray(q.options) && q.options[q.answer] !== undefined) candidates.push(q.options[q.answer]);
+        if (typeof q.answer === "string") candidates.push(q.answer);
+        for (var i = 0; i < candidates.length; i++) {
+            var c = normalizeBlankAns(candidates[i]);
+            if (c && (u === c || u.replace(/\s/g, "") === c.replace(/\s/g, ""))) return true;
+        }
+        return false;
+    };
+
+    window.cleanupTf4OnContainer = function(scopeEl) {
+        var root = scopeEl || document;
+        var oldCtrls = root.querySelectorAll(".eg-tf4-ctrl, .eg-tf4-submit-wrap, .eg-blank-inline-wrap, .eg-tf4-panel-box");
+        for (var i = 0; i < oldCtrls.length; i++) oldCtrls[i].remove();
+        var oldHosts = root.querySelectorAll(".eg-tf4-host-btn");
+        for (var j = 0; j < oldHosts.length; j++) {
+            var h = oldHosts[j];
+            h.classList.remove("eg-tf4-host-btn");
+            if (h.__egTf4Capture) {
+                h.removeEventListener("click", h.__egTf4Capture, true);
+                h.__egTf4Capture = null;
+            }
+        }
+    };
+
+    window.lockTf4Controls = function(scopeEl) {
+        var root = scopeEl || document;
+        var inps = root.querySelectorAll(".eg-tf4-inp, .eg-tf4-qbtn, .eg-tf4-submit-btn");
+        for (var i = 0; i < inps.length; i++) {
+            inps[i].disabled = true;
+            inps[i].style.pointerEvents = "none";
+        }
+    };
+
+    window.prefillFiftyTf4 = function(scopeEl, q) {
+        var root = scopeEl || document;
+        var exp = window.getTf4Expected(q);
+        var ctrls = root.querySelectorAll(".eg-tf4-ctrl");
+        if (!ctrls || ctrls.length < 4) return;
+        var pool = [0, 1, 2, 3];
+        for (var i = pool.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+        }
+        var picked = pool.slice(0, 2);
+        for (var k = 0; k < picked.length; k++) {
+            var idx = picked[k];
+            var ctrl = ctrls[idx];
+            if (ctrl && typeof ctrl.__setVal === "function") {
+                ctrl.__setVal(exp[idx], false);
+                var inp = ctrl.querySelector(".eg-tf4-inp");
+                if (inp) { inp.readOnly = true; inp.title = "Đã được 50:50 trợ giúp"; }
+                ctrl.style.borderColor = "#4ade80";
+            }
+        }
+    };
+
+    window.revealTf4OnContainer = function(scopeEl, q) {
+        var root = scopeEl || document;
+        var exp = window.getTf4Expected(q);
+        var ctrls = root.querySelectorAll(".eg-tf4-ctrl");
+        for (var i = 0; i < ctrls.length && i < 4; i++) {
+            var ctrl = ctrls[i];
+            var inp = ctrl.querySelector(".eg-tf4-inp");
+            var uVal = inp ? String(inp.value || "").trim().toUpperCase() : "";
+            var ok = (uVal === exp[i]);
+            ctrl.innerHTML = '<span class="eg-tf4-badge-res ' + (uVal ? (ok ? 'ok' : 'bad') : 'ok') + '">' +
+                (uVal ? (ok ? ('✓ ' + exp[i]) : ('✗ ' + uVal + ' → Đúng: ' + exp[i])) : ('Đáp án: ' + exp[i])) + '</span>';
+        }
+        var subWrap = root.querySelector(".eg-tf4-submit-wrap");
+        if (subWrap) {
+            subWrap.innerHTML = '<div class="eg-tf4-hint-msg" style="font-size:15px;color:#4ade80;">📋 Đáp án Đúng/Sai: ' + window.getTf4SummaryText(q) + '</div>';
+        }
+    };
+
+    window.mountTf4OnOptionButtons = function(q, optButtons, onSubmitResult, customOpts) {
+        ensureStyles();
+        customOpts = customOpts || {};
+        var btns = optButtons ? Array.prototype.slice.call(optButtons) : [];
+        if (!btns.length) return false;
+        var parent = btns[0].parentElement;
+        var outerScope = customOpts.parentContainer || (parent ? parent.parentElement : document) || document;
+
+        // Clean any old widgets first
+        var oldSubmits = outerScope.querySelectorAll(".eg-tf4-submit-wrap, .eg-blank-inline-wrap");
+        for (var c = 0; c < oldSubmits.length; c++) oldSubmits[c].remove();
+        for (var b = 0; b < btns.length; b++) {
+            var oldCtrl = btns[b].querySelectorAll(".eg-tf4-ctrl");
+            for (var oc = 0; oc < oldCtrl.length; oc++) oldCtrl[oc].remove();
+            if (btns[b].__egTf4Capture) {
+                btns[b].removeEventListener("click", btns[b].__egTf4Capture, true);
+                btns[b].__egTf4Capture = null;
+            }
+            btns[b].classList.remove("eg-tf4-host-btn");
+        }
+
+        // Case A: Blank question (Điền khuyết Trả lời: ...........)
+        if (window.isBlankQuestion(q)) {
+            var blankWrap = document.createElement("div");
+            blankWrap.className = "eg-blank-inline-wrap";
+            var prefixHtml = q.answerPrefix ? ('<span class="eg-blank-prefix">' + q.answerPrefix + '</span>') : '';
+            blankWrap.innerHTML =
+                '<span class="eg-blank-lbl">✍️ Trả lời:</span>' +
+                prefixHtml +
+                '<input type="text" class="eg-blank-inp" placeholder="...................." autocomplete="off" />' +
+                '<button type="button" class="eg-blank-submit-btn">✅ Chốt đáp án</button>';
+            if (parent && parent.nextSibling) parent.parentNode.insertBefore(blankWrap, parent.nextSibling);
+            else if (parent && parent.parentNode) parent.parentNode.appendChild(blankWrap);
+
+            var bInp = blankWrap.querySelector(".eg-blank-inp");
+            var bBtn = blankWrap.querySelector(".eg-blank-submit-btn");
+            var blankSubmitted = false;
+            function submitBlankInline() {
+                if (blankSubmitted) return;
+                var val = bInp ? String(bInp.value || "").trim() : "";
+                if (!val) {
+                    if (bInp) { bInp.focus(); bInp.style.borderColor = "#ef4444"; }
+                    return;
+                }
+                blankSubmitted = true;
+                var isOk = window.checkBlankUserAnswer(q, val);
+                var targetIdx = isOk ? (Number(q.answer) || 0) : (((Number(q.answer) || 0) + 1) % 4);
+                if (bInp) bInp.disabled = true;
+                if (bBtn) bBtn.disabled = true;
+                if (btns[targetIdx]) btns[targetIdx].click();
+            }
+            if (bBtn) bBtn.onclick = function(ev) { ev.stopPropagation(); submitBlankInline(); };
+            if (bInp) {
+                bInp.onclick = function(ev) { ev.stopPropagation(); };
+                bInp.onkeydown = function(ev) {
+                    ev.stopPropagation();
+                    if (ev.key === "Enter") { ev.preventDefault(); submitBlankInline(); }
+                };
+            }
+            return true;
+        }
+
+        // Case B: True/False 4 statements (Điền Đ / S)
+        if (!window.isTf4Question(q)) return false;
+
+        var expected = window.getTf4Expected(q);
+        var LETTERS = ["A", "B", "C", "D"];
+        var stateVals = ["", "", "", ""];
+        var submitted = false;
+        var inputs = [];
+
+        var submitWrap = document.createElement("div");
+        submitWrap.className = "eg-tf4-submit-wrap";
+        var submitBtn = document.createElement("button");
+        submitBtn.type = "button";
+        submitBtn.className = "eg-tf4-submit-btn";
+        submitBtn.textContent = "✅ CHỐT ĐÁP ÁN Đ / S (Đã điền 0/4)";
+        var hintMsg = document.createElement("div");
+        hintMsg.className = "eg-tf4-hint-msg";
+        hintMsg.textContent = "💡 Nhập hoặc bấm chọn Đ (Đúng) / S (Sai) cho cả 4 ý A, B, C, D rồi bấm Chốt đáp án";
+        submitWrap.appendChild(submitBtn);
+        submitWrap.appendChild(hintMsg);
+
+        function updateSubmitButtonState() {
+            var filled = 0;
+            var parts = [];
+            for (var i = 0; i < 4; i++) {
+                if (stateVals[i] === "Đ" || stateVals[i] === "S") {
+                    filled++;
+                    parts.push(LETTERS[i] + ":" + stateVals[i]);
+                } else {
+                    parts.push(LETTERS[i] + ":?");
+                }
+            }
+            if (filled === 4) {
+                submitBtn.classList.add("ready");
+                submitBtn.textContent = "✅ CHỐT ĐÁP ÁN Đ / S (" + parts.join(" • ") + ")";
+                hintMsg.textContent = "✨ Đã điền đủ 4/4 nhận định! Bấm nút trên hoặc nhấn phím Enter để chốt đáp án.";
+                hintMsg.style.color = "#86efac";
+            } else {
+                submitBtn.classList.remove("ready");
+                submitBtn.textContent = "✅ CHỐT ĐÁP ÁN Đ / S (Đã điền " + filled + "/4)";
+                hintMsg.textContent = "💡 Hãy chọn Đ (Đúng) hoặc S (Sai) cho từng ý A, B, C, D (" + parts.join(" • ") + ")";
+                hintMsg.style.color = "#fde68a";
+            }
+        }
+
+        for (var i = 0; i < 4 && i < btns.length; i++) {
+            (function(idx) {
+                var btn = btns[idx];
+                var hexi = btn.querySelector(".hexi");
+                var targetBox = hexi || btn;
+
+                if (!hexi) {
+                    // Wrap existing contents of btn so statement text stays together on the left
+                    if (!btn.querySelector(".eg-tf4-stmt-wrap")) {
+                        var wrapSpan = document.createElement("span");
+                        wrapSpan.className = "eg-tf4-stmt-wrap";
+                        while (btn.firstChild) {
+                            wrapSpan.appendChild(btn.firstChild);
+                        }
+                        btn.appendChild(wrapSpan);
+                    }
+                    btn.classList.add("eg-tf4-host-btn");
+                }
+
+                var ctrl = document.createElement("div");
+                ctrl.className = "eg-tf4-ctrl";
+                ctrl.setAttribute("data-idx", String(idx));
+
+                var inp = document.createElement("input");
+                inp.type = "text";
+                inp.className = "eg-tf4-inp";
+                inp.maxLength = 1;
+                inp.placeholder = "Đ/S";
+                inp.autocomplete = "off";
+                inp.title = "Nhập Đ (Đúng) hoặc S (Sai) cho ý " + LETTERS[idx];
+
+                var btnD = document.createElement("span");
+                btnD.setAttribute("role", "button");
+                btnD.setAttribute("tabindex", "0");
+                btnD.className = "eg-tf4-qbtn eg-btn-d";
+                btnD.textContent = "Đ";
+                btnD.title = "Chọn Đúng (Đ) cho ý " + LETTERS[idx];
+
+                var btnS = document.createElement("span");
+                btnS.setAttribute("role", "button");
+                btnS.setAttribute("tabindex", "0");
+                btnS.className = "eg-tf4-qbtn eg-btn-s";
+                btnS.textContent = "S";
+                btnS.title = "Chọn Sai (S) cho ý " + LETTERS[idx];
+
+                ctrl.appendChild(inp);
+                ctrl.appendChild(btnD);
+                ctrl.appendChild(btnS);
+                targetBox.appendChild(ctrl);
+                inputs[idx] = inp;
+
+                function setVal(val, autoAdvance) {
+                    if (submitted) return;
+                    if (inp.readOnly && val !== stateVals[idx] && stateVals[idx]) return;
+                    stateVals[idx] = val;
+                    inp.value = val;
+                    inp.classList.remove("val-d", "val-s", "shake-warn");
+                    btnD.classList.remove("active");
+                    btnS.classList.remove("active");
+                    if (val === "Đ") {
+                        inp.classList.add("val-d");
+                        btnD.classList.add("active");
+                    } else if (val === "S") {
+                        inp.classList.add("val-s");
+                        btnS.classList.add("active");
+                    }
+                    updateSubmitButtonState();
+                    if (autoAdvance && (val === "Đ" || val === "S")) {
+                        for (var step = 1; step <= 4; step++) {
+                            var nextIdx = (idx + step) % 4;
+                            if (!stateVals[nextIdx] && inputs[nextIdx] && !inputs[nextIdx].readOnly) {
+                                inputs[nextIdx].focus();
+                                inputs[nextIdx].select();
+                                return;
+                            }
+                        }
+                    }
+                }
+                ctrl.__setVal = setVal;
+
+                btnD.addEventListener("click", function(ev) {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    setVal("Đ", true);
+                });
+                btnS.addEventListener("click", function(ev) {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    setVal("S", true);
+                });
+                inp.addEventListener("click", function(ev) {
+                    ev.stopPropagation();
+                    inp.select();
+                });
+                inp.addEventListener("input", function(ev) {
+                    ev.stopPropagation();
+                    var raw = String(inp.value || "").trim().toUpperCase();
+                    var ch = raw.slice(-1);
+                    if (ch === "Đ" || ch === "D" || ch === "1" || ch === "T") {
+                        setVal("Đ", true);
+                    } else if (ch === "S" || ch === "0" || ch === "F") {
+                        setVal("S", true);
+                    } else {
+                        setVal("", false);
+                    }
+                });
+                inp.addEventListener("keydown", function(ev) {
+                    ev.stopPropagation();
+                    if (ev.key === "Backspace" || ev.key === "Delete") {
+                        ev.preventDefault();
+                        setVal("", false);
+                    } else if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
+                        ev.preventDefault();
+                        if (inputs[(idx + 1) % 4]) { inputs[(idx + 1) % 4].focus(); inputs[(idx + 1) % 4].select(); }
+                    } else if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") {
+                        ev.preventDefault();
+                        if (inputs[(idx + 3) % 4]) { inputs[(idx + 3) % 4].focus(); inputs[(idx + 3) % 4].select(); }
+                    } else if (ev.key === "Enter") {
+                        ev.preventDefault();
+                        submitBtn.click();
+                    }
+                });
+
+                // Capture-phase listener on btn to block premature single-choice click
+                var captureFn = function(ev) {
+                    if (submitted) return;
+                    if (ev.target === btnD || btnD.contains(ev.target)) {
+                        ev.stopImmediatePropagation();
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                        setVal("Đ", true);
+                        return;
+                    }
+                    if (ev.target === btnS || btnS.contains(ev.target)) {
+                        ev.stopImmediatePropagation();
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                        setVal("S", true);
+                        return;
+                    }
+                    if (ev.target === inp) {
+                        ev.stopImmediatePropagation();
+                        ev.stopPropagation();
+                        return;
+                    }
+                    // Clicked on the option statement card itself -> focus input or cycle Đ -> S
+                    ev.stopImmediatePropagation();
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    if (!stateVals[idx]) {
+                        setVal("Đ", false);
+                        inp.focus();
+                    } else if (stateVals[idx] === "Đ") {
+                        setVal("S", false);
+                        inp.focus();
+                    } else {
+                        setVal("Đ", false);
+                        inp.focus();
+                    }
+                };
+                btn.__egTf4Capture = captureFn;
+                btn.addEventListener("click", captureFn, true);
+            })(i);
+        }
+
+        function doRevealVisuals() {
+            for (var k = 0; k < 4 && k < btns.length; k++) {
+                var ctrl = btns[k].querySelector(".eg-tf4-ctrl");
+                var ok = (stateVals[k] === expected[k]);
+                if (ctrl) {
+                    ctrl.innerHTML = '<span class="eg-tf4-badge-res ' + (ok ? 'ok' : 'bad') + '">' +
+                        (ok ? ('✓ ' + expected[k]) : ('✗ ' + (stateVals[k] || '?') + ' (Đúng: ' + expected[k] + ')')) + '</span>';
+                }
+                btns[k].classList.remove("correct", "wrong", "correct-choice", "wrong-choice", "selected", "pending");
+                btns[k].classList.add(ok ? "correct" : "wrong");
+            }
+            submitWrap.innerHTML = '<div class="eg-tf4-hint-msg" style="font-size:15px;color:#4ade80;">📋 Đáp án đúng: ' + window.getTf4SummaryText(q) + '</div>';
+        }
+
+        submitBtn.addEventListener("click", function(ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+            if (submitted && !customOpts.deferReveal) return;
+
+            var firstEmpty = -1;
+            for (var k = 0; k < 4; k++) {
+                if (stateVals[k] !== "Đ" && stateVals[k] !== "S") {
+                    if (firstEmpty < 0) firstEmpty = k;
+                    if (inputs[k]) {
+                        inputs[k].classList.remove("shake-warn");
+                        void inputs[k].offsetWidth;
+                        inputs[k].classList.add("shake-warn");
+                    }
+                }
+            }
+            if (firstEmpty >= 0) {
+                hintMsg.textContent = "⚠️ Bạn chưa điền đủ Đ hoặc S cho cả 4 ý A, B, C, D! Hãy điền tiếp ý " + LETTERS[firstEmpty] + ".";
+                hintMsg.style.color = "#fca5a5";
+                if (inputs[firstEmpty]) inputs[firstEmpty].focus();
+                return;
+            }
+
+            var allCorrect = true;
+            for (var m = 0; m < 4; m++) {
+                if (stateVals[m] !== expected[m]) allCorrect = false;
+            }
+            var summaryStr = window.getTf4SummaryText(q);
+
+            if (customOpts.deferReveal && typeof onSubmitResult === "function") {
+                onSubmitResult(allCorrect, stateVals.slice(), expected.slice(), summaryStr, function() {
+                    submitted = true;
+                    doRevealVisuals();
+                });
+                return;
+            }
+
+            submitted = true;
+            if (typeof onSubmitResult === "function") {
+                onSubmitResult(allCorrect, stateVals.slice(), expected.slice(), summaryStr);
+            } else {
+                var targetIdx = allCorrect ? (Number(q.answer) || 0) : (((Number(q.answer) || 0) + 1) % 4);
+                if (btns[targetIdx]) btns[targetIdx].click();
+            }
+
+            setTimeout(function() {
+                doRevealVisuals();
+                // Update any feedback text inside modal/stage so it shows full A-B-C-D Đ/S key
+                var fbSelectors = ["#modalFeedback", ".sn-modal-result", ".pi-modal-result", "#result"];
+                for (var f = 0; f < fbSelectors.length; f++) {
+                    var fbEl = document.querySelector(fbSelectors[f]);
+                    if (fbEl && fbEl.textContent && !allCorrect) {
+                        fbEl.textContent = "❌ Chưa chính xác! Đáp án đúng là: " + summaryStr;
+                    }
+                }
+            }, 20);
+        });
+
+        if (parent && parent.nextSibling) {
+            parent.parentNode.insertBefore(submitWrap, parent.nextSibling);
+        } else if (parent && parent.parentNode) {
+            parent.parentNode.appendChild(submitWrap);
+        }
+        return true;
+    };
+
+    window.mountTf4PanelInQuestionBox = function(q, containerEl, onSubmitResult) {
+        ensureStyles();
+        if (!containerEl) return false;
+        var old = containerEl.querySelectorAll(".eg-tf4-panel-box, .eg-blank-inline-wrap");
+        for (var c = 0; c < old.length; c++) old[c].remove();
+
+        if (window.isBlankQuestion(q)) {
+            var bWrap = document.createElement("div");
+            bWrap.className = "eg-blank-inline-wrap";
+            var pfx = q.answerPrefix ? ('<span class="eg-blank-prefix">' + q.answerPrefix + '</span>') : '';
+            bWrap.innerHTML =
+                '<span class="eg-blank-lbl">✍️ Trả lời:</span>' + pfx +
+                '<input type="text" class="eg-blank-inp" placeholder="...................." autocomplete="off" />' +
+                '<button type="button" class="eg-blank-submit-btn">✅ Chốt đáp án</button>';
+            containerEl.appendChild(bWrap);
+            var inpB = bWrap.querySelector(".eg-blank-inp");
+            var btnB = bWrap.querySelector(".eg-blank-submit-btn");
+            var doneB = false;
+            function subB() {
+                if (doneB) return;
+                var v = inpB ? String(inpB.value || "").trim() : "";
+                if (!v) { if (inpB) inpB.focus(); return; }
+                doneB = true;
+                var ok = window.checkBlankUserAnswer(q, v);
+                if (typeof onSubmitResult === "function") onSubmitResult(ok);
+            }
+            if (btnB) btnB.onclick = function(e) { e.stopPropagation(); subB(); };
+            if (inpB) {
+                inpB.onclick = function(e) { e.stopPropagation(); };
+                inpB.onkeydown = function(e) { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); subB(); } };
+            }
+            return true;
+        }
+
+        if (!window.isTf4Question(q)) return false;
+
+        var exp = window.getTf4Expected(q);
+        var LETTERS = ["A", "B", "C", "D"];
+        var stateVals = ["", "", "", ""];
+        var submitted = false;
+        var inputs = [];
+        var rows = [];
+
+        var panel = document.createElement("div");
+        panel.className = "eg-tf4-panel-box";
+
+        for (var i = 0; i < 4; i++) {
+            (function(idx) {
+                var row = document.createElement("div");
+                row.className = "eg-tf4-panel-row";
+                var optTxt = (q.options && q.options[idx]) ? q.options[idx] : ("Nhận định " + LETTERS[idx]);
+                var left = document.createElement("div");
+                left.className = "eg-tf4-stmt-wrap";
+                left.innerHTML = '<strong style="color:#fbbf24;">' + LETTERS[idx] + '.</strong> <span>' + optTxt + '</span>';
+
+                var ctrl = document.createElement("div");
+                ctrl.className = "eg-tf4-ctrl";
+                var inp = document.createElement("input");
+                inp.type = "text";
+                inp.className = "eg-tf4-inp";
+                inp.maxLength = 1;
+                inp.placeholder = "Đ/S";
+                var btnD = document.createElement("span");
+                btnD.className = "eg-tf4-qbtn eg-btn-d";
+                btnD.textContent = "Đ";
+                var btnS = document.createElement("span");
+                btnS.className = "eg-tf4-qbtn eg-btn-s";
+                btnS.textContent = "S";
+
+                ctrl.appendChild(inp);
+                ctrl.appendChild(btnD);
+                ctrl.appendChild(btnS);
+                row.appendChild(left);
+                row.appendChild(ctrl);
+                panel.appendChild(row);
+                inputs[idx] = inp;
+                rows[idx] = row;
+
+                function setVal(val, autoAdv) {
+                    if (submitted) return;
+                    stateVals[idx] = val;
+                    inp.value = val;
+                    inp.classList.remove("val-d", "val-s", "shake-warn");
+                    btnD.classList.remove("active");
+                    btnS.classList.remove("active");
+                    if (val === "Đ") { inp.classList.add("val-d"); btnD.classList.add("active"); }
+                    else if (val === "S") { inp.classList.add("val-s"); btnS.classList.add("active"); }
+                    updateBtn();
+                    if (autoAdv && (val === "Đ" || val === "S")) {
+                        for (var s = 1; s <= 4; s++) {
+                            var ni = (idx + s) % 4;
+                            if (!stateVals[ni] && inputs[ni]) { inputs[ni].focus(); return; }
+                        }
+                    }
+                }
+                btnD.onclick = function(e) { e.stopPropagation(); setVal("Đ", true); };
+                btnS.onclick = function(e) { e.stopPropagation(); setVal("S", true); };
+                inp.onclick = function(e) { e.stopPropagation(); inp.select(); };
+                inp.oninput = function(e) {
+                    e.stopPropagation();
+                    var ch = String(inp.value || "").trim().toUpperCase().slice(-1);
+                    if (ch === "Đ" || ch === "D" || ch === "1" || ch === "T") setVal("Đ", true);
+                    else if (ch === "S" || ch === "0" || ch === "F") setVal("S", true);
+                    else setVal("", false);
+                };
+                inp.onkeydown = function(e) {
+                    e.stopPropagation();
+                    if (e.key === "Enter") { e.preventDefault(); subBtn.click(); }
+                };
+            })(i);
+        }
+
+        var subWrap = document.createElement("div");
+        subWrap.className = "eg-tf4-submit-wrap";
+        var subBtn = document.createElement("button");
+        subBtn.type = "button";
+        subBtn.className = "eg-tf4-submit-btn";
+        subBtn.textContent = "✅ CHỐT ĐÁP ÁN Đ / S (Đã điền 0/4)";
+        subWrap.appendChild(subBtn);
+        panel.appendChild(subWrap);
+
+        function updateBtn() {
+            var c = 0;
+            for (var k = 0; k < 4; k++) if (stateVals[k] === "Đ" || stateVals[k] === "S") c++;
+            subBtn.textContent = "✅ CHỐT ĐÁP ÁN Đ / S (Đã điền " + c + "/4)";
+            subBtn.classList.toggle("ready", c === 4);
+        }
+
+        subBtn.onclick = function(e) {
+            e.stopPropagation();
+            if (submitted) return;
+            for (var k = 0; k < 4; k++) {
+                if (stateVals[k] !== "Đ" && stateVals[k] !== "S") {
+                    inputs[k].classList.add("shake-warn");
+                    inputs[k].focus();
+                    return;
+                }
+            }
+            submitted = true;
+            var allOk = true;
+            for (var m = 0; m < 4; m++) {
+                var ok = (stateVals[m] === exp[m]);
+                if (!ok) allOk = false;
+                rows[m].classList.add(ok ? "row-ok" : "row-bad");
+            }
+            if (typeof onSubmitResult === "function") {
+                onSubmitResult(allOk, stateVals.slice(), exp.slice(), window.getTf4SummaryText(q));
+            }
+        };
+
+        containerEl.appendChild(panel);
+        return true;
+    };
+}
+function installClassroomPicker() {
+    if (window.__classroomPickerInstalled) return;
+    window.__classroomPickerInstalled = true;
+
+    var STORAGE_KEY = "EDUGAME_CLASS_ROSTER_V1";
+    var state = {
+        className: "Lớp học",
+        students: [],
+        called: [],
+        spinning: false,
+        audioCtx: null
+    };
+
+    function loadRoster() {
+        var loaded = null;
+        try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) loaded = JSON.parse(raw);
+        } catch (e) {}
+        if (!loaded || !loaded.students || !loaded.students.length) {
+            if (window.__INITIAL_CLASS_ROSTER && window.__INITIAL_CLASS_ROSTER.students && window.__INITIAL_CLASS_ROSTER.students.length) {
+                loaded = window.__INITIAL_CLASS_ROSTER;
+            }
+        }
+        if (loaded && loaded.students && loaded.students.length) {
+            state.className = loaded.className || "Lớp học";
+            state.students = loaded.students.slice();
+        } else {
+            state.className = "Mặc định (STT 1 -> 40)";
+            state.students = [];
+            for (var i = 1; i <= 40; i++) {
+                state.students.push("Số thứ tự " + (i < 10 ? "0" + i : i));
+            }
+        }
+    }
+
+    function saveRoster(className, list) {
+        state.className = className || "Lớp học";
+        state.students = list.slice();
+        state.called = [];
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                className: state.className,
+                students: state.students,
+                isDefault: false
+            }));
+        } catch (e) {}
+    }
+
+    function getAudio() {
+        try {
+            if (!state.audioCtx) {
+                var AC = window.AudioContext || window.webkitAudioContext;
+                if (AC) state.audioCtx = new AC();
+            }
+            if (state.audioCtx && state.audioCtx.state === "suspended") {
+                state.audioCtx.resume();
+            }
+        } catch (e) {}
+        return state.audioCtx;
+    }
+
+    function playTick(freq) {
+        var ctx = getAudio();
+        if (!ctx) return;
+        try {
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq || 620, ctx.currentTime);
+            gain.gain.setValueAtTime(0.14, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+        } catch (e) {}
+    }
+
+    function playWinnerFanfare() {
+        var ctx = getAudio();
+        if (!ctx) return;
+        try {
+            var notes = [523.25, 659.25, 783.99, 1046.5];
+            for (var i = 0; i < notes.length; i++) {
+                (function(idx) {
+                    var osc = ctx.createOscillator();
+                    var gain = ctx.createGain();
+                    var startT = ctx.currentTime + idx * 0.09;
+                    var dur = idx === notes.length - 1 ? 0.45 : 0.14;
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(notes[idx], startT);
+                    gain.gain.setValueAtTime(0.22, startT);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startT + dur);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(startT);
+                    osc.stop(startT + dur + 0.02);
+                })(i);
+            }
+        } catch (e) {}
+    }
+
+    function speakWinner(name) {
+        var text = "Xin mời " + name;
+        try {
+            if (window.speechSynthesis && !window.__fakeTTS) {
+                window.speechSynthesis.cancel();
+                var u = new SpeechSynthesisUtterance(text);
+                u.lang = "vi-VN";
+                u.rate = 1.02;
+                window.speechSynthesis.speak(u);
+                return;
+            }
+        } catch (e) {}
+        try {
+            if (typeof window.ttsEl === "function") {
+                var url = "https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=" + encodeURIComponent(text);
+                var a = window.ttsEl(url);
+                if (a && a.play) a.play().catch(function() {});
+            }
+        } catch (e) {}
+    }
+
+    function mountUI() {
+        if (!document.body || document.getElementById("edugame-picker-fab")) return;
+        loadRoster();
+
+        var st = document.createElement("style");
+        st.textContent =
+            "#edugame-picker-fab{position:fixed;top:68px;left:14px;z-index:99990;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:2px solid #fef08a;border-radius:30px;padding:8px 14px;font-family:sans-serif;font-size:14px;font-weight:800;cursor:grab;box-shadow:0 6px 20px rgba(0,0,0,0.45);display:flex;align-items:center;gap:6px;transition:transform 0.18s,box-shadow 0.18s;user-select:none;-webkit-user-select:none;touch-action:none}" +
+            "#edugame-picker-fab:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(245,158,11,0.65)}" +
+            "#edugame-picker-fab.epm-dragging{cursor:grabbing !important;transition:none !important;transform:scale(1.07);box-shadow:0 12px 32px rgba(245,158,11,0.9);opacity:0.95}" +
+            "#edugame-fs-fab{position:fixed;top:114px;left:14px;z-index:99990;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;border:2px solid #bae6fd;border-radius:30px;padding:8px 14px;font-family:sans-serif;font-size:13.5px;font-weight:800;cursor:grab;box-shadow:0 6px 20px rgba(0,0,0,0.45);display:flex;align-items:center;gap:6px;transition:transform 0.18s,box-shadow 0.18s,background 0.2s;user-select:none;-webkit-user-select:none;touch-action:none}" +
+            "#edugame-fs-fab:hover{transform:scale(1.05);box-shadow:0 8px 25px rgba(14,165,233,0.65)}" +
+            "#edugame-fs-fab.epm-fs-active{background:linear-gradient(135deg,#6366f1,#4f46e5);border-color:#c7d2fe}" +
+            "#edugame-fs-fab.epm-dragging{cursor:grabbing !important;transition:none !important;transform:scale(1.07);box-shadow:0 12px 32px rgba(14,165,233,0.9);opacity:0.95}" +
+            "#edugame-picker-modal{position:fixed;inset:0;background:rgba(15,23,42,0.82);z-index:100005;display:none;align-items:center;justify-content:center;padding:16px;font-family:sans-serif;backdrop-filter:blur(5px)}" +
+            ".epm-card{background:linear-gradient(160deg,#1e1b4b 0%,#0f172a 100%);border:3px solid #f59e0b;border-radius:22px;width:600px;max-width:95vw;padding:22px 24px;color:#fff;box-shadow:0 25px 70px rgba(0,0,0,0.75);text-align:center;position:relative}" +
+            ".epm-stage{margin:16px 0;padding:28px 16px;background:radial-gradient(circle,#312e81 0%,#090d16 100%);border:3px dashed #fbbf24;border-radius:18px;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 30px rgba(0,0,0,0.6)}" +
+            ".epm-name{font-size:36px;font-weight:900;color:#fef08a;text-shadow:0 4px 18px rgba(251,191,36,0.55);line-height:1.25;word-break:break-word}" +
+            ".epm-sub{font-size:13px;color:#94a3b8;margin-top:8px}" +
+            ".epm-btn-spin{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:2px solid #a7f3d0;padding:14px 28px;border-radius:14px;font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 8px 25px rgba(16,185,129,0.4);transition:transform 0.15s;width:100%;margin-bottom:12px}" +
+            ".epm-btn-spin:hover{transform:translateY(-2px)}" +
+            ".epm-btn-spin:disabled{opacity:0.6;cursor:wait}" +
+            ".epm-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:13px;color:#cbd5e1}" +
+            ".epm-mini-btn{background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px solid rgba(255,255,255,0.22);padding:6px 12px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer}" +
+            ".epm-mini-btn:hover{background:rgba(255,255,255,0.2)}" +
+            "@media (max-width:650px){#edugame-picker-fab{padding:6px 11px;font-size:12px;top:60px;left:10px}#edugame-fs-fab{padding:6px 11px;font-size:12px;top:100px;left:10px}.epm-name{font-size:25px}}";
+        document.head.appendChild(st);
+
+        var fab = document.createElement("button");
+        fab.id = "edugame-picker-fab";
+        fab.type = "button";
+        fab.title = "Bấm để gọi tên HS (F2) • Giữ chuột/ngón tay kéo đến vị trí bất kỳ";
+        fab.innerHTML = "<span style=\"opacity:0.75;font-size:13px;margin-right:1px\">⠿</span><span>🎲</span><span>Gọi tên HS</span>";
+        document.body.appendChild(fab);
+
+        var fsFab = document.createElement("button");
+        fsFab.id = "edugame-fs-fab";
+        fsFab.type = "button";
+        fsFab.title = "Bấm để phóng to Toàn màn hình / Thoát Full • Giữ chuột/ngón tay kéo đến vị trí bất kỳ";
+        fsFab.innerHTML = "<span style=\"opacity:0.75;font-size:13px;margin-right:1px\">⠿</span><span>⛶</span><span>Full màn hình</span>";
+        document.body.appendChild(fsFab);
+
+        var modal = document.createElement("div");
+        modal.id = "edugame-picker-modal";
+        modal.innerHTML =
+            '<div class="epm-card">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+                    '<div style="text-align:left;">' +
+                        '<div style="font-size:19px;font-weight:900;color:#fbbf24;">🎲 VÒNG QUAY GỌI TÊN HỌC SINH</div>' +
+                        '<div id="epm-class-label" style="font-size:12.5px;color:#cbd5e1;margin-top:2px;"></div>' +
+                    '</div>' +
+                    '<button type="button" id="epm-close" style="background:rgba(255,255,255,0.12);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;font-weight:bold;cursor:pointer;">×</button>' +
+                '</div>' +
+                '<div class="epm-stage">' +
+                    '<div class="epm-name" id="epm-display">🎁 Sẵn sàng quay!</div>' +
+                    '<div class="epm-sub" id="epm-subtext">Bấm nút bên dưới hoặc ấn phím Space / F2 để chọn ngẫu nhiên</div>' +
+                '</div>' +
+                '<button type="button" class="epm-btn-spin" id="epm-spin-btn">🎰 QUAY GỌI TÊN NGẪU NHIÊN</button>' +
+                '<div class="epm-toolbar">' +
+                    '<span id="epm-counter-badge" style="background:rgba(245,158,11,0.2);border:1px solid #f59e0b;color:#fde68a;padding:4px 10px;border-radius:20px;font-weight:700;"></span>' +
+                    '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+                        '<button type="button" class="epm-mini-btn" id="epm-reset-btn">🔄 Làm mới lượt</button>' +
+                        '<button type="button" class="epm-mini-btn" id="epm-edit-btn">✏️ Đổi danh sách / Sĩ số</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div id="epm-editor-panel" style="display:none;margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.2);text-align:left;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px;">' +
+                        '<span style="font-size:12.5px;font-weight:700;color:#fde68a;">Nhập tên HS (mỗi dòng 1 tên) hoặc chọn nhanh sĩ số:</span>' +
+                        '<div style="display:flex;gap:4px;">' +
+                            '<button type="button" class="epm-mini-btn" data-quick-num="35">1→35</button>' +
+                            '<button type="button" class="epm-mini-btn" data-quick-num="40">1→40</button>' +
+                            '<button type="button" class="epm-mini-btn" data-quick-num="45">1→45</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<textarea id="epm-textarea" rows="5" style="width:100%;box-sizing:border-box;border-radius:10px;padding:8px 10px;font-size:13px;background:#0f172a;color:#fff;border:1px solid #475569;font-family:sans-serif;"></textarea>' +
+                    '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">' +
+                        '<button type="button" class="epm-mini-btn" id="epm-save-roster" style="background:#d97706;border-color:#fbbf24;color:#fff;">💾 Lưu áp dụng ngay</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(modal);
+
+        function refreshMeta() {
+            var lbl = document.getElementById("epm-class-label");
+            var cnt = document.getElementById("epm-counter-badge");
+            if (lbl) lbl.textContent = state.className + " • Tổng số: " + state.students.length + " học sinh";
+            if (cnt) cnt.textContent = "Đã gọi: " + state.called.length + "/" + state.students.length + " HS (Không lặp)";
+        }
+
+        function spinNow() {
+            if (state.spinning) return;
+            if (!state.students.length) loadRoster();
+            var remaining = [];
+            for (var i = 0; i < state.students.length; i++) {
+                if (state.called.indexOf(state.students[i]) === -1) {
+                    remaining.push(state.students[i]);
+                }
+            }
+            if (remaining.length === 0) {
+                state.called = [];
+                remaining = state.students.slice();
+            }
+            state.spinning = true;
+            var btn = document.getElementById("epm-spin-btn");
+            var disp = document.getElementById("epm-display");
+            var sub = document.getElementById("epm-subtext");
+            if (btn) btn.disabled = true;
+            if (sub) sub.textContent = "🥁 Đang quay ngẫu nhiên... Hồi hộp chờ xem ai được gọi!";
+
+            var winner = remaining[Math.floor(Math.random() * remaining.length)];
+            var totalSteps = 24;
+            var step = 0;
+
+            function nextTick() {
+                step++;
+                if (step < totalSteps) {
+                    var randName = state.students[Math.floor(Math.random() * state.students.length)];
+                    if (disp) {
+                        disp.textContent = "🎲 " + randName;
+                        disp.style.color = step % 2 === 0 ? "#fef08a" : "#7dd3fc";
+                        disp.style.transform = "scale(" + (step % 2 === 0 ? "1.04" : "0.97") + ")";
+                    }
+                    playTick(480 + step * 14);
+                    var delay = 40 + Math.floor((step * step) * 0.38);
+                    setTimeout(nextTick, delay);
+                } else {
+                    state.spinning = false;
+                    state.called.push(winner);
+                    if (btn) btn.disabled = false;
+                    if (disp) {
+                        disp.textContent = "🌟 " + winner + " 🌟";
+                        disp.style.color = "#4ade80";
+                        disp.style.transform = "scale(1.08)";
+                    }
+                    if (sub) sub.textContent = "🎉 Chúc mừng em đã được chọn lên trả lời câu hỏi!";
+                    refreshMeta();
+                    playWinnerFanfare();
+                    try {
+                        if (typeof window.confetti === "function") {
+                            window.confetti({ particleCount: 90, spread: 80, origin: { y: 0.55 } });
+                        }
+                    } catch (e) {}
+                    speakWinner(winner);
+                }
+            }
+            nextTick();
+        }
+
+        function bindDraggableFab(btnEl, storageKey, defLeft, defTop, defMobileTop, onTap) {
+            var dragState = { active: false, moved: false, startX: 0, startY: 0, origLeft: defLeft, origTop: defTop, lastDragEnd: 0 };
+
+            function clampAndApply(leftPx, topPx) {
+                var vw = window.innerWidth || document.documentElement.clientWidth || 800;
+                var vh = window.innerHeight || document.documentElement.clientHeight || 600;
+                var fw = btnEl.offsetWidth || 140;
+                var fh = btnEl.offsetHeight || 40;
+                var maxL = Math.max(6, vw - fw - 6);
+                var maxT = Math.max(6, vh - fh - 6);
+                var clampedL = Math.min(maxL, Math.max(6, Math.round(leftPx)));
+                var clampedT = Math.min(maxT, Math.max(6, Math.round(topPx)));
+                btnEl.style.left = clampedL + "px";
+                btnEl.style.top = clampedT + "px";
+                btnEl.style.bottom = "auto";
+                btnEl.style.right = "auto";
+                return { left: clampedL, top: clampedT };
+            }
+
+            function restorePos() {
+                try {
+                    var rawPos = localStorage.getItem(storageKey);
+                    if (rawPos) {
+                        var parsedPos = JSON.parse(rawPos);
+                        if (parsedPos && typeof parsedPos.left === "number" && typeof parsedPos.top === "number") {
+                            clampAndApply(parsedPos.left, parsedPos.top);
+                            return;
+                        }
+                    }
+                } catch (e) {}
+                clampAndApply(window.innerWidth <= 650 ? 10 : defLeft, window.innerWidth <= 650 ? defMobileTop : defTop);
+            }
+
+            function savePos(leftPx, topPx) {
+                try {
+                    localStorage.setItem(storageKey, JSON.stringify({ left: leftPx, top: topPx }));
+                } catch (e) {}
+            }
+
+            function onStart(clientX, clientY) {
+                var rect = btnEl.getBoundingClientRect();
+                dragState.active = true;
+                dragState.moved = false;
+                dragState.startX = clientX;
+                dragState.startY = clientY;
+                dragState.origLeft = rect.left;
+                dragState.origTop = rect.top;
+            }
+
+            function onMove(clientX, clientY, evt) {
+                if (!dragState.active) return;
+                var dx = clientX - dragState.startX;
+                var dy = clientY - dragState.startY;
+                if (!dragState.moved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+                    dragState.moved = true;
+                    btnEl.classList.add("epm-dragging");
+                }
+                if (dragState.moved) {
+                    if (evt && evt.cancelable) evt.preventDefault();
+                    clampAndApply(dragState.origLeft + dx, dragState.origTop + dy);
+                }
+            }
+
+            function onEnd() {
+                if (!dragState.active) return;
+                dragState.active = false;
+                btnEl.classList.remove("epm-dragging");
+                if (dragState.moved) {
+                    dragState.lastDragEnd = Date.now();
+                    var rect = btnEl.getBoundingClientRect();
+                    var finalPos = clampAndApply(rect.left, rect.top);
+                    savePos(finalPos.left, finalPos.top);
+                }
+            }
+
+            btnEl.addEventListener("mousedown", function(e) {
+                if (e.button !== 0) return;
+                onStart(e.clientX, e.clientY);
+            });
+            window.addEventListener("mousemove", function(e) {
+                if (!dragState.active) return;
+                onMove(e.clientX, e.clientY, e);
+            });
+            window.addEventListener("mouseup", function() {
+                onEnd();
+            });
+
+            btnEl.addEventListener("touchstart", function(e) {
+                if (!e.touches || !e.touches.length) return;
+                onStart(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            window.addEventListener("touchmove", function(e) {
+                if (!dragState.active || !e.touches || !e.touches.length) return;
+                onMove(e.touches[0].clientX, e.touches[0].clientY, e);
+            }, { passive: false });
+            window.addEventListener("touchend", function() {
+                onEnd();
+            });
+            window.addEventListener("touchcancel", function() {
+                onEnd();
+            });
+
+            window.addEventListener("resize", function() {
+                var rect = btnEl.getBoundingClientRect();
+                clampAndApply(rect.left, rect.top);
+            });
+
+            setTimeout(restorePos, 0);
+
+            btnEl.onclick = function(e) {
+                if (dragState.moved || (Date.now() - dragState.lastDragEnd < 280)) {
+                    if (e && e.preventDefault) e.preventDefault();
+                    return;
+                }
+                if (typeof onTap === "function") onTap();
+            };
+        }
+
+        function isCurrentlyFullscreen() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || document.body.classList.contains("eg-pseudo-fullscreen"));
+        }
+
+        function syncFullscreenUI() {
+            var active = isCurrentlyFullscreen();
+            if (document.body) {
+                document.body.classList.toggle("eg-fullscreen-zoom", active);
+            }
+            if (fsFab) {
+                fsFab.classList.toggle("epm-fs-active", active);
+                fsFab.innerHTML = active
+                    ? "<span style=\"opacity:0.75;font-size:13px;margin-right:1px\">⠿</span><span>🗗</span><span>Thoát Full</span>"
+                    : "<span style=\"opacity:0.75;font-size:13px;margin-right:1px\">⠿</span><span>⛶</span><span>Full màn hình</span>";
+            }
+            var inlineBtns = document.querySelectorAll(".eg-inline-fs-btn");
+            for (var i = 0; i < inlineBtns.length; i++) {
+                inlineBtns[i].innerHTML = active ? "🗗 Thoát Full" : "⛶ Full màn hình";
+            }
+        }
+
+        window.toggleEduGameFullscreen = function() {
+            var de = document.documentElement;
+            if (!isCurrentlyFullscreen()) {
+                var req = de.requestFullscreen || de.webkitRequestFullscreen || de.mozRequestFullScreen || de.msRequestFullscreen;
+                if (req) {
+                    try {
+                        var pr = req.call(de);
+                        if (pr && typeof pr.then === "function") {
+                            pr.then(syncFullscreenUI).catch(function() {
+                                document.body.classList.add("eg-pseudo-fullscreen");
+                                syncFullscreenUI();
+                            });
+                        } else {
+                            setTimeout(syncFullscreenUI, 100);
+                        }
+                    } catch (e) {
+                        document.body.classList.add("eg-pseudo-fullscreen");
+                        syncFullscreenUI();
+                    }
+                } else {
+                    document.body.classList.add("eg-pseudo-fullscreen");
+                    syncFullscreenUI();
+                }
+            } else {
+                document.body.classList.remove("eg-pseudo-fullscreen");
+                var ex = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+                if (ex && (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)) {
+                    try {
+                        var pr2 = ex.call(document);
+                        if (pr2 && typeof pr2.then === "function") pr2.then(syncFullscreenUI).catch(syncFullscreenUI);
+                        else setTimeout(syncFullscreenUI, 100);
+                    } catch (e) {
+                        syncFullscreenUI();
+                    }
+                } else {
+                    syncFullscreenUI();
+                }
+            }
+        };
+
+        document.addEventListener("fullscreenchange", syncFullscreenUI);
+        document.addEventListener("webkitfullscreenchange", syncFullscreenUI);
+        document.addEventListener("mozfullscreenchange", syncFullscreenUI);
+        document.addEventListener("MSFullscreenChange", syncFullscreenUI);
+
+        bindDraggableFab(fab, "EDUGAME_PICKER_FAB_POS_V1", 14, 68, 60, function() {
+            refreshMeta();
+            modal.style.display = "flex";
+        });
+
+        bindDraggableFab(fsFab, "EDUGAME_FS_FAB_POS_V1", 14, 114, 100, function() {
+            window.toggleEduGameFullscreen();
+        });
+        document.getElementById("epm-close").onclick = function() {
+            modal.style.display = "none";
+        };
+        modal.onclick = function(e) {
+            if (e.target === modal && !state.spinning) modal.style.display = "none";
+        };
+        document.getElementById("epm-spin-btn").onclick = spinNow;
+        document.getElementById("epm-reset-btn").onclick = function() {
+            state.called = [];
+            refreshMeta();
+            var disp = document.getElementById("epm-display");
+            var sub = document.getElementById("epm-subtext");
+            if (disp) { disp.textContent = "🎁 Đã làm mới lượt!"; disp.style.color = "#fef08a"; }
+            if (sub) sub.textContent = "Tất cả học sinh trong lớp đã sẵn sàng cho lượt quay mới.";
+        };
+        document.getElementById("epm-edit-btn").onclick = function() {
+            var ep = document.getElementById("epm-editor-panel");
+            var ta = document.getElementById("epm-textarea");
+            if (!ep) return;
+            var show = ep.style.display === "none";
+            ep.style.display = show ? "block" : "none";
+            if (show && ta) ta.value = state.students.join("\n");
+        };
+        var quickBtns = modal.querySelectorAll("[data-quick-num]");
+        for (var q = 0; q < quickBtns.length; q++) {
+            quickBtns[q].onclick = function() {
+                var n = parseInt(this.getAttribute("data-quick-num"), 10) || 40;
+                var arr = [];
+                for (var k = 1; k <= n; k++) arr.push("Số thứ tự " + (k < 10 ? "0" + k : k));
+                var ta = document.getElementById("epm-textarea");
+                if (ta) ta.value = arr.join("\n");
+            };
+        }
+        document.getElementById("epm-save-roster").onclick = function() {
+            var ta = document.getElementById("epm-textarea");
+            var rawText = ta ? ta.value : "";
+            var parts = rawText.split(/[\r\n,;]+/);
+            var clean = [];
+            for (var i = 0; i < parts.length; i++) {
+                var s = parts[i].trim();
+                if (s) clean.push(s);
+            }
+            if (!clean.length) return;
+            saveRoster("Danh sách lớp (" + clean.length + " HS)", clean);
+            document.getElementById("epm-editor-panel").style.display = "none";
+            refreshMeta();
+            var disp = document.getElementById("epm-display");
+            if (disp) disp.textContent = "✅ Đã lưu " + clean.length + " HS!";
+        };
+
+        window.addEventListener("keydown", function(e) {
+            if (e.key === "F2") {
+                e.preventDefault();
+                if (modal.style.display !== "flex") {
+                    refreshMeta();
+                    modal.style.display = "flex";
+                } else {
+                    spinNow();
+                }
+            }
+        });
+
+        refreshMeta();
+    }
+
+    if (document.body) {
+        mountUI();
+    } else {
+        window.addEventListener("DOMContentLoaded", mountUI);
+    }
+}
+installSafety();
+installConfettiFallback();
+installTtsUnlock();
+installLandscape();
+installQuestionMedia();
+installUniversalTf4Engine();
+installClassroomPicker();</script>
+
+<!-- Portal Back Button -->
+<style>
+.dt-portal-back-fab {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 99999;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc !important;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+.dt-portal-back-fab:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.45);
+}
+@media (max-width: 640px) {
+  .dt-portal-back-fab {
+    top: 8px;
+    left: 8px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+  }
+}
+</style>
+<a href="../../index.html" class="dt-portal-back-fab" title="Quay về Cổng Bài Giảng Điện Tử Thầy Đinh Công Tùng">
+  <span>🏠</span><span>Cổng bài giảng</span>
+</a>
+
+</body>
+</html>

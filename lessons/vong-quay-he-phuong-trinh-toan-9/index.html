@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vòng Quay May Mắn - EduGame</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<meta name="referrer" content="no-referrer">
+<script>function installSafety() {
+    // 1) Canvas: bù ctx.roundRect cho trình duyệt cũ
+    try {
+        var P = window.CanvasRenderingContext2D && window.CanvasRenderingContext2D.prototype;
+        if (P && !P.roundRect) P.roundRect = function (x, y, w, h, r) {
+            r = typeof r === "number" ? r : (r && r.length ? r[0] : 0); r = Math.max(0, Math.min(r, w / 2, h / 2));
+            this.moveTo(x + r, y); this.arcTo(x + w, y, x + w, y + h, r); this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r); this.arcTo(x, y, x + w, y, r); this.closePath();
+        };
+    } catch (e) { }
+    // 2) Giọng đọc của trình duyệt: WebView (Zalo...) thường KHÔNG có speechSynthesis -> bù bản giả để game không chết
+    try {
+        if (!window.speechSynthesis) {
+            var fake = {
+                speaking: false, pending: false, paused: false, onvoiceschanged: null,
+                getVoices: function () { return []; },
+                speak: function (u) { setTimeout(function () { try { if (u && u.onend) u.onend({}); } catch (e) { } }, 0); },
+                cancel: function () { }, pause: function () { }, resume: function () { },
+                addEventListener: function () { }, removeEventListener: function () { }
+            };
+            Object.defineProperty(window, "speechSynthesis", { value: fake, configurable: true, writable: true });
+            window.__fakeTTS = true;
+        }
+        if (!window.SpeechSynthesisUtterance) {
+            window.SpeechSynthesisUtterance = function (t) { this.text = t; this.lang = ""; this.voice = null; this.rate = 1; this.pitch = 1; this.volume = 1; };
+        }
+    } catch (e) { }
+    // 2b) Giọng trình duyệt đã chọn lúc tạo game (vd Hoài My) có thể KHÔNG có trên điện thoại học sinh -> game tự chuyển sang giọng Google
+    window.__voiceMissing = function (name) {
+        try {
+            var vs = window.speechSynthesis.getVoices();
+            if (!vs || !vs.length) return false;
+            for (var i = 0; i < vs.length; i++) { if (vs[i].name === name || vs[i].voiceURI === name) return false; }
+            return true;
+        } catch (e) { return false; }
+    };
+    // 3) Âm thanh hiệu ứng: nếu không có AudioContext thì bù bản im lặng
+    try {
+        if (!window.AudioContext && !window.webkitAudioContext) {
+            var param = function () { return { value: 0, setValueAtTime: function () { }, linearRampToValueAtTime: function () { }, exponentialRampToValueAtTime: function () { }, setTargetAtTime: function () { }, cancelScheduledValues: function () { } }; };
+            var node = function () { return { connect: function (n) { return n; }, disconnect: function () { }, start: function () { }, stop: function () { }, type: "", frequency: param(), gain: param(), detune: param(), Q: param(), buffer: null, loop: false }; };
+            window.AudioContext = function () {
+                this.state = "running"; this.currentTime = 0; this.sampleRate = 44100; this.destination = node();
+                this.resume = function () { return Promise.resolve(); }; this.suspend = this.resume; this.close = this.resume;
+                this.createOscillator = node; this.createGain = node; this.createBiquadFilter = node; this.createBufferSource = node;
+                this.createBuffer = function () { return { getChannelData: function () { return []; } }; };
+                this.createDynamicsCompressor = node; this.createDelay = node; this.createStereoPanner = node;
+            };
+        }
+    } catch (e) { }
+    // 4) Hiện lỗi JS (cộng dồn) ở góc dưới màn hình để chẩn đoán trên điện thoại
+    var errs = [];
+    window.addEventListener("error", function (e) {
+        try {
+            if (!e || !e.message) return;
+            if (String(location.href).indexOf("debug") < 0) return; // chỉ hiện khung lỗi khi mở link có thêm ?debug (để chẩn đoán); học sinh không thấy
+            errs.push(e.message + " (dong " + (e.lineno || "?") + ")");
+            if (errs.length > 4) errs.shift();
+            var d = document.getElementById("__err");
+            if (!d) {
+                d = document.createElement("div"); d.id = "__err";
+                d.style.cssText = "position:fixed;left:4px;bottom:4px;right:150px;z-index:2147483647;background:rgba(150,0,0,.9);color:#fff;font:11px/1.3 monospace;padding:4px 6px;border-radius:4px;pointer-events:none;max-height:140px;overflow:hidden;white-space:pre-wrap;word-break:break-all";
+                (document.body || document.documentElement).appendChild(d);
+            }
+            d.textContent = "Loi: " + errs.join("\n");
+        } catch (x) { }
+    });
+}
+function installConfettiFallback() {
+    if (typeof window.confetti === "function") return;
+    var cv = null, cx = null, bits = [], running = false;
+    var COLORS = ["#ff4d4d", "#ffd93d", "#4dd0e1", "#7cff6b", "#ff7ad9", "#ffffff", "#ffa726"];
+    function ensure() {
+        if (cv) return;
+        cv = document.createElement("canvas");
+        cv.style.cssText = "position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:99999";
+        cv.width = window.innerWidth; cv.height = window.innerHeight;
+        document.body.appendChild(cv); cx = cv.getContext("2d");
+        window.addEventListener("resize", function () { cv.width = window.innerWidth; cv.height = window.innerHeight; });
+    }
+    function step() {
+        cx.clearRect(0, 0, cv.width, cv.height);
+        for (var i = bits.length - 1; i >= 0; i--) {
+            var p = bits[i];
+            p.vy += 0.35; p.vx *= 0.992; p.vy *= 0.992; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life -= 0.006;
+            if (p.y > cv.height + 30 || p.life <= 0) { bits.splice(i, 1); continue; }
+            cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.globalAlpha = Math.min(1, p.life * 2); cx.fillStyle = p.c;
+            cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore();
+        }
+        if (bits.length) requestAnimationFrame(step); else { running = false; cx.clearRect(0, 0, cv.width, cv.height); }
+    }
+    window.confetti = function (opts) {
+        opts = opts || {}; ensure();
+        var n = Math.min(opts.particleCount || 100, 220);
+        var o = opts.origin || {};
+        var ox = (o.x === undefined ? 0.5 : o.x) * cv.width, oy = (o.y === undefined ? 0.5 : o.y) * cv.height;
+        var spread = opts.spread || 60, angle = opts.angle === undefined ? 90 : opts.angle;
+        for (var i = 0; i < n; i++) {
+            var a = (angle + (Math.random() - 0.5) * spread) * Math.PI / 180, v = 12 + Math.random() * 14;
+            bits.push({ x: ox, y: oy, vx: Math.cos(a) * v, vy: -Math.sin(a) * v, w: 6 + Math.random() * 8, h: 4 + Math.random() * 6, r: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.4, c: COLORS[Math.floor(Math.random() * COLORS.length)], life: 1 });
+        }
+        if (!running) { running = true; requestAnimationFrame(step); }
+    };
+}
+function installTtsUnlock() {
+    var el = null, unlocked = false;
+    var SILENT = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YQAAAAA=";
+    window.ttsEl = function (url) {
+        if (!el) el = new Audio();
+        el.onended = null; el.onerror = null; el.src = url;
+        return el;
+    };
+    function unlock() {
+        if (unlocked) return; unlocked = true;
+        try {
+            if (el && !el.paused) return;
+            var p = window.ttsEl(SILENT).play();
+            if (p && p.catch) p.catch(function () { unlocked = false; });
+        } catch (e) { unlocked = false; }
+    }
+    document.addEventListener("pointerdown", unlock, true);
+    document.addEventListener("touchend", unlock, true);
+    document.addEventListener("click", unlock, true);
+}
+function installLandscape() {
+    var skipped = false, box = null, tried = false;
+    function isPhone() {
+        var coarse = false;
+        try { coarse = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches); } catch (e) { }
+        return coarse && Math.min(window.innerWidth, window.innerHeight) < 700;
+    }
+    function build() {
+        box = document.createElement("div"); box.id = "__rot";
+        box.style.cssText = "position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;background:rgba(12,20,48,.97);color:#ffd166;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font:bold 22px/1.5 Arial,sans-serif;touch-action:manipulation";
+        box.innerHTML = '<div style="font-size:72px;animation:__spin 1.6s ease-in-out infinite alternate">\uD83D\uDCF1</div>' +
+            '<div style="margin-top:14px">Xoay ngang điện thoại<br>để chơi dễ hơn nhé!</div>' +
+            '<div style="margin-top:8px;font-size:15px;font-weight:normal;color:#fff;opacity:.8">(hoặc chạm vào màn hình để tự xoay)</div>' +
+            '<button id="__skip" style="margin-top:26px;padding:10px 18px;font-size:16px;border-radius:10px;border:2px solid #ffd166;background:transparent;color:#ffd166;cursor:pointer">Vẫn chơi màn hình dọc</button>';
+        var st = document.createElement("style"); st.textContent = "@keyframes __spin{from{transform:rotate(0)}to{transform:rotate(-90deg)}}";
+        (document.head || document.documentElement).appendChild(st);
+        (document.body || document.documentElement).appendChild(box);
+        document.getElementById("__skip").addEventListener("click", function (ev) { ev.stopPropagation(); skipped = true; update(); });
+    }
+    function update() {
+        var need = isPhone() && window.innerHeight > window.innerWidth && !skipped;
+        if (need && !box && document.body) build();
+        if (box) box.style.display = need ? "flex" : "none";
+    }
+    function tryLock(ev) {
+        if (tried || skipped || !isPhone()) return;
+        if (ev && ev.target && ev.target.id === "__skip") return;
+        tried = true;
+        try {
+            var de = document.documentElement, rq = de.requestFullscreen || de.webkitRequestFullscreen;
+            var lockIt = function () { try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(function () { }); } catch (e) { } };
+            var pr = rq ? rq.call(de) : null;
+            if (pr && pr.then) pr.then(lockIt).catch(function () { lockIt(); }); else lockIt();
+        } catch (e) { }
+    }
+    window.addEventListener("resize", update); window.addEventListener("orientationchange", function () { setTimeout(update, 200); });
+    document.addEventListener("pointerup", tryLock, true); document.addEventListener("click", tryLock, true);
+    var n = 0, iv = setInterval(function () { update(); if (++n > 20) clearInterval(iv); }, 300);
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", update); else update();
+}
+installSafety();
+installConfettiFallback();
+installTtsUnlock();
+installLandscape();</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:#0d1117;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#fff;}
+.wheel-app{display:flex;flex-direction:column;height:100%;width:100%;max-width:1200px;margin:0 auto;position:relative;}
+
+/* Header Bar */
+.wheel-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(22,27,34,0.9);border-bottom:1px solid #30363d;z-index:10;}
+.wheel-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#ff9ff3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.wheel-stats{display:flex;align-items:center;gap:12px;font-size:14px;}
+.stat-pill{background:#21262d;border:1px solid #30363d;padding:4px 10px;border-radius:20px;font-weight:600;}
+.stat-pill b{color:#feca57;}
+.hdr-btn{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:4px;transition:0.2s;}
+.hdr-btn:hover{background:#30363d;color:#fff;}
+
+/* Main Layout */
+.wheel-main{flex:1;display:flex;flex-direction:row;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:10px;}
+@media (max-width:850px){
+  .wheel-main{flex-direction:column;justify-content:center;gap:10px;}
+}
+
+/* Wheel Container */
+.wheel-stage{position:relative;display:flex;align-items:center;justify-content:center;padding:10px;}
+.canvas-wrap{position:relative;width:min(70vh, 480px, 90vw);height:min(70vh, 480px, 90vw);display:flex;align-items:center;justify-content:center;}
+canvas#wheelCanvas{width:100%;height:100%;filter:drop-shadow(0 10px 25px rgba(0,0,0,0.6));border-radius:50%;}
+
+/* Pointer Needle */
+.wheel-pointer{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:36px;height:48px;z-index:20;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));transform-origin:50% 12px;transition:transform 0.05s ease-out;}
+.wheel-pointer svg{width:100%;height:100%;}
+
+/* Center Spin Button */
+.center-spin-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:78px;height:78px;border-radius:50%;background:radial-gradient(circle,#ff4757,#b33939);border:4px solid #fff;box-shadow:0 0 20px rgba(255,71,87,0.8),inset 0 2px 4px rgba(255,255,255,0.6);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:14px;cursor:pointer;z-index:25;transition:transform 0.15s,box-shadow 0.15s;text-transform:uppercase;letter-spacing:1px;}
+.center-spin-btn:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.08);box-shadow:0 0 30px rgba(255,71,87,1);}
+.center-spin-btn:active:not(:disabled){transform:translate(-50%,-50%) scale(0.95);}
+.center-spin-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.center-spin-btn span{font-size:10px;font-weight:normal;opacity:0.9;}
+
+/* Info & Controls Panel */
+.wheel-sidebar{width:320px;max-width:100%;display:flex;flex-direction:column;gap:12px;padding:12px;background:rgba(22,27,34,0.7);border-radius:16px;border:1px solid #30363d;backdrop-filter:blur(10px);z-index:5;}
+@media (max-width:850px){
+  .wheel-sidebar{width:min(90vw, 480px);flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:8px 12px;}
+}
+.sidebar-title{font-size:15px;font-weight:700;color:#58a6ff;display:flex;align-items:center;gap:6px;}
+.q-progress-list{display:flex;flex-wrap:wrap;gap:6px;max-height:160px;overflow-y:auto;padding-right:4px;}
+.q-tag{font-size:12px;padding:4px 8px;border-radius:8px;background:#21262d;border:1px solid #30363d;color:#8b949e;display:flex;align-items:center;gap:4px;}
+.q-tag.done{background:rgba(46,160,67,0.2);border-color:#2ea043;color:#3fb950;}
+.q-tag.active{background:rgba(56,139,253,0.3);border-color:#58a6ff;color:#58a6ff;}
+
+.spin-action-btn{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#ff4757,#ff6b81);color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(255,71,87,0.4);transition:0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.spin-action-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,71,87,0.6);}
+.spin-action-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* Question Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s ease-out;padding:16px;}
+.modal-overlay.show{opacity:1;pointer-events:auto;}
+.q-card{width:min(94vw, 680px);background:#161b22;border:2px solid #58a6ff;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(88,166,255,0.3);overflow:hidden;transform:scale(0.9);transition:transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);display:flex;flex-direction:column;}
+.modal-overlay.show .q-card{transform:scale(1);}
+
+.card-hdr{padding:14px 20px;background:linear-gradient(90deg,#1f2937,#111827);border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between;}
+.card-tag{font-size:14px;font-weight:700;color:#58a6ff;display:flex;align-items:center;gap:6px;}
+.card-speaker{background:#21262d;border:1px solid #30363d;color:#58a6ff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;}
+
+.card-body{padding:20px;display:flex;flex-direction:column;gap:16px;}
+.q-text{font-size:19px;font-weight:600;line-height:1.5;color:#f0f6fc;text-align:left;}
+
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:550px){.options-grid{grid-template-columns:1fr;}}
+
+.opt-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#21262d;border:2px solid #30363d;border-radius:12px;color:#c9d1d9;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:left;position:relative;}
+.opt-btn:hover:not(:disabled){background:#30363d;border-color:#58a6ff;color:#fff;transform:translateY(-2px);}
+.opt-btn .opt-badge{width:32px;height:32px;border-radius:8px;background:#30363d;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;flex-shrink:0;}
+.opt-btn.correct{background:rgba(46,160,67,0.25)!important;border-color:#2ea043!important;color:#3fb950!important;}
+.opt-btn.correct .opt-badge{background:#2ea043;color:#fff;}
+.opt-btn.wrong{background:rgba(248,81,73,0.25)!important;border-color:#f85149!important;color:#ff7b72!important;animation:shake 0.4s;}
+.opt-btn.wrong .opt-badge{background:#f85149;color:#fff;}
+
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%,60%{transform:translateX(-8px);}
+  40%,80%{transform:translateX(8px);}
+}
+
+.feedback-bar{padding:12px 16px;border-radius:10px;font-weight:600;display:none;align-items:center;gap:10px;font-size:15px;}
+.feedback-bar.correct{background:rgba(46,160,67,0.2);border:1px solid #2ea043;color:#3fb950;display:flex;}
+.feedback-bar.wrong{background:rgba(248,81,73,0.2);border:1px solid #f85149;color:#ff7b72;display:flex;}
+
+.card-ftr{padding:14px 20px;background:#111827;border-top:1px solid #30363d;display:flex;justify-content:flex-end;gap:12px;}
+.next-spin-btn{padding:10px 24px;border:none;border-radius:10px;background:linear-gradient(135deg,#238636,#2ea043);color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:none;}
+.next-spin-btn.show{display:inline-flex;align-items:center;gap:6px;}
+
+/* Victory Screen */
+.victory-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:0.3s;padding:20px;}
+.victory-modal.show{opacity:1;pointer-events:auto;}
+.victory-card{background:#161b22;border:2px solid #feca57;border-radius:24px;padding:32px;max-width:500px;width:100%;text-align:center;box-shadow:0 0 50px rgba(254,202,87,0.4);display:flex;flex-direction:column;align-items:center;gap:16px;}
+.victory-trophy{font-size:64px;animation:bounce 1s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-12px);}}
+.victory-title{font-size:26px;font-weight:800;color:#feca57;}
+.victory-desc{font-size:16px;color:#8b949e;line-height:1.5;}
+.victory-score{font-size:36px;font-weight:900;color:#3fb950;margin:10px 0;}
+.btn-replay{padding:12px 30px;border-radius:12px;border:none;background:linear-gradient(135deg,#ff4757,#ff6b81);color:#fff;font-size:16px;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wheel-app">
+  <!-- Header -->
+  <div class="wheel-hdr">
+    <div class="wheel-title">🎡 VÒNG QUAY MAY MẮN</div>
+    <div class="wheel-stats">
+      <div class="stat-pill">Điểm: <b id="uiScore">0</b></div>
+      <div class="stat-pill">Đã mở: <b id="uiOpened">0</b>/<span id="uiTotal">0</span></div>
+      <button class="hdr-btn" id="btnSound" type="button">🔊 Bật</button>
+      <button class="hdr-btn" id="btnFullscreen" type="button">⛶ Toàn màn hình</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="wheel-main">
+    <div class="wheel-stage">
+      <div class="canvas-wrap">
+        <canvas id="wheelCanvas" width="800" height="800"></canvas>
+        <div class="wheel-pointer" id="wheelPointer">
+          <svg viewBox="0 0 40 50">
+            <polygon points="5,0 35,0 20,48" fill="#feca57" stroke="#fff" stroke-width="3" />
+            <circle cx="20" cy="12" r="6" fill="#ff4757" />
+          </svg>
+        </div>
+        <button class="center-spin-btn" id="btnCenterSpin" type="button">
+          QUAY
+          <span>CHẠM ĐÂY</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar Controls -->
+    <div class="wheel-sidebar">
+      <div class="sidebar-title">📋 DANH SÁCH CÂU HỎI</div>
+      <div class="q-progress-list" id="qProgressList"></div>
+      <button class="spin-action-btn" id="btnBigSpin" type="button">🎯 QUAY NGAY</button>
+    </div>
+  </div>
+</div>
+
+<!-- Question Modal -->
+<div class="modal-overlay" id="qModal">
+  <div class="q-card">
+    <div class="card-hdr">
+      <div class="card-tag" id="modalTag">🎡 CÂU HỎI SỐ 1</div>
+      <button class="card-speaker" id="btnSpeaker" type="button">🔊 Đọc câu hỏi</button>
+    </div>
+    <div class="card-body">
+      <div class="q-text" id="modalQuestion">Nội dung câu hỏi...</div>
+      <div class="options-grid" id="modalOptions"></div>
+      <div class="feedback-bar" id="modalFeedback"></div>
+    </div>
+    <div class="card-ftr">
+      <button class="next-spin-btn" id="btnNextSpin" type="button">Quay tiếp ➔</button>
+    </div>
+  </div>
+</div>
+
+<!-- Victory Modal -->
+<div class="victory-modal" id="victoryModal">
+  <div class="victory-card">
+    <div class="victory-trophy">🏆</div>
+    <div class="victory-title">XUẤT SẮC HOÀN THÀNH!</div>
+    <div class="victory-desc">Bạn đã trả lời xuất sắc tất cả các câu hỏi trên vòng quay may mắn!</div>
+    <div class="victory-score" id="victoryScore">1000 ĐIỂM</div>
+    <button class="btn-replay" id="btnReplay" type="button">🔄 Chơi lại từ đầu</button>
+  </div>
+</div>
+
+<script>
+function latexLite(input) {
+        if (input === null || input === undefined) return '';
+        var s = String(input);
+        if (s.indexOf('$') < 0 && s.indexOf('\\') < 0) return s;
+        var SYM = {
+            neq: '≠', ne: '≠', leq: '≤', le: '≤', geq: '≥', ge: '≥', approx: '≈', times: '×', cdot: '·', div: '÷', pm: '±',
+            infty: '∞', pi: 'π', circ: '°', degree: '°', angle: '∠', triangle: '△', perp: '⊥', parallel: '∥',
+            'in': '∈', notin: '∉', subset: '⊂', cup: '∪', cap: '∩', emptyset: '∅', varnothing: '∅',
+            to: '→', rightarrow: '→', Rightarrow: '⇒', Leftrightarrow: '⇔', leftrightarrow: '↔',
+            Delta: 'Δ', alpha: 'α', beta: 'β', gamma: 'γ', delta: 'δ', theta: 'θ', lambda: 'λ', mu: 'μ', sigma: 'σ', omega: 'ω', Omega: 'Ω',
+            ldots: '…', cdots: '…', dots: '…', left: '', right: '', big: '', Big: '', displaystyle: '', quad: ' ', qquad: ' '
+        };
+        function simple(a) { return /^-?[0-9A-Za-z.,]+$/.test(a); }
+        function wrap(a) { a = a.trim(); return simple(a) ? a : '(' + a + ')'; }
+
+        // 1. Bỏ dấu bao công thức: $$...$$, $...$, \( \), \[ \]  (không đụng giá tiền kiểu "5$ và 7$")
+        s = s.replace(/\$\$([\s\S]+?)\$\$/g, ' $1 ');
+        s = s.replace(/\$(?=\S)([^$\n]*?\S)\$/g, '$1');
+        s = s.replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+        s = s.replace(/\\\\/g, ' ');
+
+        // 2. Lệnh có đối số trong ngoặc nhọn (lặp để xử lý lồng nhau)
+        var prev;
+        do {
+            prev = s;
+            s = s.replace(/\\(?:text|mathrm|mathbf|textbf|mathit|operatorname|mbox|boldsymbol)\s*\{([^{}]*)\}/g, '$1');
+            s = s.replace(/\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, function (m, a, b) { return wrap(a) + '/' + wrap(b); });
+            s = s.replace(/\\sqrt\s*\[\s*3\s*\]\s*\{([^{}]*)\}/g, function (m, a) { return '∛' + wrap(a); });
+            s = s.replace(/\\sqrt\s*\{([^{}]*)\}/g, function (m, a) { return '√' + wrap(a); });
+            s = s.replace(/\^\s*\{([^{}]*)\}/g, function (m, a) { a = a.trim(); return /^-?[0-9A-Za-z]$|^[0-9]+$/.test(a) ? '^' + a : '^(' + a + ')'; });
+            s = s.replace(/_\s*\{([^{}]*)\}/g, function (m, a) { a = a.trim(); return /^[0-9A-Za-z]+$/.test(a) ? '_' + a : '_(' + a + ')'; });
+        } while (s !== prev);
+
+        // 3. Ký tự thoát và khoảng trắng LaTeX
+        s = s.replace(/\\\{/g, '{').replace(/\\\}/g, '}').replace(/\\%/g, '%').replace(/\\[,;:! ]/g, ' ');
+        // 4. Lệnh ký hiệu: \neq -> ≠ ... ; lệnh lạ (\sin, \ln) giữ lại tên
+        s = s.replace(/\\([A-Za-z]+)/g, function (m, w) { return Object.prototype.hasOwnProperty.call(SYM, w) ? SYM[w] : w; });
+        s = s.replace(/\\/g, '');
+        s = s.replace(/\^\s*°/g, '°');   // 30^\circ -> 30°
+        return s.replace(/[ \t]{2,}/g, ' ').trim();
+    }
+function mathToSpeech(input) {
+        if (input === null || input === undefined) return '';
+        var t = (typeof latexLite === 'function') ? latexLite(input) : String(input);
+        var L = 'A-Za-z\u00C0-\u1EF9';                       // chữ cái Latin + tiếng Việt
+        var VAR_AHEAD = '[a-zA-Z](?![' + L + '])';            // một chữ cái đứng riêng (biến số)
+        var SUP = {'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁺':'+','⁻':'-','⁼':'=','⁽':'(','⁾':')','ⁿ':'n','ˣ':'x','ʸ':'y','ᵃ':'a','ᵇ':'b','ᶜ':'c','ᵐ':'m','ᵏ':'k','ⁱ':'i'};
+        var SUB = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9','₊':'+','₋':'-','₌':'=','₍':'(','₎':')','ₙ':'n','ₓ':'x','ₐ':'a','ₖ':'k','ₘ':'m','ᵢ':'i'};
+        var SUP_CLASS = '[' + Object.keys(SUP).join('') + ']';
+        var SUB_CLASS = '[' + Object.keys(SUB).join('') + ']';
+        var UNIT = { km: 'ki-lô-mét', dm: 'đề-xi-mét', cm: 'xăng-ti-mét', mm: 'mi-li-mét', m: 'mét' };
+    
+        function power(e) {
+            e = e.replace(/\s+/g, '');
+            if (e === '2') return ' bình phương ';
+            if (e === '3') return ' lập phương ';
+            if (e.charAt(0) === '-') return ' mũ âm ' + e.substring(1) + ' ';
+            return ' mũ ' + e + ' ';
+        }
+    
+        // 0. Dọn ký tự rác & chuẩn hoá dấu trừ
+        t = t.replace(/^\s*\^\s*/, '').replace(/[−–]/g, '-');
+        // Nhãn "Câu 1:", "Đáp án 2." -> đọc như dấu phẩy, tránh hiểu nhầm thành phép chia/nhân
+        t = t.replace(/(Câu|Bài|Đáp án|Ví dụ|Phần|Bước)\s*(\d+|[A-D](?![A-Za-z]))\s*[:.]/g, '$1 $2, ');
+    
+        // 1. Đơn vị diện tích / thể tích (cm², m^3 ...)
+        t = t.replace(/(\d)\s*(km|dm|cm|mm|m)\s*(?:²|\^\s*2)(?![0-9])/g, function (m, d, u) { return d + ' ' + UNIT[u] + ' vuông '; });
+        t = t.replace(/(\d)\s*(km|dm|cm|mm|m)\s*(?:³|\^\s*3)(?![0-9])/g, function (m, d, u) { return d + ' ' + UNIT[u] + ' khối '; });
+        // Đơn vị vận tốc
+        t = t.replace(/km\s*\/\s*h\b/g, ' ki-lô-mét trên giờ ').replace(/m\s*\/\s*s\b/g, ' mét trên giây ');
+        // Đơn vị độ dài / khối lượng đứng sau số (bỏ qua "m" đơn lẻ vì dễ trùng biến số)
+        t = t.replace(/(\d)\s*(km|dm|cm|mm|kg)(?![A-Za-z\u00C0-\u1EF9²³^])/g, function (m, d, u) {
+            return d + ' ' + (u === 'kg' ? 'ki-lô-gam' : UNIT[u]) + ' ';
+        });
+    
+        // 2. Lũy thừa: chỉ số trên Unicode (x², 2³, aⁿ) và dấu mũ (x^2, 2^(n+1))
+        t = t.replace(new RegExp('([0-9A-Za-z\\)\\]])\\s*(' + SUP_CLASS + '+)', 'g'), function (m, base, ex) {
+            return base + power(ex.split('').map(function (c) { return SUP[c]; }).join(''));
+        });
+        t = t.replace(/([0-9A-Za-z\)\]])\s*\^\s*(\(([^()]*)\)|-?[0-9A-Za-z]+)/g, function (m, base, ex, inner) {
+            return inner !== undefined ? base + ' mũ mở ngoặc ' + inner + ' đóng ngoặc ' : base + power(ex);
+        });
+        // Chỉ số dưới (x₁ -> x 1)
+        t = t.replace(new RegExp(SUB_CLASS + '+', 'g'), function (s) { return ' ' + s.split('').map(function (c) { return SUB[c]; }).join('') + ' '; });
+    
+        // 3. Căn thức
+        t = t.replace(/∛/g, ' căn bậc ba của ').replace(/√|sqrt/g, ' căn bậc hai của ');
+    
+        // 4. Số: dấu chấm phân cách hàng nghìn (1.000.000), dấu phẩy thập phân (2,5)
+        t = t.replace(/\d{1,3}(?:\.\d{3})+(?![\d.])/g, function (s) { return s.replace(/\./g, ''); });
+        t = t.replace(/(\d),(\d)/g, '$1 phẩy $2');
+        // Giờ phút viết liền (7:30)
+        t = t.replace(/(^|[^\d])(\d{1,2}):([0-5]\d)(?!\d)/g, function (m, pre, h, mi) {
+            return parseInt(h, 10) <= 24 ? pre + h + ' giờ ' + mi + ' phút' : m;
+        });
+    
+        // 5. Ngoặc trong biểu thức toán (có chứa số hoặc phép tính)
+        var prev;
+        do {
+            prev = t;
+            t = t.replace(/\(([^()]*[0-9+\-×÷*\/=:.·⋅][^()]*)\)/g, ' mở ngoặc $1 đóng ngoặc ');
+        } while (t !== prev);
+        t = t.replace(/\[([^\[\]]*)\]/g, ' mở ngoặc vuông $1 đóng ngoặc vuông ');
+        t = t.replace(/\{([^{}]*)\}/g, ' mở ngoặc nhọn $1 đóng ngoặc nhọn ');
+    
+        // 6. Phân số & chia
+        t = t.replace(/([0-9A-Za-z])\s*\/\s*(?=[0-9]|[a-zA-Z](?![A-Za-z\u00C0-\u1EF9])|\s*mở)/g, '$1 phần ');
+        t = t.replace(/÷/g, ' chia ');
+        t = t.replace(new RegExp('([0-9]|ngoặc|(?<![' + L + '])[a-zA-Z])\\s*:\\s*(?=[0-9]|' + VAR_AHEAD + '|\\s*mở|\\s*căn)', 'g'), '$1 chia ');
+    
+        // 7. Nhân: × · ⋅ * , "3 x 4", và dấu chấm kiểu SGK ("2 . 3", "2.(3+4)", "a.b")
+        t = t.replace(/[×✕·⋅∙*]/g, ' nhân ');
+        t = t.replace(/(\d)\s+[xX]\s+(?=\d)/g, '$1 nhân ');
+        t = t.replace(/(\d)\s+\.\s+(?=\d)/g, '$1 nhân ');                               // 2 . 3
+        t = t.replace(/(\d)\.(\d)/g, '$1 phẩy $2');                                         // 2.5 -> số thập phân
+        t = t.replace(new RegExp('([0-9]|ngoặc|(?<![' + L + '])[a-zA-Z])\\s*\\.\\s*(?=' + VAR_AHEAD + '|\\s*mở|\\s*căn)', 'g'), '$1 nhân ');
+    
+        // 8. Cộng, trừ, số âm
+        t = t.replace(/±/g, ' cộng trừ ').replace(/\+/g, ' cộng ');
+        t = t.replace(new RegExp('([0-9]|ngoặc|phương|(?<![' + L + '])[a-zA-Z])\\s*-\\s*(?=[0-9]|' + VAR_AHEAD + '|\\s*mở|\\s*căn)', 'g'), '$1 trừ ');
+        t = t.replace(new RegExp('(^|[\\s=,;:(])-\\s*(?=[0-9]|' + VAR_AHEAD + '|\\s*mở)', 'g'), '$1 âm ');
+    
+        // 9. So sánh
+        t = t.replace(/≤|<=/g, ' bé hơn hoặc bằng ').replace(/≥|>=/g, ' lớn hơn hoặc bằng ');
+        t = t.replace(/≠|!=/g, ' khác ').replace(/≈/g, ' xấp xỉ ');
+        t = t.replace(/=\s*\?/g, ' bằng bao nhiêu?');
+        t = t.replace(/</g, ' bé hơn ').replace(/>/g, ' lớn hơn ').replace(/=/g, ' bằng ');
+    
+        // 10. Ký hiệu khác
+        t = t.replace(/%/g, ' phần trăm ').replace(/°\s*C/g, ' độ C ').replace(/°/g, ' độ ');
+        t = t.replace(/π/g, ' pi ').replace(/∞/g, ' vô cực ').replace(/∅/g, ' tập rỗng ');
+        t = t.replace(/∉/g, ' không thuộc ').replace(/∈/g, ' thuộc ').replace(/⊂/g, ' là tập con của ');
+        t = t.replace(/∪/g, ' hợp ').replace(/∩/g, ' giao ').replace(/([Gg]óc\s*)?∠/g, function (m, g) { return g ? g : ' góc '; });
+        t = t.replace(/[△Δ]/g, ' tam giác ').replace(/⊥/g, ' vuông góc với ').replace(/∥|\/\//g, ' song song với ');
+    
+        return t.replace(/\s+/g, ' ').replace(/\s+([,.;!?])/g, '$1').trim();
+    }
+function gameFormatMath(text) {
+    if (text === null || text === undefined) return '';
+    var s = (typeof latexLite === 'function') ? latexLite(text) : String(text);
+    var SUP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','=':'⁼','(':'⁽',')':'⁾','n':'ⁿ','x':'ˣ','y':'ʸ','a':'ᵃ','b':'ᵇ','c':'ᶜ','m':'ᵐ','k':'ᵏ','i':'ⁱ'};
+    var SUB = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋','=':'₌','n':'ₙ','x':'ₓ','a':'ₐ','k':'ₖ','m':'ₘ','i':'ᵢ'};
+    function conv(str, map) {
+        var out = '';
+        for (var i = 0; i < str.length; i++) {
+            var c = str.charAt(i);
+            if (c === ' ') continue;
+            if (!map[c]) return null;
+            out += map[c];
+        }
+        return out;
+    }
+    s = s.replace(/^\s*\^\s*/, '');
+    s = s.replace(/([0-9A-Za-z\)\]])\s*\^\s*\(([^()]+)\)/g, function (m, b, e) { var c = conv(e, SUP); return c === null ? m : b + c; });
+    s = s.replace(/([0-9A-Za-z\)\]])\s*\^\s*(-?[0-9A-Za-z]+)/g, function (m, b, e) { var c = conv(e, SUP); return c === null ? m : b + c; });
+    s = s.replace(/([A-Za-z])_\s*\{?([0-9A-Za-z]+)\}?/g, function (m, b, e) { var c = conv(e, SUB); return c === null ? m : b + c; });
+    return s;
+}
+function wheelRuntime(questions, voicePref) {
+    if (!Array.isArray(questions) || questions.length === 0) {
+        questions = [
+            { q: "Số nào sau đây chia hết cho 2?", options: ["125", "248", "317", "909"], answer: 1 },
+            { q: "Số nào sau đây chia hết cho 5?", options: ["324", "195", "402", "888"], answer: 1 },
+            { q: "Số nào chia hết cho cả 2 và 5?", options: ["2020", "2025", "1954", "305"], answer: 0 },
+            { q: "Tổng 1954 + 1975 có chia hết cho 2 không?", options: ["Có chia hết", "Không chia hết", "Chỉ chia hết cho 5", "Không xác định"], answer: 1 }
+        ];
+    }
+
+    const state = {
+        score: 0,
+        completed: new Set(),
+        currentIdx: -1,
+        isSpinning: false,
+        angle: 0, // radians
+        soundEnabled: true,
+        audioCtx: null
+    };
+
+    // Color palette for slices
+    const COLORS = [
+        '#f72585', '#7209b7', '#3a0ca3', '#4361ee', 
+        '#4cc9f0', '#06d6a0', '#ffd166', '#ef476f',
+        '#118ab2', '#073b4c', '#e63946', '#2a9d8f'
+    ];
+
+    // Sound FX generator via Web Audio API (Offline 100%)
+    function initAudio() {
+        if (!state.audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) state.audioCtx = new AudioContext();
+        }
+        if (state.audioCtx && state.audioCtx.state === 'suspended') {
+            state.audioCtx.resume();
+        }
+    }
+
+    function playTick() {
+        if (!state.soundEnabled) return;
+        try {
+            initAudio();
+            if (!state.audioCtx) return;
+            const osc = state.audioCtx.createOscillator();
+            const gain = state.audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(800, state.audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(200, state.audioCtx.currentTime + 0.02);
+            gain.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.02);
+            osc.connect(gain);
+            gain.connect(state.audioCtx.destination);
+            osc.start();
+            osc.stop(state.audioCtx.currentTime + 0.02);
+        } catch (e) {}
+    }
+
+    function playFanfare() {
+        if (!state.soundEnabled) return;
+        try {
+            initAudio();
+            if (!state.audioCtx) return;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
+            notes.forEach((freq, idx) => {
+                const osc = state.audioCtx.createOscillator();
+                const gain = state.audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                const startTime = state.audioCtx.currentTime + idx * 0.08;
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(0.3, startTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+                osc.connect(gain);
+                gain.connect(state.audioCtx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + 0.35);
+            });
+        } catch (e) {}
+    }
+
+    function playBuzz() {
+        if (!state.soundEnabled) return;
+        try {
+            initAudio();
+            if (!state.audioCtx) return;
+            const osc = state.audioCtx.createOscillator();
+            const gain = state.audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, state.audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(100, state.audioCtx.currentTime + 0.25);
+            gain.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.25);
+            osc.connect(gain);
+            gain.connect(state.audioCtx.destination);
+            osc.start();
+            osc.stop(state.audioCtx.currentTime + 0.25);
+        } catch (e) {}
+    }
+
+    // TTS Voice
+    function speakText(text) {
+        if (!state.soundEnabled) return;
+        try {
+            window.speechSynthesis.cancel();
+            const cleanText = text.replace(/<[^>]*>/g, '').replace(/\$[^$]*\$/g, '');
+            const utter = new SpeechSynthesisUtterance(cleanText);
+            utter.lang = 'vi-VN';
+            utter.rate = 0.95;
+            window.speechSynthesis.speak(utter);
+        } catch (e) {}
+    }
+
+    // Canvas drawing
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const N = questions.length;
+    const sliceAngle = (2 * Math.PI) / N;
+
+    function drawWheel() {
+        const W = canvas.width;
+        const H = canvas.height;
+        const cx = W / 2;
+        const cy = H / 2;
+        const R = W / 2 - 25; // leave room for border & lights
+
+        ctx.clearRect(0, 0, W, H);
+
+        // 1. Draw Outer Ring with LED lights
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, R + 18, 0, 2 * Math.PI);
+        ctx.fillStyle = '#1e293b';
+        ctx.fill();
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#f59e0b';
+        ctx.stroke();
+
+        // LED bulbs
+        const numLeds = Math.max(16, N * 2);
+        for (let i = 0; i < numLeds; i++) {
+            const ledAngle = (2 * Math.PI / numLeds) * i;
+            const lx = cx + (R + 10) * Math.cos(ledAngle);
+            const ly = cy + (R + 10) * Math.sin(ledAngle);
+            ctx.beginPath();
+            ctx.arc(lx, ly, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = (i % 2 === 0) ? '#fef08a' : '#f97316';
+            ctx.shadowColor = '#fbbf24';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // 2. Draw Slices
+        for (let i = 0; i < N; i++) {
+            const startA = state.angle + i * sliceAngle;
+            const endA = startA + sliceAngle;
+            const isDone = state.completed.has(i);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, R, startA, endA);
+            ctx.closePath();
+
+            // Color
+            if (isDone) {
+                ctx.fillStyle = '#334155'; // dimmed for completed
+            } else {
+                ctx.fillStyle = COLORS[i % COLORS.length];
+            }
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.stroke();
+
+            // Text on Slice
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(startA + sliceAngle / 2);
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold ' + Math.min(22, Math.max(13, 260 / N)) + 'px "Segoe UI", Arial, sans-serif';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 6;
+
+            // Extract short label from question
+            let label = 'Câu ' + (i + 1);
+            const rawQ = questions[i].q || '';
+            const numMatch = rawQ.match(/(\d+[\d\s\+\-\*\/]*\d+)/);
+            if (numMatch && numMatch[1].length <= 10) {
+                label = numMatch[1].trim();
+            } else if (rawQ.length <= 12) {
+                label = rawQ;
+            }
+            if (isDone) label = '✓ ' + label;
+
+            ctx.fillText(label, R - 25, 0);
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        // 3. Center Ring
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, 45, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0f172a';
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // Spin animation logic
+    let lastTickSlice = -1;
+    function spinTo(targetIdx) {
+        if (state.isSpinning) return;
+        state.isSpinning = true;
+        initAudio();
+        document.getElementById('btnCenterSpin').disabled = true;
+        document.getElementById('btnBigSpin').disabled = true;
+
+        // Pointer is at 12 o'clock (-PI/2)
+        // Slice i center at (angle + (i + 0.5)*sliceAngle)
+        // We want (angle + (targetIdx + 0.5)*sliceAngle) = -PI/2 + 2*PI*K
+        const fullRounds = 4 + Math.floor(Math.random() * 3); // 4 to 6 full rounds
+        const currentA = state.angle % (2 * Math.PI);
+        const targetA = (3 * Math.PI / 2) - ((targetIdx + 0.5) * sliceAngle);
+        let diff = (targetA - currentA) % (2 * Math.PI);
+        if (diff < 0) diff += 2 * Math.PI;
+
+        const totalRotation = fullRounds * (2 * Math.PI) + diff;
+        const startAngle = state.angle;
+        const duration = 4000; // ms
+        const startTime = performance.now();
+
+        const pointerEl = document.getElementById('wheelPointer');
+
+        function animate(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            // Cubic ease out
+            const ease = 1 - Math.pow(1 - progress, 3);
+            state.angle = startAngle + totalRotation * ease;
+
+            // Pointer tick calculation
+            const normalizedAngle = (state.angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+            // which slice is at top
+            const pointerAngle = (3 * Math.PI / 2 - normalizedAngle + 2 * Math.PI) % (2 * Math.PI);
+            const currentSlice = Math.floor(pointerAngle / sliceAngle) % N;
+
+            if (currentSlice !== lastTickSlice) {
+                lastTickSlice = currentSlice;
+                playTick();
+                if (pointerEl) {
+                    pointerEl.style.transform = 'translateX(-50%) rotate(-18deg)';
+                    setTimeout(() => {
+                        if (pointerEl) pointerEl.style.transform = 'translateX(-50%) rotate(0deg)';
+                    }, 40);
+                }
+            }
+
+            drawWheel();
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                state.isSpinning = false;
+                document.getElementById('btnCenterSpin').disabled = false;
+                document.getElementById('btnBigSpin').disabled = false;
+                playFanfare();
+                setTimeout(() => openQuestion(targetIdx), 500);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    function pickNextIndex() {
+        const available = [];
+        for (let i = 0; i < N; i++) {
+            if (!state.completed.has(i)) available.push(i);
+        }
+        if (available.length === 0) return -1;
+        return available[Math.floor(Math.random() * available.length)];
+    }
+
+    function startSpin() {
+        if (state.isSpinning) return;
+        const nextIdx = pickNextIndex();
+        if (nextIdx === -1) {
+            showVictory();
+            return;
+        }
+        spinTo(nextIdx);
+    }
+
+    // Modal Question Handling
+    function openQuestion(idx) {
+        state.currentIdx = idx;
+        const qData = questions[idx];
+        const modal = document.getElementById('qModal');
+        const tag = document.getElementById('modalTag');
+        const qText = document.getElementById('modalQuestion');
+        const optsContainer = document.getElementById('modalOptions');
+        const fb = document.getElementById('modalFeedback');
+        const nextBtn = document.getElementById('btnNextSpin');
+
+        tag.textContent = '🎡 CÂU HỎI SỐ ' + (idx + 1) + ' / ' + N;
+        qText.innerHTML = (typeof gameFormatMath === 'function') ? gameFormatMath(qData.q) : qData.q;
+        optsContainer.innerHTML = '';
+        fb.className = 'feedback-bar';
+        fb.textContent = '';
+        nextBtn.className = 'next-spin-btn';
+
+        const LETTERS = ['A', 'B', 'C', 'D'];
+        (qData.options || []).forEach((opt, optIdx) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.type = 'button';
+            btn.innerHTML = '<span class="opt-badge">' + LETTERS[optIdx] + '</span><span class="opt-text">' + 
+                ((typeof gameFormatMath === 'function') ? gameFormatMath(opt) : opt) + '</span>';
+            btn.onclick = () => selectOption(optIdx);
+            optsContainer.appendChild(btn);
+        });
+
+        modal.classList.add('show');
+
+        // AI read out loud
+        let speech = 'Câu hỏi số ' + (idx + 1) + '. ' + qData.q + '. ';
+        (qData.options || []).forEach((opt, i) => {
+            speech += 'Đáp án ' + LETTERS[i] + ': ' + opt + '. ';
+        });
+        speakText(speech);
+
+        document.getElementById('btnSpeaker').onclick = () => speakText(speech);
+    }
+
+    function selectOption(optIdx) {
+        const qData = questions[state.currentIdx];
+        const opts = document.querySelectorAll('.opt-btn');
+        opts.forEach(b => b.disabled = true);
+
+        const isCorrect = (optIdx === qData.answer);
+        const fb = document.getElementById('modalFeedback');
+        const nextBtn = document.getElementById('btnNextSpin');
+
+        if (isCorrect) {
+            opts[optIdx].classList.add('correct');
+            state.score += 100;
+            state.completed.add(state.currentIdx);
+            fb.className = 'feedback-bar correct';
+            fb.textContent = '🎉 CHÍNH XÁC! Bạn được cộng 100 điểm!';
+            playFanfare();
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            }
+            speakText('Chính xác! Bạn được cộng 100 điểm!');
+        } else {
+            opts[optIdx].classList.add('wrong');
+            if (opts[qData.answer]) opts[qData.answer].classList.add('correct');
+            fb.className = 'feedback-bar wrong';
+            const LETTERS = ['A', 'B', 'C', 'D'];
+            fb.textContent = '❌ CHƯA ĐÚNG! Đáp án chính xác là ' + LETTERS[qData.answer] + '.';
+            playBuzz();
+            speakText('Chưa đúng rồi. Đáp án chính xác là ' + LETTERS[qData.answer]);
+        }
+
+        updateUI();
+        nextBtn.className = 'next-spin-btn show';
+        nextBtn.onclick = () => {
+            document.getElementById('qModal').classList.remove('show');
+            window.speechSynthesis.cancel();
+            if (state.completed.size >= N) {
+                setTimeout(showVictory, 400);
+            }
+        };
+    }
+
+    function updateUI() {
+        document.getElementById('uiScore').textContent = state.score;
+        document.getElementById('uiOpened').textContent = state.completed.size;
+        document.getElementById('uiTotal').textContent = N;
+
+        const list = document.getElementById('qProgressList');
+        list.innerHTML = '';
+        for (let i = 0; i < N; i++) {
+            const tag = document.createElement('div');
+            const isDone = state.completed.has(i);
+            tag.className = 'q-tag' + (isDone ? ' done' : '');
+            tag.textContent = (isDone ? '✓ ' : '') + 'C' + (i + 1);
+            list.appendChild(tag);
+        }
+        drawWheel();
+    }
+
+    function showVictory() {
+        const vModal = document.getElementById('victoryModal');
+        document.getElementById('victoryScore').textContent = state.score + ' ĐIỂM';
+        vModal.classList.add('show');
+        playFanfare();
+        if (typeof confetti === 'function') {
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+        }
+        speakText('Chúc mừng bạn đã hoàn thành xuất sắc tất cả các câu hỏi trên vòng quay may mắn!');
+    }
+
+    // Button event listeners
+    document.getElementById('btnCenterSpin').onclick = startSpin;
+    document.getElementById('btnBigSpin').onclick = startSpin;
+
+    document.getElementById('btnSound').onclick = function() {
+        state.soundEnabled = !state.soundEnabled;
+        this.textContent = state.soundEnabled ? '🔊 Bật' : '🔇 Tắt';
+        if (!state.soundEnabled) window.speechSynthesis.cancel();
+    };
+
+    document.getElementById('btnFullscreen').onclick = function() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen().catch(() => {});
+        }
+    };
+
+    document.getElementById('btnReplay').onclick = function() {
+        state.score = 0;
+        state.completed.clear();
+        state.currentIdx = -1;
+        document.getElementById('victoryModal').classList.remove('show');
+        updateUI();
+    };
+
+    // Responsive Canvas Resize
+    function resizeCanvas() {
+        const wrap = document.querySelector('.canvas-wrap');
+        if (wrap) {
+            const rect = wrap.getBoundingClientRect();
+            const size = Math.min(rect.width, rect.height) * window.devicePixelRatio;
+            canvas.width = size || 800;
+            canvas.height = size || 800;
+            drawWheel();
+        }
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // Initial setup
+    updateUI();
+    setTimeout(resizeCanvas, 100);
+}
+wheelRuntime([{"q":"Số 120 có chia hết cho 2 hoặc cho 5 không?","options":["Chỉ chia hết cho 2","Chỉ chia hết cho 5","Chia hết cho cả 2 và 5","Không chia hết cho cả hai"],"answer":2},{"q":"Số 35 có đặc điểm chia hết nào sau đây?","options":["Chỉ chia hết cho 2","Chỉ chia hết cho 5","Chia hết cho cả 2 và 5","Không chia hết cho cả hai"],"answer":1},{"q":"Số 46 có chia hết cho 2 hay không? Vì sao?","options":["Có, vì chữ số tận cùng là 6 (chẵn)","Không, vì 46 là số lẻ","Có, vì 4 + 6 = 10","Chia hết cho 5"],"answer":0},{"q":"Số 2010 có chữ số tận cùng là 0 thì chia hết cho số nào?","options":["Chỉ chia hết cho 2","Chỉ chia hết cho 5","Chia hết cho cả 2 và 5","Không chia hết"],"answer":2},{"q":"Số 185 có chia hết cho 2 không?","options":["Có chia hết vì là số có 3 chữ số","Không chia hết vì chữ số tận cùng là 5 (lẻ)","Có chia hết cho cả 2 và 5","Không xác định được"],"answer":1},{"q":"Số 248 có chia hết cho 2 không? Vì sao?","options":["Có, vì chữ số tận cùng là 8","Không, vì 248 là số lớn","Chỉ chia hết cho 5","Không chia hết"],"answer":0}], "google_cloud");
+</script>
+
+<!-- Portal Back Button -->
+<style>
+.dt-portal-back-fab {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 99999;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc !important;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+.dt-portal-back-fab:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.45);
+}
+@media (max-width: 640px) {
+  .dt-portal-back-fab {
+    top: 8px;
+    left: 8px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+  }
+}
+</style>
+<a href="../../index.html" class="dt-portal-back-fab" title="Quay về Cổng Bài Giảng Điện Tử Thầy Đinh Công Tùng">
+  <span>🏠</span><span>Cổng bài giảng</span>
+</a>
+
+</body>
+</html>

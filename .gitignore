@@ -1,0 +1,5 @@
+.github_config.json
+.netlify_config.json
+*.bak
+*.zip
+__pycache__/

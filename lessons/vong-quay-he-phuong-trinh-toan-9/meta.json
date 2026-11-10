@@ -1,0 +1,17 @@
+{
+  "id": "vong-quay-he-phuong-trinh-toan-9",
+  "title": "Vòng Quay May Mắn: Khởi Động Hệ Phương Trình — Toán 9 (Tiết 15)",
+  "description": "Mini-game Vòng quay kỳ diệu kiểm tra nhanh kiến thức Hệ phương trình bậc nhất hai ẩn với hiệu ứng âm thanh và pháo hoa.",
+  "subject": "Toán học 9",
+  "file": "lessons/vong-quay-he-phuong-trinh-toan-9/index.html",
+  "slides": 6,
+  "date": "20/08/2026",
+  "thumbnail": "thumbnails/vong-quay-he-phuong-trinh-toan-9.webp",
+  "type": "game",
+  "badge": "🎮 Game Toán 9",
+  "features": [
+    "🎡 Vòng quay may mắn",
+    "🔊 Hiệu ứng âm thanh",
+    "🏆 Vinh danh"
+  ]
+}

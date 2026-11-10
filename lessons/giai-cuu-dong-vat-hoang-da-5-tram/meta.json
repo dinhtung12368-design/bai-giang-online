@@ -1,0 +1,17 @@
+{
+  "id": "giai-cuu-dong-vat-hoang-da-5-tram",
+  "title": "Biệt Đội Giải Cứu Động Vật Hoang Dã — Vượt 5 Trạm Thử Thách",
+  "description": "Trò chơi nhập vai giáo dục bảo vệ thiên nhiên và đa dạng sinh học: Vượt qua 5 trạm canh gác để giải cứu các loài thú quý hiếm.",
+  "subject": "Khoa học tự nhiên",
+  "file": "lessons/giai-cuu-dong-vat-hoang-da-5-tram/index.html",
+  "slides": 5,
+  "date": "19/08/2026",
+  "thumbnail": "thumbnails/giai-cuu-dong-vat-hoang-da-5-tram.webp",
+  "type": "game",
+  "badge": "🌿 Game 5 Trạm",
+  "features": [
+    "🦁 5 Trạm giải cứu",
+    "🎯 Trắc nghiệm tương tác",
+    "🏅 Huy hiệu"
+  ]
+}
